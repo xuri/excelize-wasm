@@ -1,4 +1,4 @@
-# A WebAssembly build of the Go excelize library
+# excelize-wasm
 
 <p align="center"><img width="500" src="./excelize-wasm.svg" alt="excelize-wasm logo"></p>
 
