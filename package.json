@@ -1,0 +1,68 @@
+{
+  "name": "excelize-wasm",
+  "version": "0.0.1",
+  "description": "A WebAssembly build of the Go excelize library",
+  "author": "xuri <xuri.me@gmail.com>",
+  "homepage": "https://xuri.me/excelize",
+  "bugs": {
+    "url": "https://github.com/xuri/excelize-wasm/issues",
+    "email": "xuri.me@gmail.com"
+  },
+  "license": "BSD-3-Clause",
+  "type": "module",
+  "main": "main.cjs",
+  "module": "main.js",
+  "exports": {
+    "require": "./main.cjs",
+    "script": "./index.js",
+    "default": "./main.js"
+  },
+  "files": [
+    "*.js",
+    "*.cjs",
+    "*.d.ts",
+    "*.wasm"
+  ],
+  "types": "index.d.ts",
+  "typings": "index.d.ts",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/xuri/excelize-wasm.git"
+  },
+  "funding": {
+    "type": "individual",
+    "url": "https://www.paypal.com/paypalme/xuri"
+  },
+  "keywords": [
+    "data-science",
+    "ecma-376",
+    "excel",
+    "excel",
+    "excelize",
+    "excelize",
+    "formula",
+    "go",
+    "golang",
+    "microsoft",
+    "microsoft",
+    "office",
+    "ole",
+    "ooxml",
+    "openoffice",
+    "openxml",
+    "spreadsheet",
+    "statistics analytics",
+    "vba",
+    "visualization",
+    "wasm",
+    "webassembly",
+    "wps",
+    "xlsm",
+    "xlsx",
+    "xlsx",
+    "xltm",
+    "xltx",
+    "xml",
+    "zip"
+  ]
+}
