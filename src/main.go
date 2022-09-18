@@ -25,7 +25,7 @@ import (
 
 	_ "golang.org/x/image/tiff"
 
-	"github.com/xuri/excelize/v2"
+	"github.com/xuri/excelize"
 )
 
 type argsRule struct {
@@ -42,6 +42,11 @@ var (
 
 func main() {
 	c := make(chan struct{})
+	regInteropFunc()
+	<-c
+}
+
+func regInteropFunc() {
 	for name, impl := range map[string]func(this js.Value, args []js.Value) interface{}{
 		"AddChart":               AddChart,
 		"AddChartSheet":          AddChartSheet,
@@ -139,7 +144,6 @@ func main() {
 	} {
 		js.Global().Set(name, js.FuncOf(impl))
 	}
-	<-c
 }
 
 func inTypeSlice(a []js.Type, x js.Type) int {

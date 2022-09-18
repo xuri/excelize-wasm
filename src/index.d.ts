@@ -30,7 +30,7 @@ declare type Options = {
  * column title.
  * @param cell The cell reference
  */
-declare function CellNameToCoordinates(cell: string): { col: numebr, row: number, error: string }
+declare function CellNameToCoordinates(cell: string): { col: number, row: number, error: string }
 
 /**
  * ColumnNameToNumber provides a function to convert Excel sheet column name
@@ -114,7 +114,7 @@ declare class NewFile {
    * set (such as offset, scale, aspect ratio setting and print settings) and
    * properties set.
    * @param sheet The worksheet name
-   * @param cell The cell refernece
+   * @param cell The cell reference
    * @param format The chart format
    * @param combo Specifies the create a chart that combines two or more chart
    *  types in a single chart
@@ -138,7 +138,7 @@ declare class NewFile {
    * worksheet index, cell and format set (such as author and text). Note that
    * the max author length is 255 and the max text length is 32512.
    * @param sheet The worksheet name
-   * @param cell The cell refernece
+   * @param cell The cell reference
    * @param format The comment format
    */
   AddComment(sheet: string, cell: string, format: string): { error: string }
@@ -148,7 +148,7 @@ declare class NewFile {
    * picture format set (such as offset, scale, aspect ratio setting and print
    * settings), file base name, extension name and file bytes.
    * @param sheet The worksheet name
-   * @param cell The cell refernece
+   * @param cell The cell reference
    * @param format The picture format
    * @param name The picture name
    * @param extension The extension name
@@ -169,7 +169,7 @@ declare class NewFile {
    * index, shape format set (such as offset, scale, aspect ratio setting and
    * print settings) and properties set.
    * @param sheet The worksheet name
-   * @param cell The cell refernece
+   * @param cell The cell reference
    * @param format The shape format
    */
   AddShape(sheet: string, cell: string, format: string): { error: string }
@@ -178,8 +178,8 @@ declare class NewFile {
    * AddTable provides the method to add table in a worksheet by given
    * worksheet name, range reference and format set.
    * @param sheet The worksheet name
-   * @param hCell The top-left cell refernece
-   * @param vCell The right-bottom cell refernece
+   * @param hCell The top-left cell reference
+   * @param vCell The right-bottom cell reference
    * @param format The table format
    */
   AddTable(sheet: string, hCell: string, vCell: string, format: string): { error: string }
@@ -189,8 +189,8 @@ declare class NewFile {
    * worksheet name, range reference and settings. An auto filter in Excel is
    * a way of filtering a 2D range of data based on some simple criteria.
    * @param sheet The worksheet name
-   * @param hCell The top-left cell refernece
-   * @param vCell The right-bottom cell refernece
+   * @param hCell The top-left cell reference
+   * @param vCell The right-bottom cell reference
    * @param format The auto filter format
    */
   AutoFilter(sheet: string, hCell: string, vCell: string, format: string): { error: string }
@@ -201,7 +201,7 @@ declare class NewFile {
    * implicit intersection, explicit intersection, array formula, table
    * formula and some other formulas are not supported currently.
    * @param sheet The worksheet name
-   * @param cell The cell refernece
+   * @param cell The cell reference
    */
   CalcCellValue(sheet: string, cell: string): { result: string, error: string }
 
@@ -218,7 +218,7 @@ declare class NewFile {
    * DeleteChart provides a function to delete chart in spreadsheet by given
    * worksheet name and cell reference.
    * @param sheet The worksheet name
-   * @param cell The cell refernece
+   * @param cell The cell reference
    */
   DeleteChart(sheet: string, cell: string): { error: string }
 
@@ -226,7 +226,7 @@ declare class NewFile {
    * DeleteComment provides the method to delete comment in a sheet by given
    * worksheet name.
    * @param sheet The worksheet name
-   * @param cell The cell refernece
+   * @param cell The cell reference
    */
   DeleteComment(sheet: string, cell: string): { error: string }
 
@@ -244,7 +244,7 @@ declare class NewFile {
    * worksheet name and cell reference. Note that the image file won't be
    * deleted from the document currently.
    * @param sheet The worksheet name
-   * @param cell The cell refernece
+   * @param cell The cell reference
    */
   DeletePicture(sheet: string, cell: string): { error: string }
 
@@ -321,10 +321,11 @@ declare class NewFile {
 
   /**
    * GetCellValue provides a function to get formatted value from cell by given
-   * worksheet name and cell reference in spreadsheet. If it is possible to
-   * apply a format to the cell value, it will do so, if not then an error
-   * will be returned, along with the raw value of the cell. All cells' values
-   * will be the same in a merged range.
+   * worksheet name and cell reference in spreadsheet. The return value is
+   * converted to the `string` data type. If the cell format can be applied to
+   * the value of a cell, the applied value will be returned, otherwise the
+   * original value will be returned. All cells' values will be the same in a
+   * merged range.
    * @param sheet The worksheet name
    * @param cell The cell reference
    */
@@ -512,8 +513,8 @@ declare class NewFile {
    *  	|A8(x3,y4)      C8(x4,y4)|
    *  	+------------------------+
    * @param sheet The worksheet name
-   * @param hCell The top-left cell refernece
-   * @param vCell The right-bottom cell refernece
+   * @param hCell The top-left cell reference
+   * @param vCell The right-bottom cell reference
    */
   MergeCell(sheet: string, hCell: string, vCell: string): { error: string }
 
@@ -586,7 +587,7 @@ declare class NewFile {
    * @param value The cell value to search
    * @param reg Specifies if search with regular expression
    */
-  SearchSheet(sheet: string, value: string, reg?: boollean): { result: string, error: string }
+  SearchSheet(sheet: string, value: string, reg?: boolean): { result: string, error: string }
 
   /**
    * SetActiveSheet provides a function to set the default active sheet of the
@@ -650,24 +651,23 @@ declare class NewFile {
 
   /**
    * SetCellStyle provides a function to add style attribute for cells by given
-   * worksheet name, range reference and style ID. This function is
-   * concurrency safe. Note that diagonalDown and diagonalUp type border
-   * should be use same color in the same range. SetCellStyle will overwrite
-   * the existing styles for the cell, it won't append or merge style with
-   * existing styles.
+   * worksheet name, range reference and style ID. Note that diagonalDown and
+   * diagonalUp type border should be use same color in the same range.
+   * SetCellStyle will overwrite the existing styles for the cell, it won't
+   * append or merge style with existing styles.
    * @param sheet The worksheet name
-   * @param hCell The top-left cell refernece
-   * @param vCell The right-bottom cell refernece
+   * @param hCell The top-left cell reference
+   * @param vCell The right-bottom cell reference
    * @param styleID The style ID
    */
   SetCellStyle(sheet: string, hCell: string, vCell: string, styleID: number): { error: string }
 
   /**
-   * SetCellValue provides a function to set the value of a cell. This function
-   * is concurrency safe. The specified coordinates should not be in the first
-   * row of the table, a complex number can be set with string text.
+   * SetCellValue provides a function to set the value of a cell. The specified
+   * coordinates should not be in the first row of the table, a complex number
+   * can be set with string text.
    *
-   * You can set numbers format by the SetCellStyle funtion. If you need to set
+   * You can set numbers format by the SetCellStyle function. If you need to set
    * the specialized date in Excel like January 0, 1900 or February 29, 1900.
    * Please set the cell value as number 0 or 60, then create and bind the
    * date-time number format style for the cell.
@@ -735,7 +735,7 @@ declare class NewFile {
    * SetRowHeight provides a function to set the height of a single row.
    * @param sheet The worksheet name
    * @param row The row number
-   * @param height The heighr of the row
+   * @param height The height of the row
    */
   SetRowHeight(sheet: string, row: number, height : number): { error: string }
 
@@ -794,8 +794,7 @@ declare class NewFile {
 
   /**
    * SetSheetRow writes an array to row by given worksheet name, starting cell
-   * reference and a pointer to array type 'slice'. This function is
-   * concurrency safe.
+   * reference and a pointer to array type 'slice'.
    * @param sheet The worksheet name
    * @param cell The starting cell reference
    * @param slice The array for writes
@@ -810,7 +809,7 @@ declare class NewFile {
    * @param sheet The worksheet name
    * @param visible The worksheet visibility
    */
-  SetSheetVisible(sheet: string, visible: booolean): { error: string }
+  SetSheetVisible(sheet: string, visible: boolean): { error: string }
 
   /**
    * UngroupSheets provides a function to ungroup worksheets.
@@ -820,8 +819,8 @@ declare class NewFile {
   /**
    * UnmergeCell provides a function to unmerge a given range reference.
    * @param sheet The worksheet name
-   * @param hCell The top-left cell refernece
-   * @param vCell The right-bottom cell refernece
+   * @param hCell The top-left cell reference
+   * @param vCell The right-bottom cell reference
    */
   UnmergeCell(sheet: string, hCell: string, vCell: string): { error: string }
 
@@ -863,13 +862,13 @@ declare class NewFile {
   error?: string;
 }
 
+declare function excelize(path: string): Promise<void>;
+
 /**
  * A window containing a DOM document; the document property points to the DOM
  * document loaded in that window.
  */
 interface Window {
   NewFile: NewFile;
-  OpenReader: OpenReader;
+  OpenReader: NewFile;
 }
-
-declare var window: Window;
