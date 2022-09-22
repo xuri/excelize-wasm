@@ -4,14 +4,14 @@
  * AppProperties directly maps the document application properties.
  */
 declare type AppProperties = {
-  application:        string;
-  scale_crop:         boolean;
-  doc_security:       number;
-  company:            string;
-  links_up_to_date:   boolean;
-  hyperlinks_changed: boolean;
-  app_version:        string;
-  error?:             string;
+  application?:        string;
+  scale_crop?:         boolean;
+  doc_security?:       number;
+  company?:            string;
+  links_up_to_date?:   boolean;
+  hyperlinks_changed?: boolean;
+  app_version?:        string;
+  error?:              string | null;
 };
 
 /**
@@ -30,7 +30,7 @@ declare type Options = {
  * column title.
  * @param cell The cell reference
  */
-declare function CellNameToCoordinates(cell: string): { col: number, row: number, error: string }
+declare function CellNameToCoordinates(cell: string): { col: number, row: number, error: string | null }
 
 /**
  * ColumnNameToNumber provides a function to convert Excel sheet column name
@@ -38,14 +38,14 @@ declare function CellNameToCoordinates(cell: string): { col: number, row: number
  * incorrect.
  * @param name The column name
  */
-declare function ColumnNameToNumber(name: string): { col: number, error: string }
+declare function ColumnNameToNumber(name: string): { col: number, error: string | null }
 
 /**
  * ColumnNumberToName provides a function to convert the integer to Excel sheet
  * column title.
  * @param num The column name
  */
-declare function ColumnNumberToName(num: number): { col: string, error: string }
+declare function ColumnNumberToName(num: number): { col: string, error: string | null }
 
 /**
  * CoordinatesToCellName converts [X, Y] coordinates to alpha-numeric cell name
@@ -54,7 +54,7 @@ declare function ColumnNumberToName(num: number): { col: string, error: string }
  * @param row The row number
  * @param abs Specifies the absolute cell references
  */
-declare function CoordinatesToCellName(col: number, row: number, abs?: boolean): { col: string, error: string }
+declare function CoordinatesToCellName(col: number, row: number, abs?: boolean): { cell: string, error: string | null }
 
 /**
  * HSLToRGB converts an HSL triple to a RGB triple.
@@ -62,14 +62,14 @@ declare function CoordinatesToCellName(col: number, row: number, abs?: boolean):
  * @param s Saturation
  * @param l Lightness
  */
-declare function HSLToRGB(h: number, s: number, l: number): { r: number, g: number, b: number }
+declare function HSLToRGB(h: number, s: number, l: number): { r: number, g: number, b: number, error: string | null }
 
 /**
  * JoinCellName joins cell name from column name and row number.
  * @param col The column name
  * @param row The row number
  */
-declare function JoinCellName(col: string, row: number): { cell: string, error: string }
+declare function JoinCellName(col: string, row: number): { cell: string, error: string | null }
 
 /**
  * RGBToHSL converts an RGB triple to a HSL triple.
@@ -77,20 +77,20 @@ declare function JoinCellName(col: string, row: number): { cell: string, error: 
  * @param g Green
  * @param b Blue
  */
-declare function RGBToHSL(r: number, g: number, b: number): { h: number, s: number, l: number }
+declare function RGBToHSL(r: number, g: number, b: number): { h: number, s: number, l: number, error: string | null }
 
 /**
  * SplitCellName splits cell name to column name and row number.
  * @param cell The cell reference
  */
-declare function SplitCellName(cell: string): { col: string, row: number, error: string }
+declare function SplitCellName(cell: string): { col: string, row: number, error: string | null }
 
 /**
  * ThemeColor applied the color with tint value.
  * @param baseColor Base color in hex format
  * @param tint A mixture of a color with white
  */
-declare function ThemeColor(baseColor: string, tint: number): { color: string }
+declare function ThemeColor(baseColor: string, tint: number): { color: string, error: string | null }
 
 /**
  * NewFile provides a function to create new file by default template.
@@ -119,7 +119,7 @@ declare class NewFile {
    * @param combo Specifies the create a chart that combines two or more chart
    *  types in a single chart
    */
-  AddChart(sheet: string, cell: string, format: string, combo?: string): { error: string }
+  AddChart(sheet: string, cell: string, format: string, combo?: string): { error: string | null }
 
   /**
    * AddChartSheet provides the method to create a chartsheet by given chart
@@ -131,7 +131,7 @@ declare class NewFile {
    * @param combo Specifies the create a chart that combines two or more chart
    *  types in a single chart
    */
-  AddChartSheet(sheet: string, format: string, combo?: string): { error: string }
+  AddChartSheet(sheet: string, format: string, combo?: string): { error: string | null }
 
   /**
    * AddComment provides the method to add comment in a sheet by given
@@ -141,7 +141,7 @@ declare class NewFile {
    * @param cell The cell reference
    * @param format The comment format
    */
-  AddComment(sheet: string, cell: string, format: string): { error: string }
+  AddComment(sheet: string, cell: string, format: string): { error: string | null }
 
   /**
    * AddPictureFromBytes provides the method to add picture in a sheet by given
@@ -154,7 +154,7 @@ declare class NewFile {
    * @param extension The extension name
    * @param file The contents buffer of the file
    */
-  AddPictureFromBytes(sheet: string, cell: string, format: string, name: string, extension: string, file: Uint8Array[]): { error: string }
+  AddPictureFromBytes(sheet: string, cell: string, format: string, name: string, extension: string, file: Uint8Array[]): { error: string | null }
 
   /**
    * AddPivotTable provides the method to add pivot table by given pivot table
@@ -162,7 +162,7 @@ declare class NewFile {
    * fields at the same time.
    * @param opt The pivot table option
    */
-  AddPivotTable(opt: string): { error: string }
+  AddPivotTable(opt: string): { error: string | null }
 
   /**
    * AddShape provides the method to add shape in a sheet by given worksheet
@@ -172,7 +172,7 @@ declare class NewFile {
    * @param cell The cell reference
    * @param format The shape format
    */
-  AddShape(sheet: string, cell: string, format: string): { error: string }
+  AddShape(sheet: string, cell: string, format: string): { error: string | null }
 
   /**
    * AddTable provides the method to add table in a worksheet by given
@@ -182,7 +182,7 @@ declare class NewFile {
    * @param vCell The right-bottom cell reference
    * @param format The table format
    */
-  AddTable(sheet: string, hCell: string, vCell: string, format: string): { error: string }
+  AddTable(sheet: string, hCell: string, vCell: string, format: string): { error: string | null }
 
   /**
    * AutoFilter provides the method to add auto filter in a worksheet by given
@@ -193,7 +193,7 @@ declare class NewFile {
    * @param vCell The right-bottom cell reference
    * @param format The auto filter format
    */
-  AutoFilter(sheet: string, hCell: string, vCell: string, format: string): { error: string }
+  AutoFilter(sheet: string, hCell: string, vCell: string, format: string): { error: string | null }
 
   /**
    * CalcCellValue provides a function to get calculated cell value. This
@@ -203,16 +203,16 @@ declare class NewFile {
    * @param sheet The worksheet name
    * @param cell The cell reference
    */
-  CalcCellValue(sheet: string, cell: string): { result: string, error: string }
+  CalcCellValue(sheet: string, cell: string): { value: string, error: string | null }
 
   /**
    * CopySheet provides a function to duplicate a worksheet by gave source and
    * target worksheet index. Note that currently doesn't support duplicate
    * workbooks that contain tables, charts or pictures.
-   * @param from Source sheet name
-   * @param to Target sheet name
+   * @param from Source sheet index
+   * @param to Target sheet index
    */
-  CopySheet(from: number, to: number): { error: string }
+  CopySheet(from: number, to: number): { error: string | null }
 
   /**
    * DeleteChart provides a function to delete chart in spreadsheet by given
@@ -220,7 +220,7 @@ declare class NewFile {
    * @param sheet The worksheet name
    * @param cell The cell reference
    */
-  DeleteChart(sheet: string, cell: string): { error: string }
+  DeleteChart(sheet: string, cell: string): { error: string | null }
 
   /**
    * DeleteComment provides the method to delete comment in a sheet by given
@@ -228,7 +228,7 @@ declare class NewFile {
    * @param sheet The worksheet name
    * @param cell The cell reference
    */
-  DeleteComment(sheet: string, cell: string): { error: string }
+  DeleteComment(sheet: string, cell: string): { error: string | null }
 
   /**
    * DeleteDataValidation delete data validation by given worksheet name and
@@ -237,7 +237,7 @@ declare class NewFile {
    * @param sheet The worksheet name
    * @param sqref The cell reference sequence
    */
-  DeleteDataValidation(sheet: string, sqref?: string): { error: string }
+  DeleteDataValidation(sheet: string, sqref?: string): { error: string | null }
 
   /**
    * DeletePicture provides a function to delete charts in spreadsheet by given
@@ -246,7 +246,7 @@ declare class NewFile {
    * @param sheet The worksheet name
    * @param cell The cell reference
    */
-  DeletePicture(sheet: string, cell: string): { error: string }
+  DeletePicture(sheet: string, cell: string): { error: string | null }
 
   /**
    * DeleteSheet provides a function to delete worksheet in a workbook by given
@@ -256,7 +256,7 @@ declare class NewFile {
    * it. This function will be invalid when only one worksheet is left.
    * @param sheet The worksheet name
    */
-  DeleteSheet(sheet: string)
+  DeleteSheet(sheet: string): { error: string | null }
 
   /**
    * DuplicateRow inserts a copy of specified row (by its Excel row number)
@@ -267,7 +267,7 @@ declare class NewFile {
    * @param sheet The worksheet name
    * @param row The row number
    */
-  DuplicateRow(sheet: string, row: number): { error: string }
+  DuplicateRow(sheet: string, row: number): { error: string | null }
 
   /**
    * DuplicateRowTo inserts a copy of specified row by it Excel number to
@@ -280,13 +280,14 @@ declare class NewFile {
    * @param row The source row number
    * @param row2 The target row number
    */
-  DuplicateRowTo(sheet: string, row: number, row2: number): { error: string }
+  DuplicateRowTo(sheet: string, row: number, row2: number): { error: string | null }
 
   /**
    * GetActiveSheetIndex provides a function to get active sheet index of the
    * spreadsheet. If not found the active sheet will be return integer 0.
    */
-  GetActiveSheetIndex(): { index: number }
+  GetActiveSheetIndex(): { index: number, error: string | null }
+
   /**
    * GetAppProps provides a function to get document application properties.
    * @return This is the document application properties.
@@ -299,7 +300,7 @@ declare class NewFile {
    * @param sheet The worksheet name
    * @param cell The cell reference
    */
-  GetCellFormula(sheet: string, cell: string): { formula: string, error: string }
+  GetCellFormula(sheet: string, cell: string): { formula: string, error: string | null }
 
   /**
    * GetCellHyperLink gets a cell hyperlink based on the given worksheet name
@@ -309,7 +310,7 @@ declare class NewFile {
    * @param sheet The worksheet name
    * @param cell The cell reference
    */
-  GetCellHyperLink(sheet: string, cell: string): { ok: boolean, location: string, error: string }
+  GetCellHyperLink(sheet: string, cell: string): { ok: boolean, location: string, error: string | null }
 
   /**
    * GetCellStyle provides a function to get cell style index by given
@@ -317,7 +318,7 @@ declare class NewFile {
    * @param sheet The worksheet name
    * @param cell The cell reference
    */
-  GetCellStyle(sheet: string, cell: string): { style: number, error: string }
+  GetCellStyle(sheet: string, cell: string): { style: number, error: string | null }
 
   /**
    * GetCellValue provides a function to get formatted value from cell by given
@@ -329,7 +330,7 @@ declare class NewFile {
    * @param sheet The worksheet name
    * @param cell The cell reference
    */
-  GetCellValue(sheet: string, cell: string): { value: string, error: string }
+  GetCellValue(sheet: string, cell: string): { value: string, error: string | null }
 
   /**
    * GetColOutlineLevel provides a function to get outline level of a single
@@ -337,7 +338,7 @@ declare class NewFile {
    * @param sheet The worksheet name
    * @param col The column name
    */
-  GetColOutlineLevel(sheet: string, col: string): { level: number, error: string }
+  GetColOutlineLevel(sheet: string, col: string): { level: number, error: string | null }
 
   /**
    * GetColStyle provides a function to get column style ID by given worksheet
@@ -345,7 +346,7 @@ declare class NewFile {
    * @param sheet The worksheet name
    * @param col The column name
    */
-  GetColStyle(sheet: string, col: string): { style: number, error: string }
+  GetColStyle(sheet: string, col: string): { style: number, error: string | null }
 
   /**
    * GetColVisible provides a function to get visible of a single column by
@@ -353,7 +354,7 @@ declare class NewFile {
    * @param sheet The worksheet name
    * @param col The column name
    */
-  GetColVisible(sheet: string, col: string): { visible: boolean, error: string }
+  GetColVisible(sheet: string, col: string): { visible: boolean, error: string | null }
 
   /**
    * GetColWidth provides a function to get column width by given worksheet
@@ -361,7 +362,7 @@ declare class NewFile {
    * @param sheet The worksheet name
    * @param col The column name
    */
-  GetColWidth(sheet: string, col: string): { width: number, error: string }
+  GetColWidth(sheet: string, col: string): { width: number, error: string | null }
 
   /**
    * GetCols gets the value of all cells by columns on the worksheet based on
@@ -372,7 +373,7 @@ declare class NewFile {
    * @param sheet The worksheet name
    * @param opts
    */
-  GetCols(sheet: string, opts?: Options): { result: string[][], error: string }
+  GetCols(sheet: string, opts?: Options): { result: string[][], error: string | null }
 
   /**
    * GetRowHeight provides a function to get row height by given worksheet name
@@ -380,7 +381,7 @@ declare class NewFile {
    * @param sheet The worksheet name
    * @param row The row number
    */
-  GetRowHeight(sheet: string, row: number): { height: number, error: string }
+  GetRowHeight(sheet: string, row: number): { height: number, error: string | null }
 
   /**
    * GetRowOutlineLevel provides a function to get outline level number of a
@@ -388,7 +389,7 @@ declare class NewFile {
    * @param sheet The worksheet name
    * @param row The row number
    */
-  GetRowOutlineLevel(sheet: string, row: number): { level: number, error: string }
+  GetRowOutlineLevel(sheet: string, row: number): { level: number, error: string | null }
 
   /**
    * GetRowVisible provides a function to get visible of a single row by given
@@ -396,7 +397,7 @@ declare class NewFile {
    * @param sheet The worksheet name
    * @param row The row number
    */
-  GetRowVisible(sheet: string, row: number): { visible: boolean, error: string }
+  GetRowVisible(sheet: string, row: number): { visible: boolean, error: string | null }
 
   /**
    * GetRows return all the rows in a sheet by given worksheet name, returned
@@ -409,7 +410,7 @@ declare class NewFile {
    * @param sheet The worksheet name
    * @param opts The options for get rows
    */
-  GetRows(sheet: string, opts?: Options): { result: string[][], error: string }
+  GetRows(sheet: string, opts?: Options): { result: string[][], error: string | null }
 
   /**
    * GetSheetIndex provides a function to get a sheet index of the workbook by
@@ -417,7 +418,7 @@ declare class NewFile {
    * exist, it will return an integer type value -1.
    * @param sheet The worksheet name
    */
-  GetSheetIndex(sheet: string): number
+  GetSheetIndex(sheet: string): { index: number, error: string | null }
 
   /**
    * GetSheetList provides a function to get worksheets, chart sheets, and
@@ -429,7 +430,7 @@ declare class NewFile {
    * GetSheetMap provides a function to get worksheets, chart sheets, dialog
    * sheets ID and name map of the workbook.
    */
-  GetSheetMap(): Map<string,string>
+  GetSheetMap(): { sheets: Map<string,string>, error: string | null }
 
   /**
    * GetSheetName provides a function to get the sheet name of the workbook by
@@ -437,21 +438,21 @@ declare class NewFile {
    * return an empty string.
    * @param index The sheet index
    */
-  GetSheetName(index: number): { name: string }
+  GetSheetName(index: number): { name: string, error: string | null }
 
   /**
    * GetSheetVisible provides a function to get worksheet visible by given
    * worksheet name.
    * @param sheet The worksheet name
    */
-  GetSheetVisible(sheet: string): boolean
+  GetSheetVisible(sheet: string): { visible: boolean, error: string | null }
 
   /**
    * GroupSheets provides a function to group worksheets by given worksheets
    * name. Group worksheets must contain an active worksheet.
    * @param sheet The worksheet names
    */
-  GroupSheets(sheets: string[]): { error: string }
+  GroupSheets(sheets: string[]): { error: string | null }
 
   /**
    * InsertCols provides a function to insert new columns before the given
@@ -463,9 +464,9 @@ declare class NewFile {
    * partially updates these references currently.
    * @param sheet The worksheet name
    * @param col The base column name
-   * @param n The instert columns count
+   * @param n The insert columns count
    */
-  InsertCols(sheet: string, col: string, n: number): { error: string }
+  InsertCols(sheet: string, col: string, n: number): { error: string | null }
 
   /**
    * InsertPageBreak create a page break to determine where the printed page
@@ -475,7 +476,7 @@ declare class NewFile {
    * @param sheet The worksheet name
    * @param cell The cell reference
    */
-  InsertPageBreak(sheet: string, cell: string): { error: string }
+  InsertPageBreak(sheet: string, cell: string): { error: string | null }
 
   /**
    * InsertRows provides a function to insert new rows after the given Excel
@@ -489,7 +490,7 @@ declare class NewFile {
    * @param row The base row number
    * @param n Insert rows count
    */
-  InsertRows(sheet: string, row: number, n: number): { error: string }
+  InsertRows(sheet: string, row: number, n: number): { error: string | null }
 
   /**
    * MergeCell provides a function to merge cells by given range reference and
@@ -516,7 +517,7 @@ declare class NewFile {
    * @param hCell The top-left cell reference
    * @param vCell The right-bottom cell reference
    */
-  MergeCell(sheet: string, hCell: string, vCell: string): { error: string }
+  MergeCell(sheet: string, hCell: string, vCell: string): { error: string | null }
 
   /**
    * NewConditionalStyle provides a function to create style for conditional
@@ -525,7 +526,7 @@ declare class NewFile {
    * support to set font, fills, alignment and borders currently.
    * @param style
    */
-  NewConditionalStyle(style: string): { style: number, error: string }
+  NewConditionalStyle(style: string): { style: number, error: string | null }
 
   /**
    * NewSheet provides the function to create a new sheet by given a worksheet
@@ -534,14 +535,14 @@ declare class NewFile {
    * named `Sheet1` will be created.
    * @param sheet The worksheet name
    */
-  NewSheet(sheet: string): number
+  NewSheet(sheet: string): { index: number, error: string | null }
 
   /**
    * NewStyle provides a function to create the style for cells by given JSON.
    * Note that the color field uses RGB color code.
    * @param style The style format
    */
-  NewStyle(style: string): { style: number, error: string }
+  NewStyle(style: string): { style: number, error: string | null }
 
   /**
    * RemoveCol provides a function to remove single column by given worksheet
@@ -554,15 +555,15 @@ declare class NewFile {
    * @param sheet The worksheet name
    * @param col The column name
    */
-  RemoveCol(sheet: string, col: string): { error: string }
+  RemoveCol(sheet: string, col: string): { error: string | null }
 
   /**
    * RemovePageBreak remove a page break by given worksheet name and cell
-   * reference
+   * reference.
    * @param sheet The worksheet name
    * @param cell The cell reference
    */
-  RemovePageBreak(sheet: string, cell: string): { error: string }
+  RemovePageBreak(sheet: string, cell: string): { error: string | null }
 
   /**
    * RemoveRow provides a function to remove single row by given worksheet name
@@ -575,7 +576,7 @@ declare class NewFile {
    * @param sheet The worksheet name
    * @param row The row number
    */
-  RemoveRow(sheet: string, row: number): { error: string }
+  RemoveRow(sheet: string, row: number): { error: string | null }
 
   /**
    * SearchSheet provides a function to get cell reference by given worksheet
@@ -587,7 +588,7 @@ declare class NewFile {
    * @param value The cell value to search
    * @param reg Specifies if search with regular expression
    */
-  SearchSheet(sheet: string, value: string, reg?: boolean): { result: string, error: string }
+  SearchSheet(sheet: string, value: string, reg?: boolean): { result: string[], error: string | null }
 
   /**
    * SetActiveSheet provides a function to set the default active sheet of the
@@ -596,7 +597,7 @@ declare class NewFile {
    * equal to 0 and less than the total worksheet numbers.
    * @param index The sheet index
    */
-  SetActiveSheet(index: number)
+  SetActiveSheet(index: number): { error: string | null }
 
   /**
    * SetCellBool provides a function to set bool type value of a cell by given
@@ -605,7 +606,7 @@ declare class NewFile {
    * @param cell The cell reference
    * @param value The cell value to be write
    */
-  SetCellBool(sheet: string, cell: string, value: boolean): { error: string }
+  SetCellBool(sheet: string, cell: string, value: boolean): { error: string | null }
 
   /**
    * SetCellDefault provides a function to set string type value of a cell as
@@ -614,14 +615,14 @@ declare class NewFile {
    * @param cell The cell reference
    * @param value The cell value to be write
    */
-  SetCellDefault(sheet: string, cell: string, value: string): { error: string }
+  SetCellDefault(sheet: string, cell: string, value: string): { error: string | null }
 
   /**
    * SetCellFloat sets a floating point value into a cell. The precision
    * parameter specifies how many places after the decimal will be shown
    * while -1 is a special value that will use as many decimal places as
    * necessary to represent the number. bitSize is 32 or 64 depending on if a
-   * float32 or float64 was originally used for the value. For Example:
+   * float32 or float64 was originally used for the value.
    * @param sheet The worksheet name
    * @param cell The cell reference
    * @param value The cell value to be write
@@ -629,7 +630,7 @@ declare class NewFile {
    * @param bitSize BitSize is 32 or 64 depending on if a float32 or float64
    *  was originally used for the value
    */
-  SetCellFloat(sheet: string, cell: string, value: number, precision: number, bitSize: number): { error: string }
+  SetCellFloat(sheet: string, cell: string, value: number, precision: number, bitSize: number): { error: string | null }
 
   /**
    * SetCellInt provides a function to set int type value of a cell by given
@@ -638,7 +639,7 @@ declare class NewFile {
    * @param cell The cell reference
    * @param value The cell value to be write
    */
-  SetCellInt(sheet: string, cell: string, value: number): { error: string }
+  SetCellInt(sheet: string, cell: string, value: number): { error: string | null }
 
   /**
    * SetCellStr provides a function to set string type value of a cell. Total
@@ -647,7 +648,7 @@ declare class NewFile {
    * @param cell The cell reference
    * @param value The cell value to be write
    */
-  SetCellStr(sheet: string, cell: string, value: string): { error: string }
+  SetCellStr(sheet: string, cell: string, value: string): { error: string | null }
 
   /**
    * SetCellStyle provides a function to add style attribute for cells by given
@@ -660,7 +661,7 @@ declare class NewFile {
    * @param vCell The right-bottom cell reference
    * @param styleID The style ID
    */
-  SetCellStyle(sheet: string, hCell: string, vCell: string, styleID: number): { error: string }
+  SetCellStyle(sheet: string, hCell: string, vCell: string, styleID: number): { error: string | null }
 
   /**
    * SetCellValue provides a function to set the value of a cell. The specified
@@ -675,7 +676,7 @@ declare class NewFile {
    * @param cell The cell reference
    * @param value The cell value to be write
    */
-  SetCellValue(sheet: string, cell: string, value: boolean | number | string ): { error: string }
+  SetCellValue(sheet: string, cell: string, value: boolean | number | string ): { error: string | null }
 
   /**
    * SetColOutlineLevel provides a function to set outline level of a single
@@ -685,7 +686,7 @@ declare class NewFile {
    * @param col The column name
    * @param level The outline level of the column
    */
-  SetColOutlineLevel(sheet: string, col: string, level: number): { error: string }
+  SetColOutlineLevel(sheet: string, col: string, level: number): { error: string | null }
 
   /**
    * SetColStyle provides a function to set style of columns by given worksheet
@@ -696,7 +697,7 @@ declare class NewFile {
    * @param columns The column range
    * @param styleID The style ID
    */
-  SetColStyle(sheet: string, columns: string, styleID: number): { error: string }
+  SetColStyle(sheet: string, columns: string, styleID: number): { error: string | null }
 
   /**
    * SetColVisible provides a function to set visible columns by given
@@ -705,7 +706,7 @@ declare class NewFile {
    * @param columns The column name
    * @param visible The column's visibility
    */
-  SetColVisible(sheet: string, columns: string, visible: boolean): { error: string }
+  SetColVisible(sheet: string, columns: string, visible: boolean): { error: string | null }
 
   /**
    * SetColWidth provides a function to set the width of a single column or
@@ -715,13 +716,24 @@ declare class NewFile {
    * @param endCol The end column name
    * @param width The width of the column
    */
-  SetColWidth(sheet: string, startCol: string, endCol: string, width: number): { error: string }
+  SetColWidth(sheet: string, startCol: string, endCol: string, width: number): { error: string | null }
+
+  /**
+   * SetConditionalFormat provides a function to create conditional
+   * formatting rule for cell value. Conditional formatting is a feature of
+   * Excel which allows you to apply a format to a cell or a range of cells
+   * based on certain criteria.
+   * @param sheet The worksheet name
+   * @param reference The conditional format range reference
+   * @param formatSet The conditional format
+   */
+  SetConditionalFormat(sheet: string, reference: string, formatSet: string): { error: string | null }
 
   /**
    * SetDefaultFont changes the default font in the workbook.
    * @param fontName The font name
    */
-  SetDefaultFont(fontName: string)
+  SetDefaultFont(fontName: string): { error: string | null }
 
   /**
    * SetPanes provides a function to create and remove freeze panes and split
@@ -729,7 +741,7 @@ declare class NewFile {
    * @param sheet The worksheet name
    * @param panes The panes format
    */
-  SetPanes(sheet: string, panes: string): { error: string }
+  SetPanes(sheet: string, panes: string): { error: string | null }
 
   /**
    * SetRowHeight provides a function to set the height of a single row.
@@ -737,7 +749,7 @@ declare class NewFile {
    * @param row The row number
    * @param height The height of the row
    */
-  SetRowHeight(sheet: string, row: number, height : number): { error: string }
+  SetRowHeight(sheet: string, row: number, height : number): { error: string | null }
 
   /**
    * SetRowOutlineLevel provides a function to set outline level number of a
@@ -747,7 +759,7 @@ declare class NewFile {
    * @param row The row number
    * @param level The outline level of the row
    */
-  SetRowOutlineLevel(sheet: string, row: number, level: number): { error: string }
+  SetRowOutlineLevel(sheet: string, row: number, level: number): { error: string | null }
 
   /**
    * SetRowStyle provides a function to set the style of rows by given
@@ -759,7 +771,7 @@ declare class NewFile {
    * @param end Then end row number
    * @param styleID The style ID
    */
-  SetRowStyle(sheet: string, start: number, end: number, styleID: number): { error: string }
+  SetRowStyle(sheet: string, start: number, end: number, styleID: number): { error: string | null }
 
   /**
    * SetRowStyle provides a function to set the style of rows by given
@@ -770,7 +782,7 @@ declare class NewFile {
    * @param row The row number
    * @param visible The row's visibility
    */
-  SetRowVisible(sheet: string, row: number, visible: boolean): { error: string }
+  SetRowVisible(sheet: string, row: number, visible: boolean): { error: string | null }
 
   /**
    * SetSheetCol writes an array to column by given worksheet name, starting
@@ -779,7 +791,7 @@ declare class NewFile {
    * @param cell The cell reference
    * @param slice The column cells to be write
    */
-  SetSheetCol(sheet: string, cell: string, slice: Array<boolean | number | string>): { error: string }
+  SetSheetCol(sheet: string, cell: string, slice: Array<boolean | number | string>): { error: string | null }
 
   /**
    * SetSheetName provides a function to set the worksheet name by given source
@@ -790,7 +802,7 @@ declare class NewFile {
    * @param source The source sheet name
    * @param target The target sheet name
    */
-  SetSheetName(source: string, target: string)
+  SetSheetName(source: string, target: string): { error: string | null }
 
   /**
    * SetSheetRow writes an array to row by given worksheet name, starting cell
@@ -799,7 +811,7 @@ declare class NewFile {
    * @param cell The starting cell reference
    * @param slice The array for writes
    */
-  SetSheetRow(sheet: string, cell: string, slice: Array<boolean | number | string>): { error: string }
+  SetSheetRow(sheet: string, cell: string, slice: Array<boolean | number | string>): { error: string | null }
 
   /**
    * SetSheetVisible provides a function to set worksheet visible by given
@@ -809,12 +821,12 @@ declare class NewFile {
    * @param sheet The worksheet name
    * @param visible The worksheet visibility
    */
-  SetSheetVisible(sheet: string, visible: boolean): { error: string }
+  SetSheetVisible(sheet: string, visible: boolean): { error: string | null }
 
   /**
    * UngroupSheets provides a function to ungroup worksheets.
    */
-  UngroupSheets(): { error: string }
+  UngroupSheets(): { error: string | null }
 
   /**
    * UnmergeCell provides a function to unmerge a given range reference.
@@ -822,7 +834,7 @@ declare class NewFile {
    * @param hCell The top-left cell reference
    * @param vCell The right-bottom cell reference
    */
-  UnmergeCell(sheet: string, hCell: string, vCell: string): { error: string }
+  UnmergeCell(sheet: string, hCell: string, vCell: string): { error: string | null }
 
   /**
    * UnprotectSheet provides a function to remove protection for a sheet,
@@ -831,7 +843,7 @@ declare class NewFile {
    * @param sheet The worksheet name
    * @param password The password for sheet protection
    */
-  UnprotectSheet(sheet: string, password?: string): { error: string }
+  UnprotectSheet(sheet: string, password?: string): { error: string | null }
 
   /**
    * UnsetConditionalFormat provides a function to unset the conditional format
@@ -839,14 +851,14 @@ declare class NewFile {
    * @param sheet The worksheet name
    * @param reference The conditional format range reference
    */
-  UnsetConditionalFormat(sheet: string, reference: string): { error: string }
+  UnsetConditionalFormat(sheet: string, reference: string): { error: string | null }
 
   /**
    * UpdateLinkedValue fix linked values within a spreadsheet are not updating
    * in Office Excel application. This function will be remove value tag when
    * met a cell have a linked value.
    */
-  UpdateLinkedValue(): { error: string }
+  UpdateLinkedValue(): { error: string | null }
 
   /**
    * WriteToBuffer provides a function to get the contents buffer from the
@@ -854,12 +866,12 @@ declare class NewFile {
    * size is large.
    * @param opts The options for save the spreadsheet
    */
-  WriteToBuffer(opts?: Options): Uint8Array[] | string;
+  WriteToBuffer(opts?: Options): Uint8Array[] | { error: string };
 
   /**
    * Error message
    */
-  error?: string;
+  error?: string | null;
 }
 
 declare function excelize(path: string): Promise<void>;
