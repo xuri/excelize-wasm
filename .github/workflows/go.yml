@@ -30,11 +30,11 @@ jobs:
     - name: Get dependencies
       working-directory: ./cmd
       run: |
-        env GOOS=js GOARCH=wasm GO111MODULE=on go vet ./...
+        go vet ./...
 
     - name: Test
       working-directory: ./cmd
-      run: go test -v ./... -coverprofile=coverage.txt -covermode=atomic
+      run: go test -exec="go_js_wasm_exec" -v ./... -coverprofile=coverage.txt -covermode=atomic
 
     - name: Codecov
       uses: codecov/codecov-action@v3
@@ -50,3 +50,11 @@ jobs:
         make
         ls ./dist
         ls ./cmd
+
+    - name: NPM Publish
+      uses: actions/setup-node@v3
+      with:
+        node-version: 18
+      run: npm install
+      run: node -v
+      run: ls ./dist
