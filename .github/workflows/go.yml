@@ -37,8 +37,9 @@ jobs:
     #     chmod +x ${HOME}/.local/bin/go_js_wasm_exec
 
     - name: Test
-      working-directory: ./cmd
-      run: GOOS=js GOARCH=wasm GO111MODULE=on go test -exec="$(go env GOROOT)/misc/wasm/go_js_wasm_exec" -v ./... -coverprofile=coverage.txt -covermode=atomic
+      run: |
+        cd cmd
+        GOOS=js GOARCH=wasm GO111MODULE=on go test -exec="$(go env GOROOT)/misc/wasm/go_js_wasm_exec" -v ./... -coverprofile=coverage.txt -covermode=atomic
 
     - name: Codecov
       uses: codecov/codecov-action@v3
