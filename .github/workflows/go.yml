@@ -45,8 +45,8 @@ jobs:
     - name: Build WASM
       run: |
         cd cmd
-        GOOS=js GOARCH=wasm GO111MODULE=on CGO_ENABLED=0 go build -v -a -ldflags="-w -s" -gcflags=-trimpath=$(go env GOPATH) -asmflags=-trimpath=$(go env GOPATH) -o ../dist/excelize.wasm main.go
-      	gzip -f --best ../dist/excelize.wasm
+        GOOS=js GOARCH=wasm GO111MODULE=on CGO_ENABLED=0 go build -v -a -ldflags="-w -s" -gcflags=-trimpath="$(go env GOPATH)" -asmflags=-trimpath="$(go env GOPATH)" -o ../dist/excelize.wasm main.go
+        gzip -f --best ../dist/excelize.wasm
 
     - name: Setup Node.js
       uses: actions/setup-node@v3
