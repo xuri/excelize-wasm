@@ -38,7 +38,7 @@ jobs:
 
     - name: Test
       working-directory: ./cmd
-      run: go test -exec="$(go env GOROOT)/misc/wasm/wasm_exec.js" -v ./... -coverprofile=coverage.txt -covermode=atomic
+      run: GOOS=js GOARCH=wasm GO111MODULE=on go test -exec="$(go env GOROOT)/misc/wasm/go_js_wasm_exec" -v ./... -coverprofile=coverage.txt -covermode=atomic
 
     - name: Codecov
       uses: codecov/codecov-action@v3
@@ -48,12 +48,12 @@ jobs:
         flags: unittests
         name: codecov-umbrella
 
-    # - name: Build
-    #   run: |
-    #     ls
-    #     make
-    #     ls ./dist
-    #     ls ./cmd
+    - name: Build
+      run: |
+        ls
+        make
+        ls ./dist
+        ls ./cmd
 
     # - name: Setup Node.js
     #   uses: actions/setup-node@v3
