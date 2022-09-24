@@ -18,8 +18,6 @@
     "default": "./dist/main.js"
   },
   "files": [
-    "chart.png",
-    "excelize-wasm.svg",
     "excelize.wasm.gz",
     "index.d.ts",
     "index.js",

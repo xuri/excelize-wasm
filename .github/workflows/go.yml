@@ -60,10 +60,8 @@ jobs:
         node -v
         node ./node_modules/.bin/rollup -c
         ls ./dist
-        cp excelize-wasm.svg ./dist
-        cp chart.png ./dist
         cp LICENSE ./dist
         cp README.md ./dist
-        cp ${SRC}/package.json ./dist
-        cp ${SRC}/index.d.ts ./dist
+        cp src/package.json ./dist
+        cp src/index.d.ts ./dist
         ls ./dist
