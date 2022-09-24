@@ -4,7 +4,7 @@ SRC = ./src
 WASM = ${DIST}/excelize.wasm
 
 build:
-	cd ${CMD} && GOOS=js GOARCH=wasm GO111MODULE=on go test -exec="${GOROOT}/misc/wasm/go_js_wasm_exec" .
+	cd ${CMD} && GOOS=js GOARCH=wasm GO111MODULE=on go test -exec="$(go env GOROOT)/misc/wasm/go_js_wasm_exec" .
 	npm install
 	node ./node_modules/.bin/rollup -c
 	GOOS=js GOARCH=wasm GO111MODULE=on CGO_ENABLED=0 go build -v -a -ldflags="-w -s" \
@@ -18,3 +18,4 @@ build:
 	cp README.md ${DIST}
 	cp ${SRC}/package.json ${DIST}
 	cp ${SRC}/index.d.ts ${DIST}
+	
