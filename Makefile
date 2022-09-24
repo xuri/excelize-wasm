@@ -4,12 +4,12 @@ SRC = ./src
 WASM = ${DIST}/excelize.wasm
 
 build:
-	GOOS=js GOARCH=wasm GO111MODULE=on go test -exec="$(go env GOROOT)/misc/wasm/go_js_wasm_exec" ${CMD}
+	cd ${CMD} && GOOS=js GOARCH=wasm GO111MODULE=on go test -exec="${GOROOT}/misc/wasm/go_js_wasm_exec" .
 	npm install
 	node ./node_modules/.bin/rollup -c
 	GOOS=js GOARCH=wasm GO111MODULE=on CGO_ENABLED=0 go build -v -a -ldflags="-w -s" \
-		-gcflags=-trimpath=$(go env GOPATH) \
-		-asmflags=-trimpath=$(go env GOPATH) \
+		-gcflags=-trimpath=${GOPATH} \
+		-asmflags=-trimpath=${GOPATH} \
 		-o ${WASM} ${CMD}/main.go
 	gzip -f --best ${WASM}
 	cp excelize-wasm.svg ${DIST}
