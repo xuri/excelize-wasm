@@ -10,13 +10,19 @@ jobs:
         targetplatform: [x64]
 
     runs-on: ${{ matrix.os }}
-
+    env:
+      GOOS: js
+      GOARCH: wasm
+      GO111MODULE: on
     steps:
 
     - name: Install Go
       uses: actions/setup-go@v3
       with:
         go-version: ${{ matrix.go-version }}
+
+    - name: Setup PATH for wasm
+      run: echo "${{env.GOROOT}}/misc/wasm" >> $GITHUB_PATH
 
     - name: Checkout code
       uses: actions/checkout@v3
@@ -28,7 +34,7 @@ jobs:
 
     - name: Test
       working-directory: ./cmd
-      run: env GO111MODULE=on GOOS=js GOARCH=wasm go test -exec="${GOROOT}/misc/wasm/go_js_wasm_exec" -v -timeout 30m ./... -coverprofile=coverage.txt -covermode=atomic
+      run: go test -v ./... -coverprofile=coverage.txt -covermode=atomic
 
     - name: Codecov
       uses: codecov/codecov-action@v3
