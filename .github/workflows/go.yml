@@ -34,30 +34,34 @@ jobs:
 
     - name: Test
       working-directory: ./cmd
-      run: go test -exec="go_js_wasm_exec" -v ./... -coverprofile=coverage.txt -covermode=atomic
-
-    - name: Codecov
-      uses: codecov/codecov-action@v3
-      with:
-        directory: ./cmd
-        file: coverage.txt
-        flags: unittests
-        name: codecov-umbrella
-
-    - name: Build
       run: |
-        ls
-        make
-        ls ./dist
-        ls ./cmd
+        which go
+        echo ${GOROOT}
+        echo ${GOPATH}
+    #     go test -exec="go_js_wasm_exec" -v ./... -coverprofile=coverage.txt -covermode=atomic
 
-    - name: Setup Node.js
-      uses: actions/setup-node@v3
-      with:
-        node-version: 18
+    # - name: Codecov
+    #   uses: codecov/codecov-action@v3
+    #   with:
+    #     directory: ./cmd
+    #     file: coverage.txt
+    #     flags: unittests
+    #     name: codecov-umbrella
+
+    # - name: Build
+    #   run: |
+    #     ls
+    #     make
+    #     ls ./dist
+    #     ls ./cmd
+
+    # - name: Setup Node.js
+    #   uses: actions/setup-node@v3
+    #   with:
+    #     node-version: 18
     
-    - name: NPM Publish
-      run: |
-        npm install
-        node -v
-        ls ./dist
+    # - name: NPM Publish
+    #   run: |
+    #     npm install
+    #     node -v
+    #     ls ./dist
