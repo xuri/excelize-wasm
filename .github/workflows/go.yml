@@ -32,11 +32,17 @@ jobs:
       run: |
         go vet ./...
 
+    - name: Get go_js_wasm_exec
+      run: |
+        mkdir -p ${HOME}/.local/bin
+        wget https://raw.githubusercontent.com/golang/go/go${{ matrix.go }}/misc/wasm/go_js_wasm_exec \
+          -O ${HOME}/.local/bin/go_js_wasm_exec
+        chmod +x ${HOME}/.local/bin/go_js_wasm_exec
+
     - name: Test
       working-directory: ./cmd
       run: |
-        which go
-        echo $HOME
+        go env
         go test -exec="$HOME/go/bin/go_js_wasm_exec" -v ./... -coverprofile=coverage.txt -covermode=atomic
 
     # - name: Codecov
