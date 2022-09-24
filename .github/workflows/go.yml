@@ -51,10 +51,12 @@ jobs:
         ls ./dist
         ls ./cmd
 
-    - name: NPM Publish
+    - name: Setup Node.js
       uses: actions/setup-node@v3
       with:
         node-version: 18
+    
+    - name: NPM Publish
       run: |
         npm install
         node -v
