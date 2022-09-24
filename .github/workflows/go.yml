@@ -64,6 +64,10 @@ jobs:
         cp src/package.json ./dist
         cp src/index.d.ts ./dist
 
+  publish:
+    - name: Prepare publish
+      run: ls ./dist
+
     - name: NPM Publish
       uses: JS-DevTools/npm-publish@v1
       with:
