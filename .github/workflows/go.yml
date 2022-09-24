@@ -68,4 +68,3 @@ jobs:
       with:
         token: ${{ secrets.NPM_TOKEN }}
         package: ./dist/package.json
-        access: public
