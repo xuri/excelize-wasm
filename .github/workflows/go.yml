@@ -38,6 +38,9 @@ jobs:
         which go
         echo ${GOROOT}
         echo ${GOPATH}
+        echo ${env}
+        echo ${env.GOROOT}
+        echo ${env.GOPATH}
     #     go test -exec="go_js_wasm_exec" -v ./... -coverprofile=coverage.txt -covermode=atomic
 
     # - name: Codecov
