@@ -10,6 +10,7 @@ jobs:
         targetplatform: [x64]
 
     runs-on: ${{ matrix.os }}
+    environment: production
     env:
       GOOS: js
       GOARCH: wasm
