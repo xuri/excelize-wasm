@@ -1,0 +1,71 @@
+on: [push, pull_request]
+name: build
+jobs:
+
+  test:
+    strategy:
+      matrix:
+        go-version: [1.19.x]
+        os: [ubuntu-latest]
+        targetplatform: [x64]
+
+    runs-on: ${{ matrix.os }}
+    env:
+      GOOS: js
+      GOARCH: wasm
+      GO111MODULE: on
+    steps:
+
+    - name: Install Go
+      uses: actions/setup-go@v3
+      with:
+        go-version: ${{ matrix.go-version }}
+
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    - name: Get dependencies
+      working-directory: ./cmd
+      run: |
+        go vet ./...
+
+    - name: Test
+      run: |
+        cd cmd
+        GOOS=js GOARCH=wasm GO111MODULE=on go test -exec="$(go env GOROOT)/misc/wasm/go_js_wasm_exec" -v ./... -coverprofile=coverage.txt -covermode=atomic
+
+    - name: Codecov
+      uses: codecov/codecov-action@v3
+      with:
+        directory: ./cmd
+        file: coverage.txt
+        flags: unittests
+        name: codecov-umbrella
+        token: ${{secrets.CODECOV_TOKEN}}
+
+    - name: Build WASM
+      run: |
+        cd cmd
+        GOOS=js GOARCH=wasm GO111MODULE=on CGO_ENABLED=0 go build -v -a -ldflags="-w -s" -gcflags=-trimpath="$(go env GOPATH)" -asmflags=-trimpath="$(go env GOPATH)" -o ../dist/excelize.wasm main.go
+        gzip -f --best ../dist/excelize.wasm
+
+    - name: Setup Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: 18
+
+    - name: NPM Build
+      run: |
+        npm install
+        node ./node_modules/.bin/rollup -c
+        cp LICENSE ./dist
+        cp README.md ./dist
+        cp src/package.json ./dist
+        cp src/index.d.ts ./dist
+
+    - name: NPM Publish
+      uses: JS-DevTools/npm-publish@v1
+      with:
+        token: ${{ secrets.NPM_TOKEN }}
+        package: ./dist/package.json
+        access: public
