@@ -154,7 +154,7 @@ excelize('excelize.wasm.gz').then(() => {
 
 With excelize-wasm chart generation and management is as easy as a few lines of code. You can build charts based on data in your worksheet or generate charts without any data in your worksheet at all.
 
-<p align="center"><img width="650" src="https://github.com/xuri/excelize-wasm/blob/main/chart.png" alt="Excelize"></p>
+<p align="center"><img width="650" src="https://raw.githubusercontent.com/xuri/excelize-wasm/main/chart.png" alt="Excelize"></p>
 
 ```javascript
 require('excelize-wasm');
