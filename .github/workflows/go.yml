@@ -10,7 +10,6 @@ jobs:
         targetplatform: [x64]
 
     runs-on: ${{ matrix.os }}
-    environment: production
     env:
       GOOS: js
       GOARCH: wasm
@@ -63,6 +62,7 @@ jobs:
         cp README.md ./dist
         cp src/package.json ./dist
         cp src/index.d.ts ./dist
+        env
 
     - name: NPM Publish
       uses: JS-DevTools/npm-publish@v1
