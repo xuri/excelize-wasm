@@ -3,7 +3,7 @@
 <p align="center"><img width="500" src="https://github.com/xuri/excelize-wasm/raw/main/excelize-wasm.svg" alt="excelize-wasm logo"></p>
 
 <p align="center">
-    <a href="https://github.com/xuri/excelize-wasm/actions/workflows/publish.yml"><img src="https://github.com/xuri/excelize-wasm/actions/workflows/publish.yml/badge.svg" alt="NPM publish"></a>
+    <a href="https://www.npmjs.com/package/excelize-wasm"><img src="https://img.shields.io/npm/v/excelize-wasm.svg" alt="NPM version"></a>
     <a href="https://github.com/xuri/excelize-wasm/actions/workflows/go.yml"><img src="https://github.com/xuri/excelize-wasm/actions/workflows/go.yml/badge.svg" alt="Build Status"></a>
     <a href="https://codecov.io/gh/xuri/excelize-wasm"><img src="https://codecov.io/gh/xuri/excelize-wasm/branch/master/graph/badge.svg" alt="Code Coverage"></a>
     <a href="https://goreportcard.com/report/github.com/xuri/excelize-wasm"><img src="https://goreportcard.com/badge/github.com/xuri/excelize-wasm" alt="Go Report Card"></a>
@@ -39,7 +39,7 @@ Deno | &ge;1.0
 #### Node.js
 
 ```bash
-npm install excelize-wasm
+npm install --save excelize-wasm
 ```
 
 #### Browser

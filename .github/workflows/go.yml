@@ -57,11 +57,14 @@ jobs:
     - name: NPM Build
       run: |
         npm install
-        node -v
         node ./node_modules/.bin/rollup -c
-        ls ./dist
         cp LICENSE ./dist
         cp README.md ./dist
         cp src/package.json ./dist
         cp src/index.d.ts ./dist
-        ls ./dist
+
+    - name: NPM Publish
+      - uses: JS-DevTools/npm-publish@v1
+      with:
+        token: ${{ secrets.NPM_TOKEN }}
+        package: ./dist/package.json
