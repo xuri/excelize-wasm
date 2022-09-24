@@ -12,7 +12,7 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/assert"
-	"github.com/xuri/excelize"
+	"github.com/xuri/excelize/v2"
 )
 
 func TestRegInteropFunc(t *testing.T) {

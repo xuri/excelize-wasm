@@ -25,7 +25,7 @@ import (
 
 	_ "golang.org/x/image/tiff"
 
-	"github.com/xuri/excelize"
+	"github.com/xuri/excelize/v2"
 )
 
 // argsRule represents the rule of the excelize wrapper function argument.

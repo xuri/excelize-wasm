@@ -1,0 +1,46 @@
+on: [push, pull_request]
+name: build
+jobs:
+
+  test:
+    strategy:
+      matrix:
+        go-version: [1.19.x]
+        os: [ubuntu-latest]
+        targetplatform: [x64]
+
+    runs-on: ${{ matrix.os }}
+
+    steps:
+
+    - name: Install Go
+      uses: actions/setup-go@v3
+      with:
+        go-version: ${{ matrix.go-version }}
+
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    - name: Get dependencies
+      working-directory: ./cmd
+      run: |
+        env GOOS=js GOARCH=wasm GO111MODULE=on go vet ./...
+
+    - name: Test
+      working-directory: ./cmd
+      run: env GO111MODULE=on GOOS=js GOARCH=wasm go test -exec="${GOROOT}/misc/wasm/go_js_wasm_exec" -v -timeout 30m ./... -coverprofile=coverage.txt -covermode=atomic
+
+    - name: Codecov
+      uses: codecov/codecov-action@v3
+      with:
+        directory: ./cmd
+        file: coverage.txt
+        flags: unittests
+        name: codecov-umbrella
+
+    - name: Build
+      run: |
+        ls
+        make
+        ls ./dist
+        ls ./cmd
