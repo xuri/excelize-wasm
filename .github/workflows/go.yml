@@ -42,20 +42,26 @@ jobs:
         flags: unittests
         name: codecov-umbrella
 
-    - name: Build
+    - name: Build WASM
       run: |
-        ls
-        make
-        ls ./dist
-        ls ./cmd
+        GOOS=js GOARCH=wasm GO111MODULE=on CGO_ENABLED=0 go build -v -a -ldflags="-w -s" -gcflags=-trimpath=$(go env GOPATH) -asmflags=-trimpath=$(go env GOPATH) -o ./dist/excelize.wasm ./cmd/main.go
+      	gzip -f --best ./dist/excelize.wasm
 
-    # - name: Setup Node.js
-    #   uses: actions/setup-node@v3
-    #   with:
-    #     node-version: 18
+    - name: Setup Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: 18
     
-    # - name: NPM Publish
-    #   run: |
-    #     npm install
-    #     node -v
-    #     ls ./dist
+    - name: NPM Build
+      run: |
+        npm install
+        node -v
+        node ./node_modules/.bin/rollup -c
+        ls ./dist
+        cp excelize-wasm.svg ${DIST}
+        cp chart.png ${DIST}
+        cp LICENSE ${DIST}
+        cp README.md ${DIST}
+        cp ${SRC}/package.json ${DIST}
+        cp ${SRC}/index.d.ts ${DIST}
+        ls ./dist 
