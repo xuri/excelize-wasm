@@ -5,7 +5,7 @@ jobs:
   test:
     strategy:
       matrix:
-        go-version: [1.19.1]
+        go-version: [1.19.x]
         os: [ubuntu-latest]
         targetplatform: [x64]
 
@@ -21,9 +21,6 @@ jobs:
       with:
         go-version: ${{ matrix.go-version }}
 
-    - name: Setup PATH for wasm
-      run: echo "${{env.GOROOT}}/misc/wasm" >> $GITHUB_PATH
-
     - name: Checkout code
       uses: actions/checkout@v3
 
@@ -32,27 +29,24 @@ jobs:
       run: |
         go vet ./...
 
-    - name: Get go_js_wasm_exec
-      run: |
-        mkdir -p ${HOME}/.local/bin
-        wget https://raw.githubusercontent.com/golang/go/go${{ matrix.go-version }}/misc/wasm/go_js_wasm_exec \
-          -O ${HOME}/.local/bin/go_js_wasm_exec
-        chmod +x ${HOME}/.local/bin/go_js_wasm_exec
+    # - name: Get go_js_wasm_exec
+    #   run: |
+    #     mkdir -p ${HOME}/.local/bin
+    #     wget https://raw.githubusercontent.com/golang/go/go${{ matrix.go-version }}/misc/wasm/go_js_wasm_exec \
+    #       -O ${HOME}/.local/bin/go_js_wasm_exec
+    #     chmod +x ${HOME}/.local/bin/go_js_wasm_exec
 
     - name: Test
       working-directory: ./cmd
-      run: |
-        go env
-        go test -exec="$HOME/go/bin/go_js_wasm_exec" -v ./... -coverprofile=coverage.txt -covermode=atomic
-        echo ${{ env.GOPATH }}
+      run: go test -exec="$(go env GOROOT)/misc/wasm/wasm_exec.js" -v ./... -coverprofile=coverage.txt -covermode=atomic
 
-    # - name: Codecov
-    #   uses: codecov/codecov-action@v3
-    #   with:
-    #     directory: ./cmd
-    #     file: coverage.txt
-    #     flags: unittests
-    #     name: codecov-umbrella
+    - name: Codecov
+      uses: codecov/codecov-action@v3
+      with:
+        directory: ./cmd
+        file: coverage.txt
+        flags: unittests
+        name: codecov-umbrella
 
     # - name: Build
     #   run: |
