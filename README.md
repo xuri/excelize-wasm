@@ -59,14 +59,19 @@ const fs = require('fs');
 init('./node_modules/excelize-wasm/excelize.wasm.gz').then((excelize) => {
   const f = excelize.NewFile();
   // Create a new sheet.
-  const index = f.NewSheet("Sheet2")
+  const { index } = f.NewSheet("Sheet2")
   // Set value of a cell.
   f.SetCellValue("Sheet2", "A2", "Hello world.")
   f.SetCellValue("Sheet1", "B2", 100)
   // Set active sheet of the workbook.
   f.SetActiveSheet(index)
   // Save spreadsheet by the given path.
-  fs.writeFile('Book1.xlsx', f.WriteToBuffer(), 'binary', (error) => {
+  const { buffer, error } = f.WriteToBuffer();
+  if (error) {
+    console.log(error);
+    return
+  }
+  fs.writeFile('Book1.xlsx', buffer, 'binary', (error) => {
     if (error) {
       console.log(error);
     }
@@ -83,7 +88,7 @@ Create spreadsheet in browser:
 <html>
 <head>
   <meta charset="utf-8">
-  <script src="excelize-wasm/index.js"></script>
+  <script src="https://<your_hostname>/excelize-wasm/index.js"></script>
 </head>
 <body>
   <div>
@@ -94,18 +99,23 @@ Create spreadsheet in browser:
     excelizeWASM.init('https://<your_hostname>/excelize-wasm/excelize.wasm.gz').then((excelize) => {
       const f = excelize.NewFile();
       // Create a new sheet.
-      const index = f.NewSheet("Sheet2")
+      const { index } = f.NewSheet("Sheet2")
       // Set value of a cell.
       f.SetCellValue("Sheet2", "A2", "Hello world.")
       f.SetCellValue("Sheet1", "B2", 100)
       // Set active sheet of the workbook.
       f.SetActiveSheet(index)
       // Save spreadsheet by the given path.
+      const { buffer, error } = f.WriteToBuffer();
+      if (error) {
+        console.log(error);
+        return
+      }
       const link = document.createElement('a');
       link.download = 'Book1.xlsx';
       link.href = URL.createObjectURL(
-        new Blob([f.WriteToBuffer()],
-        { type: 'application/vnd.ms-excel' })
+        new Blob([buffer],
+        { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' })
       );
       link.click();
     });
@@ -127,12 +137,12 @@ const fs = require('fs');
 init('./node_modules/excelize-wasm/excelize.wasm.gz').then((excelize) => {
   const f = excelize.OpenReader(fs.readFileSync('Book1.xlsx'));
   // Set value of a cell.
-  var { cell, error } = f.GetCellValue("Sheet1", "B2")
+  var { value, error } = f.GetCellValue("Sheet1", "B2")
   if (error) {
     console.log(error);
     return;
   }
-  console.log(cell)
+  console.log(value)
   // Get all the rows in the Sheet1.
   var { result, error } = f.GetRows("Sheet1");
   if (error) {
@@ -199,7 +209,12 @@ init('./node_modules/excelize-wasm/excelize.wasm.gz').then((excelize) => {
     return
   }
   // Save spreadsheet by the given path.
-  fs.writeFile('Book1.xlsx', f.WriteToBuffer(), 'binary', (error) => {
+  var { buffer, error } = f.WriteToBuffer();
+  if (error) {
+    console.log(error);
+    return
+  }
+  fs.writeFile('Book1.xlsx', buffer, 'binary', (error) => {
     if (error) {
       console.log(error);
     }
@@ -247,7 +262,12 @@ init('./node_modules/excelize-wasm/excelize.wasm.gz').then((excelize) => {
     return
   }
   // Save spreadsheet by the given path.
-  fs.writeFile('Book1.xlsx', f.WriteToBuffer(), 'binary', (error) => {
+  const { buffer, error } = f.WriteToBuffer();
+  if (error) {
+    console.log(error);
+    return
+  }
+  fs.writeFile('Book1.xlsx', buffer, 'binary', (error) => {
     if (error) {
       console.log(error);
     }

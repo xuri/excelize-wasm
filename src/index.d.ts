@@ -28,8 +28,8 @@ declare module 'excelize-wasm' {
   };
 
   /**
-   * ColumnNumberToName provides a function to convert the integer to Excel
-   * sheet column title.
+   * CellNameToCoordinates converts alphanumeric cell name to [X, Y]
+   * coordinates or returns an error.
    * @param cell The cell reference
    */
   export function CellNameToCoordinates(cell: string): { col: number, row: number, error: string | null }
@@ -873,7 +873,7 @@ declare module 'excelize-wasm' {
      * size is large.
      * @param opts The options for save the spreadsheet
      */
-    WriteToBuffer(opts?: Options): Uint8Array[] | { error: string };
+    WriteToBuffer(opts?: Options): { buffer: BlobPart, error: string | null };
 
     /**
      * Error message
@@ -887,7 +887,16 @@ declare module 'excelize-wasm' {
    * @param path The compressed wasm archive path
    */
   export function init(path: string): Promise<{
-    NewFile: typeof NewFile;
-    OpenReader: typeof OpenReader;
+    CellNameToCoordinates: typeof CellNameToCoordinates,
+    ColumnNameToNumber:    typeof ColumnNameToNumber,
+    ColumnNumberToName:    typeof ColumnNumberToName,
+    CoordinatesToCellName: typeof CoordinatesToCellName,
+    HSLToRGB:              typeof HSLToRGB,
+    JoinCellName:          typeof JoinCellName,
+    RGBToHSL:              typeof RGBToHSL,
+    SplitCellName:         typeof SplitCellName,
+    ThemeColor:            typeof ThemeColor,
+    NewFile:               typeof NewFile;
+    OpenReader:            typeof OpenReader;
   }>;
 }

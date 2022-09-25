@@ -1,6 +1,6 @@
 package-lock.json
 .DS_Store
-
+Makefile
 # Dependency directories
 node_modules/
 

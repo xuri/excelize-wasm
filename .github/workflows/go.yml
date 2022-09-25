@@ -65,7 +65,6 @@ jobs:
         cp src/index.d.ts ./dist
 
     - name: NPM Publish
-      if: github.event_name == 'tags'
       uses: JS-DevTools/npm-publish@v1
       with:
         token: ${{secrets.NPM_TOKEN}}

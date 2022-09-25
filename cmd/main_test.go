@@ -1437,7 +1437,7 @@ func TestWriteToBuffer(t *testing.T) {
 	assert.True(t, f.(js.Value).Get("error").IsNull())
 
 	ret := f.(js.Value).Call("WriteToBuffer")
-	assert.Equal(t, js.TypeObject, ret.Type())
+	assert.True(t, ret.Get("error").IsNull())
 
 	ret = f.(js.Value).Call("WriteToBuffer", js.ValueOf(map[string]interface{}{
 		"password": "password",

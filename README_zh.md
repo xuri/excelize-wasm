@@ -59,14 +59,19 @@ const fs = require('fs');
 init('./node_modules/excelize-wasm/excelize.wasm.gz').then((excelize) => {
   const f = excelize.NewFile();
   // 创建一个工作表
-  const index = f.NewSheet("Sheet2")
+  const { index } = f.NewSheet("Sheet2")
   // 设置单元格的值
   f.SetCellValue("Sheet2", "A2", "Hello world.")
   f.SetCellValue("Sheet1", "B2", 100)
   // 设置工作簿的默认工作表
   f.SetActiveSheet(index)
   // 根据指定路径保存文件
-  fs.writeFile('Book1.xlsx', f.WriteToBuffer(), 'binary', (error) => {
+  const { buffer, error } = f.WriteToBuffer();
+  if (error) {
+    console.log(error);
+    return
+  }
+  fs.writeFile('Book1.xlsx', buffer, 'binary', (error) => {
     if (error) {
       console.log(error);
     }
@@ -83,7 +88,7 @@ init('./node_modules/excelize-wasm/excelize.wasm.gz').then((excelize) => {
 <html>
 <head>
   <meta charset="utf-8">
-  <script src="excelize-wasm/index.js"></script>
+  <script src="https://<服务器地址>/excelize-wasm/index.js"></script>
 </head>
 <body>
   <div>
@@ -94,18 +99,23 @@ init('./node_modules/excelize-wasm/excelize.wasm.gz').then((excelize) => {
     excelizeWASM.init('https://<服务器地址>/excelize-wasm/excelize.wasm.gz').then((excelize) => {
       const f = excelize.NewFile();
       // 创建一个工作表
-      const index = f.NewSheet("Sheet2")
+      const { index } = f.NewSheet("Sheet2")
       // 设置单元格的值
       f.SetCellValue("Sheet2", "A2", "Hello world.")
       f.SetCellValue("Sheet1", "B2", 100)
       // 设置工作簿的默认工作表
       f.SetActiveSheet(index)
       // 根据指定路径保存文件
+      const { buffer, error } = f.WriteToBuffer();
+      if (error) {
+        console.log(error);
+        return
+      }
       const link = document.createElement('a');
       link.download = 'Book1.xlsx';
       link.href = URL.createObjectURL(
-        new Blob([f.WriteToBuffer()],
-        { type: 'application/vnd.ms-excel' })
+        new Blob([buffer],
+        { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' })
       );
       link.click();
     });
@@ -127,12 +137,12 @@ const fs = require('fs');
 init('./node_modules/excelize-wasm/excelize.wasm.gz').then((excelize) => {
   const f = excelize.OpenReader(fs.readFileSync('Book1.xlsx'));
   // 设置单元格的值
-  var { cell, error } = f.GetCellValue("Sheet1", "B2")
+  var { value, error } = f.GetCellValue("Sheet1", "B2")
   if (error) {
     console.log(error);
     return;
   }
-  console.log(cell)
+  console.log(value)
   // 获取 Sheet1 上所有单元格
   var { result, error } = f.GetRows("Sheet1");
   if (error) {
@@ -199,7 +209,12 @@ init('./node_modules/excelize-wasm/excelize.wasm.gz').then((excelize) => {
     return
   }
   // 根据指定路径保存文件
-  fs.writeFile('Book1.xlsx', f.WriteToBuffer(), 'binary', (error) => {
+  var { buffer, error } = f.WriteToBuffer();
+  if (error) {
+    console.log(error);
+    return
+  }
+  fs.writeFile('Book1.xlsx', buffer, 'binary', (error) => {
     if (error) {
       console.log(error);
     }
@@ -247,7 +262,12 @@ init('./node_modules/excelize-wasm/excelize.wasm.gz').then((excelize) => {
     return
   }
   // 根据指定路径保存文件
-  fs.writeFile('Book1.xlsx', f.WriteToBuffer(), 'binary', (error) => {
+  const { buffer, error } = f.WriteToBuffer();
+  if (error) {
+    console.log(error);
+    return
+  }
+  fs.writeFile('Book1.xlsx', buffer, 'binary', (error) => {
     if (error) {
       console.log(error);
     }

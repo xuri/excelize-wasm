@@ -2136,7 +2136,7 @@ func UpdateLinkedValue(f *excelize.File) func(this js.Value, args []js.Value) in
 // large.
 func WriteToBuffer(f *excelize.File) func(this js.Value, args []js.Value) interface{} {
 	return func(this js.Value, args []js.Value) interface{} {
-		ret := map[string]interface{}{"error": nil}
+		ret := map[string]interface{}{"buffer": js.ValueOf([]interface{}{}), "error": nil}
 		err := prepareArgs(args, []argsRule{
 			{types: []js.Type{js.TypeObject}, opts: true},
 		})
@@ -2159,6 +2159,7 @@ func WriteToBuffer(f *excelize.File) func(this js.Value, args []js.Value) interf
 		src := buf.Bytes()
 		dst := js.Global().Get("Uint8Array").New(len(src))
 		js.CopyBytesToJS(dst, src)
-		return dst
+		ret["buffer"] = dst
+		return js.ValueOf(ret)
 	}
 }
