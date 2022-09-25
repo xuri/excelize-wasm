@@ -53,11 +53,11 @@ npm install --save excelize-wasm
 Here is a minimal example usage that will create spreadsheet file.
 
 ```javascript
-require('excelize-wasm');
+const { init } = require('excelize-wasm');
 const fs = require('fs');
 
-excelize('excelize.wasm.gz').then(() => {
-  const f = NewFile();
+init('./node_modules/excelize-wasm/excelize.wasm.gz').then((excelize) => {
+  const f = excelize.NewFile();
   // Create a new sheet.
   const index = f.NewSheet("Sheet2")
   // Set value of a cell.
@@ -91,8 +91,8 @@ Create spreadsheet in browser:
   </div>
   <script>
   function download() {
-    excelize('https://<your_hostname>/excelize-wasm/excelize.wasm.gz').then(() => {
-      const f = NewFile();
+    excelizeWASM.init('https://<your_hostname>/excelize-wasm/excelize.wasm.gz').then((excelize) => {
+      const f = excelize.NewFile();
       // Create a new sheet.
       const index = f.NewSheet("Sheet2")
       // Set value of a cell.
@@ -121,13 +121,11 @@ Create spreadsheet in browser:
 The following constitutes the bare to read a spreadsheet document.
 
 ```javascript
-require('excelize-wasm');
+const { init } = require('excelize-wasm');
 const fs = require('fs');
 
-excelize('excelize.wasm.gz').then(() => {
-  const f = OpenReader(fs.readFileSync('Book1.xlsx'));
-  // Create a new sheet.
-  const index = f.NewSheet("Sheet2")
+init('./node_modules/excelize-wasm/excelize.wasm.gz').then((excelize) => {
+  const f = excelize.OpenReader(fs.readFileSync('Book1.xlsx'));
   // Set value of a cell.
   var { cell, error } = f.GetCellValue("Sheet1", "B2")
   if (error) {
@@ -157,16 +155,16 @@ With excelize-wasm chart generation and management is as easy as a few lines of 
 <p align="center"><img width="650" src="https://raw.githubusercontent.com/xuri/excelize-wasm/main/chart.png" alt="Create chart by excelize-wasm"></p>
 
 ```javascript
-require('excelize-wasm');
+const { init } = require('excelize-wasm');
 const fs = require('fs');
 
-excelize('excelize.wasm.gz').then(() => {
+init('./node_modules/excelize-wasm/excelize.wasm.gz').then((excelize) => {
   const categories = {
     "A2": "Small", "A3": "Normal", "A4": "Large",
     "B1": "Apple", "C1": "Orange", "D1": "Pear"};
   const values = {"B2": 2, "C2": 3, "D2": 3, "B3": 5,
     "C3": 2, "D3": 4, "B4": 6, "C4": 7, "D4": 8};
-  const f = NewFile();
+  const f = excelize.NewFile();
   for (const k in categories) {
     f.SetCellValue("Sheet1", k, categories[k]);
   };
@@ -212,11 +210,11 @@ excelize('excelize.wasm.gz').then(() => {
 ### Add picture to spreadsheet file
 
 ```javascript
-require('excelize-wasm');
+const { init } = require('excelize-wasm');
 const fs = require('fs');
 
-excelize('excelize.wasm.gz').then(() => {
-  const f = OpenReader(fs.readFileSync('Book1.xlsx'));
+init('./node_modules/excelize-wasm/excelize.wasm.gz').then((excelize) => {
+  const f = excelize.OpenReader(fs.readFileSync('Book1.xlsx'));
   if (f.error) {
     console.log(f.error);
     return

@@ -16,6 +16,7 @@ import (
 )
 
 func TestRegInteropFunc(t *testing.T) {
+	js.Global().Set("excelize", map[string]interface{}{})
 	regFuncs()
 }
 

@@ -13,6 +13,7 @@ export default [
             file: pkg.exports.script,
             format: 'iife',
             generatedCode: 'es2015',
+            name: 'excelizeWASM',
             sourcemap: false,
         },
         plugins: [

@@ -565,9 +565,14 @@ if (typeof window === 'undefined') {
 
 import pako from 'pako';
 
-export async function excelize(wasmPath) {
+export async function init(wasmPath) {
   const go = new Go();
   var buffer;
+  if (typeof window === 'undefined') {
+    global.excelize = {};
+  } else {
+    window.excelize = {};
+  }
   if (typeof window === 'undefined') {
     const fs = require('fs');
     buffer = pako.ungzip(fs.readFileSync(wasmPath));
@@ -578,11 +583,6 @@ export async function excelize(wasmPath) {
       buffer = pako.ungzip(buffer);
   }
   const result = await WebAssembly.instantiate(buffer, go.importObject);
-  go.run(result.instance)
+  go.run(result.instance);
+  return excelize;
 };
-
-if (typeof window === 'undefined') {
-  global.excelize = excelize;
-} else {
-  window.excelize = excelize;
-}

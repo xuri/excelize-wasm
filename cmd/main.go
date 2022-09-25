@@ -60,7 +60,7 @@ func regFuncs() {
 		"NewFile":               NewFile,
 		"OpenReader":            OpenReader,
 	} {
-		js.Global().Set(name, js.FuncOf(impl))
+		js.Global().Get("excelize").Set(name, js.FuncOf(impl))
 	}
 }
 

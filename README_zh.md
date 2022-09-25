@@ -12,7 +12,7 @@
     <a href="https://www.paypal.com/paypalme/xuri"><img src="https://img.shields.io/badge/Donate-PayPal-green.svg" alt="Donate"></a>
 </p>
 
-Excelize-wasm 是基于 WebAssembly / Javascript 实现的 Go [Excelize](https://github.com/xuri/excelize) 基础库，用于操作 Office Excel 文档基础库，基于 ECMA-376，ISO/IEC 29500 国际标准。可以使用它来读取、写入由 Microsoft Excel&trade; 2007 及以上版本创建的电子表格文档。支持 XLAM / XLSM / XLSX / XLTM / XLTX 等多种文档格式，高度兼容带有样式、图片(表)、透视表、切片器等复杂组件的文档。可应用于各类报表平台、云计算、边缘计算等系统。获取更多信息请访问 [参考文档](https://xuri.me/excelize/)。
+Excelize-wasm 是 [Excelize](https://github.com/xuri/excelize) 基础库的 WebAssembly / Javascript 实现，可用于操作 Office Excel 文档，基于 ECMA-376，ISO/IEC 29500 国际标准。可以使用它来读取、写入由 Microsoft Excel&trade; 2007 及以上版本创建的电子表格文档。支持 XLAM / XLSM / XLSX / XLTM / XLTX 等多种文档格式，高度兼容带有样式、图片(表)、透视表、切片器等复杂组件的文档。可应用于各类报表平台、云计算、边缘计算等系统。获取更多信息请访问 [参考文档](https://xuri.me/excelize/)。
 
 ## 运行环境兼容性
 
@@ -53,11 +53,11 @@ npm install --save excelize-wasm
 下面是一个创建 Excel 文档的简单例子：
 
 ```javascript
-require('excelize-wasm');
+const { init } = require('excelize-wasm');
 const fs = require('fs');
 
-excelize('excelize.wasm.gz').then(() => {
-  const f = NewFile();
+init('./node_modules/excelize-wasm/excelize.wasm.gz').then((excelize) => {
+  const f = excelize.NewFile();
   // 创建一个工作表
   const index = f.NewSheet("Sheet2")
   // 设置单元格的值
@@ -91,8 +91,8 @@ excelize('excelize.wasm.gz').then(() => {
   </div>
   <script>
   function download() {
-    excelize('https://<服务器地址>/excelize-wasm/excelize.wasm.gz').then(() => {
-      const f = NewFile();
+    excelizeWASM.init('https://<服务器地址>/excelize-wasm/excelize.wasm.gz').then((excelize) => {
+      const f = excelize.NewFile();
       // 创建一个工作表
       const index = f.NewSheet("Sheet2")
       // 设置单元格的值
@@ -121,13 +121,11 @@ excelize('excelize.wasm.gz').then(() => {
 下面是读取 Excel 文档的例子：
 
 ```javascript
-require('excelize-wasm');
+const { init } = require('excelize-wasm');
 const fs = require('fs');
 
-excelize('excelize.wasm.gz').then(() => {
-  const f = OpenReader(fs.readFileSync('Book1.xlsx'));
-  // 创建一个工作表
-  const index = f.NewSheet("Sheet2")
+init('./node_modules/excelize-wasm/excelize.wasm.gz').then((excelize) => {
+  const f = excelize.OpenReader(fs.readFileSync('Book1.xlsx'));
   // 设置单元格的值
   var { cell, error } = f.GetCellValue("Sheet1", "B2")
   if (error) {
@@ -157,16 +155,16 @@ excelize('excelize.wasm.gz').then(() => {
 <p align="center"><img width="650" src="https://raw.githubusercontent.com/xuri/excelize-wasm/main/chart.png" alt="使用 excelize-wasm 在 Excel 电子表格文档中创建图表"></p>
 
 ```javascript
-require('excelize-wasm');
+const { init } = require('excelize-wasm');
 const fs = require('fs');
 
-excelize('excelize.wasm.gz').then(() => {
+init('./node_modules/excelize-wasm/excelize.wasm.gz').then((excelize) => {
   const categories = {
     "A2": "Small", "A3": "Normal", "A4": "Large",
     "B1": "Apple", "C1": "Orange", "D1": "Pear"};
   const values = {"B2": 2, "C2": 3, "D2": 3, "B3": 5,
     "C3": 2, "D3": 4, "B4": 6, "C4": 7, "D4": 8};
-  const f = NewFile();
+  const f = excelize.NewFile();
   for (const k in categories) {
     f.SetCellValue("Sheet1", k, categories[k]);
   };
@@ -212,11 +210,11 @@ excelize('excelize.wasm.gz').then(() => {
 ### 向 Excel 文档中插入图片
 
 ```javascript
-require('excelize-wasm');
+const { init } = require('excelize-wasm');
 const fs = require('fs');
 
-excelize('excelize.wasm.gz').then(() => {
-  const f = OpenReader(fs.readFileSync('Book1.xlsx'));
+init('./node_modules/excelize-wasm/excelize.wasm.gz').then((excelize) => {
+  const f = excelize.OpenReader(fs.readFileSync('Book1.xlsx'));
   if (f.error) {
     console.log(f.error);
     return
