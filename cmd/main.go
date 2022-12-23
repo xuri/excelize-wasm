@@ -184,6 +184,314 @@ func prepareOptions(arg js.Value) (excelize.Options, error) {
 	return opts, nil
 }
 
+// prepareBorder convert JavaScript object to Go structure for style borders.
+func prepareBorder(arg js.Value) ([]excelize.Border, error) {
+	var borders []excelize.Border
+	borderArg := arg.Get("border")
+	if borderArg.Type() != js.TypeUndefined {
+		if borderArg.Type() != js.TypeObject {
+			return borders, errArgType
+		}
+		for i := 0; i < borderArg.Length(); i++ {
+			var border excelize.Border
+			arg := borderArg.Index(i)
+			borderType := arg.Get("type")
+			if borderType.Type() != js.TypeUndefined {
+				if borderType.Type() != js.TypeString {
+					return borders, errArgType
+				}
+				border.Type = borderType.String()
+			}
+			bdrColor := arg.Get("color")
+			if bdrColor.Type() != js.TypeUndefined {
+				if bdrColor.Type() != js.TypeString {
+					return borders, errArgType
+				}
+				border.Color = bdrColor.String()
+			}
+			borderStyle := arg.Get("style")
+			if borderStyle.Type() != js.TypeUndefined {
+				if borderStyle.Type() != js.TypeNumber {
+					return borders, errArgType
+				}
+				border.Style = int(borderStyle.Float())
+			}
+			borders = append(borders, border)
+		}
+	}
+	return borders, nil
+}
+
+// prepareFill convert JavaScript object to Go structure for style fill.
+func prepareFill(arg js.Value) (excelize.Fill, error) {
+	var fill excelize.Fill
+	fillArg := arg.Get("fill")
+	if fillArg.Type() != js.TypeUndefined {
+		if fillArg.Type() != js.TypeObject {
+			return fill, errArgType
+		}
+		fillType := fillArg.Get("type")
+		if fillType.Type() != js.TypeUndefined {
+			if fillType.Type() != js.TypeString {
+				return fill, errArgType
+			}
+			fill.Type = fillType.String()
+		}
+		fillColor := fillArg.Get("color")
+		if fillColor.Type() != js.TypeUndefined {
+			if fillColor.Type() != js.TypeObject {
+				return fill, errArgType
+			}
+			for i := 0; i < fillColor.Length(); i++ {
+				color := fillColor.Index(i)
+				if color.Type() != js.TypeString {
+					return fill, errArgType
+				}
+				fill.Color = append(fill.Color, color.String())
+			}
+		}
+		fillShading := fillArg.Get("shading")
+		if fillShading.Type() != js.TypeUndefined {
+			if fillShading.Type() != js.TypeNumber {
+				return fill, errArgType
+			}
+			fill.Shading = int(fillShading.Float())
+		}
+	}
+	return fill, nil
+}
+
+// prepareFont convert JavaScript object to Go structure for style font.
+func prepareFont(arg js.Value) (*excelize.Font, error) {
+	var font excelize.Font
+	fontArg := arg.Get("font")
+	if fontArg.Type() != js.TypeUndefined {
+		if fontArg.Type() != js.TypeObject {
+			return nil, errArgType
+		}
+		fontBold := fontArg.Get("bold")
+		if fontBold.Type() != js.TypeUndefined {
+			if fontBold.Type() != js.TypeBoolean {
+				return nil, errArgType
+			}
+			font.Bold = fontBold.Bool()
+		}
+		fontItalic := fontArg.Get("italic")
+		if fontItalic.Type() != js.TypeUndefined {
+			if fontItalic.Type() != js.TypeBoolean {
+				return nil, errArgType
+			}
+			font.Italic = fontItalic.Bool()
+		}
+		fontUnderline := fontArg.Get("underline")
+		if fontUnderline.Type() != js.TypeUndefined {
+			if fontUnderline.Type() != js.TypeString {
+				return nil, errArgType
+			}
+			font.Underline = fontUnderline.String()
+		}
+		fontFamily := fontArg.Get("family")
+		if fontFamily.Type() != js.TypeUndefined {
+			if fontFamily.Type() != js.TypeString {
+				return nil, errArgType
+			}
+			font.Family = fontFamily.String()
+		}
+		fontSize := fontArg.Get("size")
+		if fontSize.Type() != js.TypeUndefined {
+			if fontSize.Type() != js.TypeNumber {
+				return nil, errArgType
+			}
+			font.Size = fontSize.Float()
+		}
+		fontStrike := fontArg.Get("strike")
+		if fontStrike.Type() != js.TypeUndefined {
+			if fontStrike.Type() != js.TypeBoolean {
+				return nil, errArgType
+			}
+			font.Strike = fontStrike.Bool()
+		}
+		fontColor := fontArg.Get("color")
+		if fontColor.Type() != js.TypeUndefined {
+			if fontColor.Type() != js.TypeString {
+				return nil, errArgType
+			}
+			font.Color = fontColor.String()
+		}
+		fontVertAlign := fontArg.Get("vert_align")
+		if fontVertAlign.Type() != js.TypeUndefined {
+			if fontVertAlign.Type() != js.TypeString {
+				return nil, errArgType
+			}
+			font.VertAlign = fontVertAlign.String()
+		}
+	}
+	return &font, nil
+}
+
+// prepareAlignment convert JavaScript object to Go structure for style
+// alignment.
+func prepareAlignment(arg js.Value) (*excelize.Alignment, error) {
+	var alignment excelize.Alignment
+	alignmentArg := arg.Get("alignment")
+	if alignmentArg.Type() != js.TypeUndefined {
+		if alignmentArg.Type() != js.TypeObject {
+			return nil, errArgType
+		}
+		alignmentHorizontal := alignmentArg.Get("horizontal")
+		if alignmentHorizontal.Type() != js.TypeUndefined {
+			if alignmentHorizontal.Type() != js.TypeString {
+				return nil, errArgType
+			}
+			alignment.Horizontal = alignmentHorizontal.String()
+		}
+		alignmentIndent := alignmentArg.Get("indent")
+		if alignmentIndent.Type() != js.TypeUndefined {
+			if alignmentIndent.Type() != js.TypeNumber {
+				return nil, errArgType
+			}
+			alignment.Indent = int(alignmentIndent.Float())
+		}
+		alignmentJustifyLastLine := alignmentArg.Get("justify_last_line")
+		if alignmentJustifyLastLine.Type() != js.TypeUndefined {
+			if alignmentJustifyLastLine.Type() != js.TypeBoolean {
+				return nil, errArgType
+			}
+			alignment.JustifyLastLine = alignmentJustifyLastLine.Bool()
+		}
+		alignmentReadingOrder := alignmentArg.Get("reading_order")
+		if alignmentReadingOrder.Type() != js.TypeUndefined {
+			if alignmentReadingOrder.Type() != js.TypeNumber {
+				return nil, errArgType
+			}
+			alignment.ReadingOrder = uint64(alignmentReadingOrder.Float())
+		}
+		alignmentRelativeIndent := alignmentArg.Get("relative_indent")
+		if alignmentRelativeIndent.Type() != js.TypeUndefined {
+			if alignmentRelativeIndent.Type() != js.TypeNumber {
+				return nil, errArgType
+			}
+			alignment.RelativeIndent = int(alignmentRelativeIndent.Float())
+		}
+		alignmentShrinkToFit := alignmentArg.Get("shrink_to_fit")
+		if alignmentShrinkToFit.Type() != js.TypeUndefined {
+			if alignmentShrinkToFit.Type() != js.TypeBoolean {
+				return nil, errArgType
+			}
+			alignment.ShrinkToFit = alignmentShrinkToFit.Bool()
+		}
+		alignmentTextRotation := alignmentArg.Get("text_rotation")
+		if alignmentTextRotation.Type() != js.TypeUndefined {
+			if alignmentTextRotation.Type() != js.TypeNumber {
+				return nil, errArgType
+			}
+			alignment.TextRotation = int(alignmentTextRotation.Float())
+		}
+		alignmentVertical := alignmentArg.Get("vertical")
+		if alignmentVertical.Type() != js.TypeUndefined {
+			if alignmentVertical.Type() != js.TypeString {
+				return nil, errArgType
+			}
+			alignment.Vertical = alignmentVertical.String()
+		}
+		alignmentWrapText := alignmentArg.Get("wrap_text")
+		if alignmentWrapText.Type() != js.TypeUndefined {
+			if alignmentWrapText.Type() != js.TypeBoolean {
+				return nil, errArgType
+			}
+			alignment.WrapText = alignmentWrapText.Bool()
+		}
+	}
+	return &alignment, nil
+}
+
+// prepareProtection convert JavaScript object to Go structure for style
+// protection.
+func prepareProtection(arg js.Value) (*excelize.Protection, error) {
+	var protection excelize.Protection
+	protectionArg := arg.Get("protection")
+	if protectionArg.Type() != js.TypeUndefined {
+		if protectionArg.Type() != js.TypeObject {
+			return nil, errArgType
+		}
+		protectionHidden := protectionArg.Get("hidden")
+		if protectionHidden.Type() != js.TypeUndefined {
+			if protectionHidden.Type() != js.TypeBoolean {
+				return nil, errArgType
+			}
+			protection.Hidden = protectionHidden.Bool()
+		}
+		protectionLocked := protectionArg.Get("locked")
+		if protectionLocked.Type() != js.TypeUndefined {
+			if protectionLocked.Type() != js.TypeBoolean {
+				return nil, errArgType
+			}
+			protection.Locked = protectionLocked.Bool()
+		}
+	}
+	return &protection, nil
+}
+
+// prepareStyle convert JavaScript object to Go structure for style options.
+func prepareStyle(arg js.Value) (excelize.Style, error) {
+	var (
+		err   error
+		style excelize.Style
+	)
+	if style.Border, err = prepareBorder(arg); err != nil {
+		return style, err
+	}
+	if style.Fill, err = prepareFill(arg); err != nil {
+		return style, err
+	}
+	if style.Font, err = prepareFont(arg); err != nil {
+		return style, err
+	}
+	if style.Alignment, err = prepareAlignment(arg); err != nil {
+		return style, err
+	}
+	if style.Protection, err = prepareProtection(arg); err != nil {
+		return style, err
+	}
+	numFmt := arg.Get("number_format")
+	if numFmt.Type() != js.TypeUndefined {
+		if numFmt.Type() != js.TypeNumber {
+			return style, errArgType
+		}
+		style.NumFmt = int(numFmt.Float())
+	}
+	decimalPlaces := arg.Get("decimal_places")
+	if decimalPlaces.Type() != js.TypeUndefined {
+		if decimalPlaces.Type() != js.TypeNumber {
+			return style, errArgType
+		}
+		style.DecimalPlaces = int(decimalPlaces.Float())
+	}
+	customNumFmt := arg.Get("custom_number_format")
+	if customNumFmt.Type() != js.TypeUndefined {
+		if customNumFmt.Type() != js.TypeString {
+			return style, errArgType
+		}
+		customNumFmtArg := customNumFmt.String()
+		style.CustomNumFmt = &customNumFmtArg
+	}
+	lang := arg.Get("lang")
+	if lang.Type() != js.TypeUndefined {
+		if lang.Type() != js.TypeString {
+			return style, errArgType
+		}
+		style.Lang = lang.String()
+	}
+	negred := arg.Get("negred")
+	if negred.Type() != js.TypeUndefined {
+		if negred.Type() != js.TypeBoolean {
+			return style, errArgType
+		}
+		style.NegRed = negred.Bool()
+	}
+	return style, nil
+}
+
 // prepareArgs provides a method to check the excelize wrapper function
 // arguments by given rules.
 func prepareArgs(args []js.Value, types []argsRule) error {
@@ -206,8 +514,8 @@ func prepareArgs(args []js.Value, types []argsRule) error {
 	return nil
 }
 
-// ColumnNumberToName provides a function to convert the integer to Excel sheet
-// column title.
+// CellNameToCoordinates converts alphanumeric cell name to [X, Y] coordinates
+// or returns an error.
 func CellNameToCoordinates(this js.Value, args []js.Value) interface{} {
 	ret := map[string]interface{}{"col": 0, "row": 0, "error": nil}
 	if err := prepareArgs(args, []argsRule{{types: []js.Type{js.TypeString}}}); err != nil {
@@ -461,19 +769,22 @@ func AddChartSheet(f *excelize.File) func(this js.Value, args []js.Value) interf
 // AddComment provides the method to add comment in a sheet by given
 // worksheet index, cell and format set (such as author and text). Note that
 // the max author length is 255 and the max text length is 32512.
-// @param sheet The worksheet name
 func AddComment(f *excelize.File) func(this js.Value, args []js.Value) interface{} {
 	return func(this js.Value, args []js.Value) interface{} {
 		ret := map[string]interface{}{"error": nil}
 		if err := prepareArgs(args, []argsRule{
 			{types: []js.Type{js.TypeString}},
 			{types: []js.Type{js.TypeString}},
-			{types: []js.Type{js.TypeString}},
 		}); err != nil {
 			ret["error"] = err.Error()
 			return js.ValueOf(ret)
 		}
-		if err := f.AddComment(args[0].String(), args[1].String(), args[2].String()); err != nil {
+		var opt excelize.Comment
+		if err := json.Unmarshal([]byte(args[1].String()), &opt); err != nil {
+			ret["error"] = err.Error()
+			return js.ValueOf(ret)
+		}
+		if err := f.AddComment(args[0].String(), opt); err != nil {
 			ret["error"] = err.Error()
 		}
 		return js.ValueOf(ret)
@@ -518,7 +829,7 @@ func AddPivotTable(f *excelize.File) func(this js.Value, args []js.Value) interf
 			ret["error"] = err.Error()
 			return js.ValueOf(ret)
 		}
-		var opt excelize.PivotTableOption
+		var opt excelize.PivotTableOptions
 		if err := json.Unmarshal([]byte(args[0].String()), &opt); err != nil {
 			ret["error"] = err.Error()
 			return js.ValueOf(ret)
@@ -734,7 +1045,9 @@ func DeleteSheet(f *excelize.File) func(this js.Value, args []js.Value) interfac
 			ret["error"] = err.Error()
 			return js.ValueOf(ret)
 		}
-		f.DeleteSheet(args[0].String())
+		if err := f.DeleteSheet(args[0].String()); err != nil {
+			ret["error"] = err.Error()
+		}
 		return js.ValueOf(ret)
 	}
 }
@@ -1147,13 +1460,16 @@ func GetRows(f *excelize.File) func(this js.Value, args []js.Value) interface{} 
 func GetSheetIndex(f *excelize.File) func(this js.Value, args []js.Value) interface{} {
 	return func(this js.Value, args []js.Value) interface{} {
 		ret := map[string]interface{}{"index": 0, "error": nil}
-		if err := prepareArgs(args, []argsRule{
+		err := prepareArgs(args, []argsRule{
 			{types: []js.Type{js.TypeString}},
-		}); err != nil {
+		})
+		if err != nil {
 			ret["error"] = err.Error()
 			return js.ValueOf(ret)
 		}
-		ret["index"] = f.GetSheetIndex(args[0].String())
+		if ret["index"], err = f.GetSheetIndex(args[0].String()); err != nil {
+			ret["error"] = err.Error()
+		}
 		return js.ValueOf(ret)
 	}
 }
@@ -1218,13 +1534,16 @@ func GetSheetName(f *excelize.File) func(this js.Value, args []js.Value) interfa
 func GetSheetVisible(f *excelize.File) func(this js.Value, args []js.Value) interface{} {
 	return func(this js.Value, args []js.Value) interface{} {
 		ret := map[string]interface{}{"visible": false, "error": nil}
-		if err := prepareArgs(args, []argsRule{
+		err := prepareArgs(args, []argsRule{
 			{types: []js.Type{js.TypeString}},
-		}); err != nil {
+		})
+		if err != nil {
 			ret["error"] = err.Error()
 			return js.ValueOf(ret)
 		}
-		ret["visible"] = f.GetSheetVisible(args[0].String())
+		if ret["visible"], err = f.GetSheetVisible(args[0].String()); err != nil {
+			ret["error"] = err.Error()
+		}
 		return js.ValueOf(ret)
 	}
 }
@@ -1394,22 +1713,6 @@ func NewConditionalStyle(f *excelize.File) func(this js.Value, args []js.Value) 
 func NewSheet(f *excelize.File) func(this js.Value, args []js.Value) interface{} {
 	return func(this js.Value, args []js.Value) interface{} {
 		ret := map[string]interface{}{"index": 0, "error": nil}
-		if err := prepareArgs(args, []argsRule{
-			{types: []js.Type{js.TypeString}},
-		}); err != nil {
-			ret["error"] = err.Error()
-			return js.ValueOf(ret)
-		}
-		ret["index"] = f.NewSheet(args[0].String())
-		return js.ValueOf(ret)
-	}
-}
-
-// NewStyle provides a function to create the style for cells by given JSON.
-// Note that the color field uses RGB color code.
-func NewStyle(f *excelize.File) func(this js.Value, args []js.Value) interface{} {
-	return func(this js.Value, args []js.Value) interface{} {
-		ret := map[string]interface{}{"style": 0, "error": nil}
 		err := prepareArgs(args, []argsRule{
 			{types: []js.Type{js.TypeString}},
 		})
@@ -1417,8 +1720,33 @@ func NewStyle(f *excelize.File) func(this js.Value, args []js.Value) interface{}
 			ret["error"] = err.Error()
 			return js.ValueOf(ret)
 		}
-		if ret["style"], err = f.NewStyle(args[0].String()); err != nil {
+		if ret["index"], err = f.NewSheet(args[0].String()); err != nil {
 			ret["error"] = err.Error()
+		}
+		return js.ValueOf(ret)
+	}
+}
+
+// NewStyle provides a function to create the style for cells by given options.
+// Note that the color field uses RGB color code.
+func NewStyle(f *excelize.File) func(this js.Value, args []js.Value) interface{} {
+	return func(this js.Value, args []js.Value) interface{} {
+		ret := map[string]interface{}{"style": 0, "error": nil}
+		err := prepareArgs(args, []argsRule{
+			{types: []js.Type{js.TypeObject}},
+		})
+		if err != nil {
+			ret["error"] = err.Error()
+			return js.ValueOf(ret)
+		}
+		var style excelize.Style
+		if style, err = prepareStyle(args[0]); err != nil {
+			ret["error"] = err.Error()
+			return js.ValueOf(ret)
+		}
+		if ret["style"], err = f.NewStyle(&style); err != nil {
+			ret["error"] = err.Error()
+			return js.ValueOf(ret)
 		}
 		return js.ValueOf(ret)
 	}
@@ -1907,9 +2235,8 @@ func SetRowStyle(f *excelize.File) func(this js.Value, args []js.Value) interfac
 	}
 }
 
-// SetRowStyle provides a function to set the style of rows by given worksheet
-// name, row range, and style ID. Note that this will overwrite the existing
-// styles for the rows, it won't append or merge style with existing styles.
+// SetRowVisible provides a function to set visible of a single row by given
+// worksheet name and Excel row number.
 func SetRowVisible(f *excelize.File) func(this js.Value, args []js.Value) interface{} {
 	return func(this js.Value, args []js.Value) interface{} {
 		ret := map[string]interface{}{"error": nil}
@@ -1977,7 +2304,9 @@ func SetSheetName(f *excelize.File) func(this js.Value, args []js.Value) interfa
 			ret["error"] = err.Error()
 			return js.ValueOf(ret)
 		}
-		f.SetSheetName(args[0].String(), args[1].String())
+		if err := f.SetSheetName(args[0].String(), args[1].String()); err != nil {
+			ret["error"] = err.Error()
+		}
 		return js.ValueOf(ret)
 	}
 }

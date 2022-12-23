@@ -28,6 +28,78 @@ declare module 'excelize-wasm' {
   };
 
   /**
+   * Border directly maps the border settings of the cells.
+   */
+  export type Border = {
+    type?:  string;
+    color?: string;
+    style?: number;
+  };
+
+  /**
+   * Fill directly maps the fill settings of the cells.
+   */
+  export type Fill = {
+    type?:    string;
+    pattern?: number;
+    color?:   string[];
+    shading?: number;
+  };
+
+  /**
+   * Font directly maps the font settings of the fonts.
+   */
+  export type Font = {
+    bold?:       boolean;
+    italic?:     boolean;
+    underline?:  string;
+    family?:     string;
+    size?:       number;
+    strike?:     boolean;
+    color?:      string;
+    vert_align?: string;
+  };
+
+  /**
+   * Alignment directly maps the alignment settings of the cells.
+   */
+  export type Alignment = {
+    horizontal?:        string;
+    indent?:            number;
+    justify_last_line?: boolean;
+    reading_order?:     number;
+    relative_indent?:   number;
+    shrink_to_fit?:     boolean;
+    text_rotation?:     number;
+    vertical?:          string;
+    wrap_text?:         boolean;
+  };
+
+  /**
+   * Protection directly maps the protection settings of the cells.
+   */
+  export type Protection = {
+    hidden?: boolean;
+    locked?: boolean;
+  };
+
+  /**
+   * Style directly maps the style settings of the cells.
+   */
+  export type Style = {
+    border?:               Border[];
+    fill?:                 Fill;
+    font?:                 Font;
+    alignment?:            Alignment;
+    protection?:           Protection;
+    number_format?:        number;
+    decimal_places?:       number;
+    custom_number_format?: string;
+    lang?:                 string;
+    negred?:               boolean;
+  }
+
+  /**
    * CellNameToCoordinates converts alphanumeric cell name to [X, Y]
    * coordinates or returns an error.
    * @param cell The cell reference
@@ -117,11 +189,11 @@ declare module 'excelize-wasm' {
      * settings) and properties set.
      * @param sheet The worksheet name
      * @param cell The cell reference
-     * @param format The chart format
+     * @param opts The chart options
      * @param combo Specifies the create a chart that combines two or more
      *  chart types in a single chart
      */
-    AddChart(sheet: string, cell: string, format: string, combo?: string): { error: string | null }
+    AddChart(sheet: string, cell: string, opts: string, combo?: string): { error: string | null }
 
     /**
      * AddChartSheet provides the method to create a chartsheet by given chart
@@ -129,21 +201,20 @@ declare module 'excelize-wasm' {
      * settings) and properties set. In Excel a chartsheet is a worksheet that
      * only contains a chart.
      * @param sheet The worksheet name
-     * @param format The chart format
+     * @param opts The chart options
      * @param combo Specifies the create a chart that combines two or more
      *  chart types in a single chart
      */
-    AddChartSheet(sheet: string, format: string, combo?: string): { error: string | null }
+    AddChartSheet(sheet: string, opts: string, combo?: string): { error: string | null }
 
     /**
      * AddComment provides the method to add comment in a sheet by given
      * worksheet index, cell and format set (such as author and text). Note
      * that the max author length is 255 and the max text length is 32512.
      * @param sheet The worksheet name
-     * @param cell The cell reference
-     * @param format The comment format
+     * @param opts The comment options
      */
-    AddComment(sheet: string, cell: string, format: string): { error: string | null }
+    AddComment(sheet: string, opts: string): { error: string | null }
 
     /**
      * AddPictureFromBytes provides the method to add picture in a sheet by
@@ -151,12 +222,12 @@ declare module 'excelize-wasm' {
      * and print settings), file base name, extension name and file bytes.
      * @param sheet The worksheet name
      * @param cell The cell reference
-     * @param format The picture format
+     * @param opts The picture options
      * @param name The picture name
      * @param extension The extension name
      * @param file The contents buffer of the file
      */
-    AddPictureFromBytes(sheet: string, cell: string, format: string, name: string, extension: string, file: Uint8Array[]): { error: string | null }
+    AddPictureFromBytes(sheet: string, cell: string, opts: string, name: string, extension: string, file: Uint8Array[]): { error: string | null }
 
     /**
      * AddPivotTable provides the method to add pivot table by given pivot
@@ -172,9 +243,9 @@ declare module 'excelize-wasm' {
      * and print settings) and properties set.
      * @param sheet The worksheet name
      * @param cell The cell reference
-     * @param format The shape format
+     * @param opts The shape options
      */
-    AddShape(sheet: string, cell: string, format: string): { error: string | null }
+    AddShape(sheet: string, cell: string, opts: string): { error: string | null }
 
     /**
      * AddTable provides the method to add table in a worksheet by given
@@ -182,9 +253,9 @@ declare module 'excelize-wasm' {
      * @param sheet The worksheet name
      * @param hCell The top-left cell reference
      * @param vCell The right-bottom cell reference
-     * @param format The table format
+     * @param opts The table options
      */
-    AddTable(sheet: string, hCell: string, vCell: string, format: string): { error: string | null }
+    AddTable(sheet: string, hCell: string, vCell: string, opts: string): { error: string | null }
 
     /**
      * AutoFilter provides the method to add auto filter in a worksheet by
@@ -194,9 +265,9 @@ declare module 'excelize-wasm' {
      * @param sheet The worksheet name
      * @param hCell The top-left cell reference
      * @param vCell The right-bottom cell reference
-     * @param format The auto filter format
+     * @param opts The auto filter options
      */
-    AutoFilter(sheet: string, hCell: string, vCell: string, format: string): { error: string | null }
+    AutoFilter(sheet: string, hCell: string, vCell: string, opts: string): { error: string | null }
 
     /**
      * CalcCellValue provides a function to get calculated cell value. This
@@ -327,11 +398,11 @@ declare module 'excelize-wasm' {
 
     /**
      * GetCellValue provides a function to get formatted value from cell by
-     * given worksheet name and cell reference in spreadsheet. The return
-     * value is converted to the `string` data type. If the cell format can be
+     * given worksheet name and cell reference in spreadsheet. The return value
+     * is converted to the 'string' data type. If the cell format can be
      * applied to the value of a cell, the applied value will be returned,
-     * otherwise the original value will be returned. All cells' values will
-     * be the same in a merged range.
+     * otherwise the original value will be returned. All cells' values will be
+     * the same in a merged range.
      * @param sheet The worksheet name
      * @param cell The cell reference
      */
@@ -455,7 +526,7 @@ declare module 'excelize-wasm' {
     /**
      * GroupSheets provides a function to group worksheets by given worksheets
      * name. Group worksheets must contain an active worksheet.
-     * @param sheet The worksheet names
+     * @param sheets The worksheet names
      */
     GroupSheets(sheets: string[]): { error: string | null }
 
@@ -544,10 +615,10 @@ declare module 'excelize-wasm' {
 
     /**
      * NewStyle provides a function to create the style for cells by given
-     * JSON. Note that the color field uses RGB color code.
-     * @param style The style format
+     * options. Note that the color field uses RGB color code.
+     * @param style The style options
      */
-    NewStyle(style: string): { style: number, error: string | null }
+    NewStyle(style: Style): { style: number, error: string | null }
 
     /**
      * RemoveCol provides a function to remove single column by given worksheet
@@ -674,10 +745,12 @@ declare module 'excelize-wasm' {
      * specified coordinates should not be in the first row of the table, a
      * complex number can be set with string text.
      *
-     * You can set numbers format by the SetCellStyle function. If you need to
-     * set the specialized date in Excel like January 0, 1900 or February 29,
-     * 1900. Please set the cell value as number 0 or 60, then create and bind
-     * the date-time number format style for the cell.
+     * Note that default date format is m/d/yy h:mm of time.Time type value. You
+     * can set numbers format by the SetCellStyle function. If you need to set
+     * the specialized date in Excel like January 0, 1900 or February 29, 1900,
+     * these times can not representation in Go language time.Time data type.
+     * Please set the cell value as number 0 or 60, then create and bind the
+     * date-time number format style for the cell.
      * @param sheet The worksheet name
      * @param cell The cell reference
      * @param value The cell value to be write
@@ -731,9 +804,9 @@ declare module 'excelize-wasm' {
      * based on certain criteria.
      * @param sheet The worksheet name
      * @param reference The conditional format range reference
-     * @param formatSet The conditional format
+     * @param opts The conditional options
      */
-    SetConditionalFormat(sheet: string, reference: string, formatSet: string): { error: string | null }
+    SetConditionalFormat(sheet: string, reference: string, opts: string): { error: string | null }
 
     /**
      * SetDefaultFont changes the default font in the workbook.

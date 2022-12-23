@@ -1,8 +1,8 @@
 import commonjs from '@rollup/plugin-commonjs';
 import nodePolyfills from 'rollup-plugin-polyfill-node';
 import { nodeResolve } from '@rollup/plugin-node-resolve';
-import pkg from './package.json';
-import { terser } from 'rollup-plugin-terser';
+import terser from '@rollup/plugin-terser';
+import pkg from './package.json' assert {type: 'json'};
 const input = 'src/index.js';
 
 export default [

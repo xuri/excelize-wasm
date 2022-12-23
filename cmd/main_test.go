@@ -28,7 +28,8 @@ func TestInTypeSlice(t *testing.T) {
 func TestPrepareOptions(t *testing.T) {
 	opts, err := prepareOptions(js.ValueOf(map[string]interface{}{
 		"password":       "passwd",
-		"raw_cell_value": true}))
+		"raw_cell_value": true,
+	}))
 	assert.NoError(t, err)
 	assert.Equal(t, excelize.Options{Password: "passwd", RawCellValue: true}, opts)
 
@@ -254,20 +255,23 @@ func TestAddChartSheet(t *testing.T) {
 	assert.EqualError(t, errArgNum, ret.Get("error").String())
 
 	ret = f.(js.Value).Call("AddChartSheet", js.ValueOf("Sheet1"), js.ValueOf("{}"))
-	assert.Equal(t, "the same name worksheet already exists", ret.Get("error").String())
+	assert.EqualError(t, excelize.ErrExistsSheet, ret.Get("error").String())
 }
 
 func TestAddComment(t *testing.T) {
 	f := NewFile(js.Value{}, []js.Value{})
 	assert.True(t, f.(js.Value).Get("error").IsNull())
 
-	ret := f.(js.Value).Call("AddComment", js.ValueOf("Sheet1"), js.ValueOf("A30"), js.ValueOf(`{"author":"Excelize: ","text":"This is a comment."}`))
+	ret := f.(js.Value).Call("AddComment", js.ValueOf("Sheet1"), js.ValueOf(`{"cell":"A30","author":"Excelize","text":"This is a comment."}`))
 	assert.True(t, ret.Get("error").IsNull())
 
 	ret = f.(js.Value).Call("AddComment")
 	assert.EqualError(t, errArgNum, ret.Get("error").String())
 
-	ret = f.(js.Value).Call("AddComment", js.ValueOf("SheetN"), js.ValueOf("A30"), js.ValueOf(`{"author":"Excelize: ","text":"This is a comment."}`))
+	ret = f.(js.Value).Call("AddComment", js.ValueOf("SheetN"), js.ValueOf(""))
+	assert.Equal(t, "unexpected end of JSON input", ret.Get("error").String())
+
+	ret = f.(js.Value).Call("AddComment", js.ValueOf("SheetN"), js.ValueOf(`{"cell":"A30","author":"Excelize","text":"This is a comment."}`))
 	assert.Equal(t, "sheet SheetN does not exist", ret.Get("error").String())
 }
 
@@ -328,7 +332,7 @@ func TestAddPivotTable(t *testing.T) {
 		)
 		assert.True(t, ret.Get("error").IsNull())
 	}
-	opts, err := json.Marshal(excelize.PivotTableOption{
+	opts, err := json.Marshal(excelize.PivotTableOptions{
 		DataRange:       "Sheet1!$A$1:$E$31",
 		PivotTableRange: "Sheet1!$G$2:$M$34",
 		Rows:            []excelize.PivotTableField{{Data: "Month", DefaultSubtotal: true}, {Data: "Year"}},
@@ -499,6 +503,9 @@ func TestDeleteSheet(t *testing.T) {
 
 	ret = f.(js.Value).Call("DeleteSheet", js.ValueOf("Sheet2"))
 	assert.True(t, ret.Get("error").IsNull())
+
+	ret = f.(js.Value).Call("DeleteSheet", js.ValueOf("Sheet:1"))
+	assert.EqualError(t, excelize.ErrSheetNameInvalid, ret.Get("error").String())
 
 	ret = f.(js.Value).Call("DeleteSheet")
 	assert.EqualError(t, errArgNum, ret.Get("error").String())
@@ -799,6 +806,9 @@ func TestGetSheetIndex(t *testing.T) {
 	ret = f.(js.Value).Call("GetSheetIndex")
 	assert.EqualError(t, errArgNum, ret.Get("error").String())
 
+	ret = f.(js.Value).Call("GetSheetIndex", js.ValueOf("Sheet:1"))
+	assert.EqualError(t, excelize.ErrSheetNameInvalid, ret.Get("error").String())
+
 	ret = f.(js.Value).Call("GetSheetIndex", js.ValueOf("SheetN"))
 	assert.True(t, ret.Get("error").IsNull())
 	assert.Equal(t, -1, ret.Get("index").Int())
@@ -857,6 +867,9 @@ func TestGetSheetVisible(t *testing.T) {
 
 	ret = f.(js.Value).Call("GetSheetVisible")
 	assert.EqualError(t, errArgNum, ret.Get("error").String())
+
+	ret = f.(js.Value).Call("GetSheetVisible", js.ValueOf("Sheet:1"))
+	assert.EqualError(t, excelize.ErrSheetNameInvalid, ret.Get("error").String())
 
 	ret = f.(js.Value).Call("GetSheetVisible", js.ValueOf("SheetN"))
 	assert.True(t, ret.Get("error").IsNull())
@@ -963,6 +976,9 @@ func TestNewSheet(t *testing.T) {
 	assert.True(t, ret.Get("error").IsNull())
 	assert.Equal(t, 1, ret.Get("index").Int())
 
+	ret = f.(js.Value).Call("NewSheet", js.ValueOf("Sheet:1"))
+	assert.EqualError(t, excelize.ErrSheetNameInvalid, ret.Get("error").String())
+
 	ret = f.(js.Value).Call("NewSheet")
 	assert.EqualError(t, errArgNum, ret.Get("error").String())
 	assert.Equal(t, 0, ret.Get("index").Int())
@@ -972,16 +988,93 @@ func TestNewStyle(t *testing.T) {
 	f := NewFile(js.Value{}, []js.Value{})
 	assert.True(t, f.(js.Value).Get("error").IsNull())
 
-	ret := f.(js.Value).Call("NewStyle", js.ValueOf(`{"number_format":1}`))
+	ret := f.(js.Value).Call("NewStyle", js.ValueOf(map[string]interface{}{
+		"number_format":        1,
+		"decimal_places":       2,
+		"custom_number_format": "0.00",
+		"lang":                 "language",
+		"negred":               true,
+		"border": []interface{}{
+			map[string]interface{}{"type": "left", "color": "000000", "style": 1},
+		},
+		"fill": map[string]interface{}{
+			"type":    "gradient",
+			"color":   []interface{}{"#FFFFFF", "#E0EBF5"},
+			"shading": 1,
+		},
+		"alignment": map[string]interface{}{
+			"horizontal":        "left",
+			"indent":            1,
+			"justify_last_line": true,
+			"reading_order":     1,
+			"relative_indent":   1,
+			"shrink_to_fit":     true,
+			"text_rotation":     90,
+			"vertical":          "center",
+			"wrap_text":         true,
+		},
+		"font": map[string]interface{}{
+			"bold":       true,
+			"italic":     true,
+			"underline":  "single",
+			"family":     "Calibri",
+			"size":       12,
+			"strike":     true,
+			"color":      "000000",
+			"vert_align": "superscript",
+		},
+		"protection": map[string]interface{}{
+			"hidden": true,
+			"locked": true,
+		},
+	}))
 	assert.True(t, ret.Get("error").IsNull())
 	assert.Equal(t, 1, ret.Get("style").Int())
 
+	for _, arg := range []map[string]interface{}{
+		{"number_format": "1"},
+		{"decimal_places": "2"},
+		{"custom_number_format": true},
+		{"lang": true},
+		{"negred": "true"},
+		{"border": true},
+		{"border": []interface{}{map[string]interface{}{"type": true}}},
+		{"border": []interface{}{map[string]interface{}{"color": true}}},
+		{"border": []interface{}{map[string]interface{}{"style": "1"}}},
+		{"fill": true},
+		{"fill": map[string]interface{}{"type": true}},
+		{"fill": map[string]interface{}{"color": true}},
+		{"fill": map[string]interface{}{"color": []interface{}{true}}},
+		{"fill": map[string]interface{}{"shading": "1"}},
+		{"alignment": true},
+		{"alignment": map[string]interface{}{"horizontal": true}},
+		{"alignment": map[string]interface{}{"indent": "1"}},
+		{"alignment": map[string]interface{}{"justify_last_line": "true"}},
+		{"alignment": map[string]interface{}{"reading_order": "1"}},
+		{"alignment": map[string]interface{}{"relative_indent": "1"}},
+		{"alignment": map[string]interface{}{"shrink_to_fit": "true"}},
+		{"alignment": map[string]interface{}{"text_rotation": "90"}},
+		{"alignment": map[string]interface{}{"vertical": true}},
+		{"alignment": map[string]interface{}{"wrap_text": "true"}},
+		{"font": true},
+		{"font": map[string]interface{}{"bold": "true"}},
+		{"font": map[string]interface{}{"italic": "true"}},
+		{"font": map[string]interface{}{"underline": true}},
+		{"font": map[string]interface{}{"family": true}},
+		{"font": map[string]interface{}{"size": "12"}},
+		{"font": map[string]interface{}{"strike": "true"}},
+		{"font": map[string]interface{}{"color": true}},
+		{"font": map[string]interface{}{"vert_align": true}},
+		{"protection": true},
+		{"protection": map[string]interface{}{"hidden": "true"}},
+		{"protection": map[string]interface{}{"locked": "true"}},
+	} {
+		ret = f.(js.Value).Call("NewStyle", js.ValueOf(arg))
+		assert.EqualError(t, errArgType, ret.Get("error").String())
+	}
+
 	ret = f.(js.Value).Call("NewStyle")
 	assert.EqualError(t, errArgNum, ret.Get("error").String())
-
-	ret = f.(js.Value).Call("NewStyle", js.ValueOf(""))
-	assert.Equal(t, "unexpected end of JSON input", ret.Get("error").String())
-	assert.Equal(t, 0, ret.Get("style").Int())
 }
 
 func TestRemoveCol(t *testing.T) {
@@ -1336,6 +1429,9 @@ func TestSetSheetName(t *testing.T) {
 	ret = f.(js.Value).Call("SetSheetName")
 	assert.EqualError(t, errArgNum, ret.Get("error").String())
 
+	ret = f.(js.Value).Call("SetSheetName", js.ValueOf("Sheet:1"), js.ValueOf("Sheet2"))
+	assert.EqualError(t, excelize.ErrSheetNameInvalid, ret.Get("error").String())
+
 	ret = f.(js.Value).Call("SetSheetName", js.ValueOf("SheetN"), js.ValueOf("Sheet2"))
 	assert.True(t, ret.Get("error").IsNull())
 }
@@ -1363,6 +1459,9 @@ func TestSetSheetVisible(t *testing.T) {
 
 	ret = f.(js.Value).Call("SetSheetVisible")
 	assert.EqualError(t, errArgNum, ret.Get("error").String())
+
+	ret = f.(js.Value).Call("SetSheetVisible", js.ValueOf("Sheet:1"), js.ValueOf(true))
+	assert.EqualError(t, excelize.ErrSheetNameInvalid, ret.Get("error").String())
 
 	ret = f.(js.Value).Call("SetSheetVisible", js.ValueOf("SheetN"), js.ValueOf(true))
 	assert.True(t, ret.Get("error").IsNull())
