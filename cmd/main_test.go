@@ -3,11 +3,11 @@ package main
 import (
 	"archive/zip"
 	"bytes"
-	"encoding/json"
 	"fmt"
 	"math/rand"
 	"os"
 	"path/filepath"
+	"reflect"
 	"syscall/js"
 	"testing"
 
@@ -23,21 +23,6 @@ func TestRegInteropFunc(t *testing.T) {
 func TestInTypeSlice(t *testing.T) {
 	assert.Equal(t, -1, inTypeSlice(nil, js.TypeBoolean))
 	assert.Equal(t, 0, inTypeSlice([]js.Type{js.TypeBoolean}, js.TypeBoolean))
-}
-
-func TestPrepareOptions(t *testing.T) {
-	opts, err := prepareOptions(js.ValueOf(map[string]interface{}{
-		"password":       "passwd",
-		"raw_cell_value": true,
-	}))
-	assert.NoError(t, err)
-	assert.Equal(t, excelize.Options{Password: "passwd", RawCellValue: true}, opts)
-
-	_, err = prepareOptions(js.ValueOf(map[string]interface{}{"password": false}))
-	assert.ErrorIs(t, err, errArgType)
-
-	_, err = prepareOptions(js.ValueOf(map[string]interface{}{"raw_cell_value": "true"}))
-	assert.ErrorIs(t, err, errArgType)
 }
 
 func TestPrepareArgs(t *testing.T) {
@@ -195,7 +180,7 @@ func TestOpenReader(t *testing.T) {
 	assert.True(t, ret.(js.Value).Get("error").IsNull())
 
 	ret = OpenReader(js.Value{}, []js.Value{uint8Array, js.ValueOf(map[string]interface{}{
-		"password": false,
+		"Password": false,
 	})})
 	assert.EqualError(t, errArgType, ret.(js.Value).Get("error").String())
 
@@ -207,7 +192,7 @@ func TestOpenReader(t *testing.T) {
 		uint8Array.SetIndex(k, v)
 	}
 	ret = OpenReader(js.Value{}, []js.Value{uint8Array, js.ValueOf(map[string]interface{}{
-		"password": "invalid",
+		"Password": "invalid",
 	})})
 	assert.EqualError(t, excelize.ErrWorkbookPassword, ret.(js.Value).Get("error").String())
 
@@ -227,51 +212,180 @@ func TestOpenReader(t *testing.T) {
 func TestAddChart(t *testing.T) {
 	f := NewFile(js.Value{}, []js.Value{})
 	assert.True(t, f.(js.Value).Get("error").IsNull())
+	lineChart := js.ValueOf(map[string]interface{}{
+		"Type": "line",
+		"Series": []interface{}{
+			map[string]interface{}{
+				"Name":       "Sheet1!$A$2",
+				"Categories": "Sheet1!$B$1:$D$1",
+				"Values":     "Sheet1!$B$2:$D$2",
+			},
+			map[string]interface{}{
+				"Name":       "Sheet1!$A$3",
+				"Categories": "Sheet1!$B$1:$D$1",
+				"Values":     "Sheet1!$B$3:$D$3",
+			},
+			map[string]interface{}{
+				"Name":       "Sheet1!$A$4",
+				"Categories": "Sheet1!$B$1:$D$1",
+				"Values":     "Sheet1!$B$4:$D$4",
+			},
+		},
+		"Title": map[string]interface{}{
+			"Name": "Fruit 3D Clustered Column Chart",
+		},
+	})
+	colChart := js.ValueOf(map[string]interface{}{
+		"Type": "col3DClustered",
+		"Series": []interface{}{
+			map[string]interface{}{
+				"Name":       "Sheet1!$A$2",
+				"Categories": "Sheet1!$B$1:$D$1",
+				"Values":     "Sheet1!$B$2:$D$2",
+			},
+			map[string]interface{}{
+				"Name":       "Sheet1!$A$3",
+				"Categories": "Sheet1!$B$1:$D$1",
+				"Values":     "Sheet1!$B$3:$D$3",
+			},
+			map[string]interface{}{
+				"Name":       "Sheet1!$A$4",
+				"Categories": "Sheet1!$B$1:$D$1",
+				"Values":     "Sheet1!$B$4:$D$4",
+			},
+		},
+		"Title": map[string]interface{}{
+			"Name": "Fruit 3D Clustered Column Chart",
+		},
+	})
+	ret := f.(js.Value).Call("AddChart", js.ValueOf("Sheet1"), js.ValueOf("A1"), lineChart)
+	assert.True(t, ret.Get("error").IsNull(), ret.Get("error").String())
 
-	ret := f.(js.Value).Call("AddChart", js.ValueOf("Sheet1"), js.ValueOf("A1"), js.ValueOf(`{"type":"col3DClustered","series":[{"name":"Sheet1!$A$2","categories":"Sheet1!$B$1:$D$1","values":"Sheet1!$B$2:$D$2"},{"name":"Sheet1!$A$3","categories":"Sheet1!$B$1:$D$1","values":"Sheet1!$B$3:$D$3"},{"name":"Sheet1!$A$4","categories":"Sheet1!$B$1:$D$1","values":"Sheet1!$B$4:$D$4"}],"title":{"name":"Fruit 3D Clustered Column Chart"}}`))
-	assert.True(t, ret.Get("error").IsNull())
-
-	ret = f.(js.Value).Call("AddChart", js.ValueOf("Sheet1"), js.ValueOf("A1"), js.ValueOf(`{"type":"line","series":[{"name":"Sheet1!$A$2","categories":"Sheet1!$B$1:$D$1","values":"Sheet1!$B$2:$D$2"},{"name":"Sheet1!$A$3","categories":"Sheet1!$B$1:$D$1","values":"Sheet1!$B$3:$D$3"},{"name":"Sheet1!$A$4","categories":"Sheet1!$B$1:$D$1","values":"Sheet1!$B$4:$D$4"}],"title":{"name":"Fruit 3D Clustered Column Chart"}}`), js.ValueOf(`{"type":"col","series":[{"name":"Sheet1!$A$2","categories":"Sheet1!$B$1:$D$1","values":"Sheet1!$B$2:$D$2"},{"name":"Sheet1!$A$3","categories":"Sheet1!$B$1:$D$1","values":"Sheet1!$B$3:$D$3"},{"name":"Sheet1!$A$4","categories":"Sheet1!$B$1:$D$1","values":"Sheet1!$B$4:$D$4"}],"title":{"name":"Fruit 3D Clustered Column Chart"}}`))
-	assert.True(t, ret.Get("error").IsNull())
+	ret = f.(js.Value).Call("AddChart", js.ValueOf("Sheet1"), js.ValueOf("A1"), lineChart, colChart)
+	assert.True(t, ret.Get("error").IsNull(), ret.Get("error").String())
 
 	ret = f.(js.Value).Call("AddChart")
 	assert.EqualError(t, errArgNum, ret.Get("error").String())
 
-	ret = f.(js.Value).Call("AddChart", js.ValueOf("SheetN"), js.ValueOf("A1"), js.ValueOf("{}"))
+	ret = f.(js.Value).Call("AddChart", js.ValueOf("Sheet1"), js.ValueOf("A1"), js.ValueOf(map[string]interface{}{"Type": true}))
+	assert.EqualError(t, errArgType, ret.Get("error").String())
+
+	ret = f.(js.Value).Call("AddChart", js.ValueOf("Sheet1"), js.ValueOf("A1"), js.ValueOf(map[string]interface{}{"Type": "col"}), js.ValueOf(map[string]interface{}{"Type": true}))
+	assert.EqualError(t, errArgType, ret.Get("error").String())
+
+	ret = f.(js.Value).Call("AddChart", js.ValueOf("Sheet1"), js.ValueOf("A1"), js.ValueOf(map[string]interface{}{"Type": ""}))
+	assert.Equal(t, "unsupported chart type ", ret.Get("error").String())
+
+	ret = f.(js.Value).Call("AddChart", js.ValueOf("Sheet1"), js.ValueOf("A1"), js.ValueOf(map[string]interface{}{"Type": "col"}), js.ValueOf(map[string]interface{}{"Type": ""}))
+	assert.Equal(t, "unsupported chart type ", ret.Get("error").String())
+
+	ret = f.(js.Value).Call("AddChart", js.ValueOf("SheetN"), js.ValueOf("A1"),
+		js.ValueOf(map[string]interface{}{}))
 	assert.Equal(t, "sheet SheetN does not exist", ret.Get("error").String())
 }
 
 func TestAddChartSheet(t *testing.T) {
 	f := NewFile(js.Value{}, []js.Value{})
 	assert.True(t, f.(js.Value).Get("error").IsNull())
-
-	ret := f.(js.Value).Call("AddChartSheet", js.ValueOf("Sheet2"), js.ValueOf(`{"type":"col3DClustered","series":[{"name":"Sheet1!$A$2","categories":"Sheet1!$B$1:$D$1","values":"Sheet1!$B$2:$D$2"},{"name":"Sheet1!$A$3","categories":"Sheet1!$B$1:$D$1","values":"Sheet1!$B$3:$D$3"},{"name":"Sheet1!$A$4","categories":"Sheet1!$B$1:$D$1","values":"Sheet1!$B$4:$D$4"}],"title":{"name":"Fruit 3D Clustered Column Chart"}}`))
+	lineChart := js.ValueOf(map[string]interface{}{
+		"Type": "line",
+		"Series": []interface{}{
+			map[string]interface{}{
+				"Name":       "Sheet1!$A$2",
+				"Categories": "Sheet1!$B$1:$D$1",
+				"Values":     "Sheet1!$B$2:$D$2",
+			},
+			map[string]interface{}{
+				"Name":       "Sheet1!$A$3",
+				"Categories": "Sheet1!$B$1:$D$1",
+				"Values":     "Sheet1!$B$3:$D$3",
+			},
+			map[string]interface{}{
+				"Name":       "Sheet1!$A$4",
+				"Categories": "Sheet1!$B$1:$D$1",
+				"Values":     "Sheet1!$B$4:$D$4",
+			},
+		},
+		"Title": map[string]interface{}{
+			"Name": "Fruit 3D Clustered Column Chart",
+		},
+	})
+	colChart := js.ValueOf(map[string]interface{}{
+		"Type": "col3DClustered",
+		"Series": []interface{}{
+			map[string]interface{}{
+				"Name":       "Sheet1!$A$2",
+				"Categories": "Sheet1!$B$1:$D$1",
+				"Values":     "Sheet1!$B$2:$D$2",
+			},
+			map[string]interface{}{
+				"Name":       "Sheet1!$A$3",
+				"Categories": "Sheet1!$B$1:$D$1",
+				"Values":     "Sheet1!$B$3:$D$3",
+			},
+			map[string]interface{}{
+				"Name":       "Sheet1!$A$4",
+				"Categories": "Sheet1!$B$1:$D$1",
+				"Values":     "Sheet1!$B$4:$D$4",
+			},
+		},
+		"Title": map[string]interface{}{
+			"Name": "Fruit 3D Clustered Column Chart",
+		},
+	})
+	ret := f.(js.Value).Call("AddChartSheet", js.ValueOf("Sheet2"), lineChart)
 	assert.True(t, ret.Get("error").IsNull())
 
-	ret = f.(js.Value).Call("AddChartSheet", js.ValueOf("Sheet3"), js.ValueOf(`{"type":"line","series":[{"name":"Sheet1!$A$2","categories":"Sheet1!$B$1:$D$1","values":"Sheet1!$B$2:$D$2"},{"name":"Sheet1!$A$3","categories":"Sheet1!$B$1:$D$1","values":"Sheet1!$B$3:$D$3"},{"name":"Sheet1!$A$4","categories":"Sheet1!$B$1:$D$1","values":"Sheet1!$B$4:$D$4"}],"title":{"name":"Fruit 3D Clustered Column Chart"}}`), js.ValueOf(`{"type":"col","series":[{"name":"Sheet1!$A$2","categories":"Sheet1!$B$1:$D$1","values":"Sheet1!$B$2:$D$2"},{"name":"Sheet1!$A$3","categories":"Sheet1!$B$1:$D$1","values":"Sheet1!$B$3:$D$3"},{"name":"Sheet1!$A$4","categories":"Sheet1!$B$1:$D$1","values":"Sheet1!$B$4:$D$4"}],"title":{"name":"Fruit 3D Clustered Column Chart"}}`))
+	ret = f.(js.Value).Call("AddChartSheet", js.ValueOf("Sheet3"), lineChart, colChart)
 	assert.True(t, ret.Get("error").IsNull())
 
 	ret = f.(js.Value).Call("AddChartSheet")
 	assert.EqualError(t, errArgNum, ret.Get("error").String())
 
-	ret = f.(js.Value).Call("AddChartSheet", js.ValueOf("Sheet1"), js.ValueOf("{}"))
+	ret = f.(js.Value).Call("AddChartSheet", js.ValueOf("Sheet4"), js.ValueOf(map[string]interface{}{"Type": true}))
+	assert.EqualError(t, errArgType, ret.Get("error").String())
+
+	ret = f.(js.Value).Call("AddChartSheet", js.ValueOf("Sheet2"), js.ValueOf(map[string]interface{}{"Type": "col"}), js.ValueOf(map[string]interface{}{"Type": true}))
+	assert.EqualError(t, errArgType, ret.Get("error").String())
+
+	ret = f.(js.Value).Call("AddChartSheet", js.ValueOf("Sheet4"), js.ValueOf(map[string]interface{}{"Type": ""}))
+	assert.Equal(t, "unsupported chart type ", ret.Get("error").String())
+
+	ret = f.(js.Value).Call("AddChartSheet", js.ValueOf("Sheet5"), js.ValueOf(map[string]interface{}{"Type": "col"}), js.ValueOf(map[string]interface{}{"Type": ""}))
+	assert.Equal(t, "unsupported chart type ", ret.Get("error").String())
+
+	ret = f.(js.Value).Call("AddChartSheet", js.ValueOf("Sheet1"), js.ValueOf(map[string]interface{}{}))
 	assert.EqualError(t, excelize.ErrExistsSheet, ret.Get("error").String())
 }
 
 func TestAddComment(t *testing.T) {
 	f := NewFile(js.Value{}, []js.Value{})
 	assert.True(t, f.(js.Value).Get("error").IsNull())
+	comment := js.ValueOf(map[string]interface{}{
+		"Cell":   "A12",
+		"Author": "Excelize",
+		"Runs": []interface{}{
+			map[string]interface{}{
+				"Text": "Excelize: ",
+				"Font": map[string]interface{}{"Bold": true},
+			},
+			map[string]interface{}{"Text": "This is a comment."},
+		},
+	})
 
-	ret := f.(js.Value).Call("AddComment", js.ValueOf("Sheet1"), js.ValueOf(`{"cell":"A30","author":"Excelize","text":"This is a comment."}`))
+	ret := f.(js.Value).Call("AddComment", js.ValueOf("Sheet1"), comment)
 	assert.True(t, ret.Get("error").IsNull())
 
 	ret = f.(js.Value).Call("AddComment")
 	assert.EqualError(t, errArgNum, ret.Get("error").String())
 
-	ret = f.(js.Value).Call("AddComment", js.ValueOf("SheetN"), js.ValueOf(""))
-	assert.Equal(t, "unexpected end of JSON input", ret.Get("error").String())
+	ret = f.(js.Value).Call("AddComment", js.ValueOf("SheetN"), js.ValueOf(nil))
+	assert.Equal(t, errArgType.Error(), ret.Get("error").String())
 
-	ret = f.(js.Value).Call("AddComment", js.ValueOf("SheetN"), js.ValueOf(`{"cell":"A30","author":"Excelize","text":"This is a comment."}`))
+	ret = f.(js.Value).Call("AddComment", js.ValueOf("Sheet1"), map[string]interface{}{"Cell": true})
+	assert.Equal(t, errArgType.Error(), ret.Get("error").String())
+
+	ret = f.(js.Value).Call("AddComment", js.ValueOf("SheetN"), comment)
 	assert.Equal(t, "sheet SheetN does not exist", ret.Get("error").String())
 }
 
@@ -287,13 +401,16 @@ func TestAddPictureFromBytes(t *testing.T) {
 	f := NewFile(js.Value{}, []js.Value{})
 	assert.True(t, f.(js.Value).Get("error").IsNull())
 
-	ret := f.(js.Value).Call("AddPictureFromBytes", js.ValueOf("Sheet1"), js.ValueOf("A1"), js.ValueOf(""), js.ValueOf("Picture 1"), js.ValueOf(".png"), js.ValueOf(uint8Array))
+	ret := f.(js.Value).Call("AddPictureFromBytes", js.ValueOf("Sheet1"), js.ValueOf("A1"), js.ValueOf("Picture 1"), js.ValueOf(".png"), js.ValueOf(uint8Array), js.ValueOf(map[string]interface{}{}))
 	assert.True(t, ret.Get("error").IsNull())
 
 	ret = f.(js.Value).Call("AddPictureFromBytes")
 	assert.EqualError(t, errArgNum, ret.Get("error").String())
 
-	ret = f.(js.Value).Call("AddPictureFromBytes", js.ValueOf("Sheet1"), js.ValueOf("A1"), js.ValueOf(""), js.ValueOf("Picture 1"), js.ValueOf("png"), js.ValueOf(uint8Array))
+	ret = f.(js.Value).Call("AddPictureFromBytes", js.ValueOf("Sheet1"), js.ValueOf("A1"), js.ValueOf("Picture 1"), js.ValueOf(".png"), js.ValueOf(uint8Array), js.ValueOf(map[string]interface{}{"Locked": 1}))
+	assert.EqualError(t, errArgType, ret.Get("error").String())
+
+	ret = f.(js.Value).Call("AddPictureFromBytes", js.ValueOf("Sheet1"), js.ValueOf("A1"), js.ValueOf("Picture 1"), js.ValueOf("png"), js.ValueOf(uint8Array), js.ValueOf(map[string]interface{}{}))
 	assert.EqualError(t, excelize.ErrImgExt, ret.Get("error").String())
 }
 
@@ -332,32 +449,34 @@ func TestAddPivotTable(t *testing.T) {
 		)
 		assert.True(t, ret.Get("error").IsNull())
 	}
-	opts, err := json.Marshal(excelize.PivotTableOptions{
-		DataRange:       "Sheet1!$A$1:$E$31",
-		PivotTableRange: "Sheet1!$G$2:$M$34",
-		Rows:            []excelize.PivotTableField{{Data: "Month", DefaultSubtotal: true}, {Data: "Year"}},
-		Filter:          []excelize.PivotTableField{{Data: "Region"}},
-		Columns:         []excelize.PivotTableField{{Data: "Type", DefaultSubtotal: true}},
-		Data:            []excelize.PivotTableField{{Data: "Sales", Subtotal: "Sum", Name: "Summarize by Sum"}},
-		RowGrandTotals:  true,
-		ColGrandTotals:  true,
-		ShowDrill:       true,
-		ShowRowHeaders:  true,
-		ShowColHeaders:  true,
-		ShowLastColumn:  true,
-		ShowError:       true,
+	opts := js.ValueOf(map[string]interface{}{
+		"DataRange":       "Sheet1!$A$1:$E$31",
+		"PivotTableRange": "Sheet1!$G$2:$M$34",
+		"Rows":            []interface{}{map[string]interface{}{"Data": "Month", "DefaultSubtotal": true}, map[string]interface{}{"Data": "Year"}},
+		"Filter":          []interface{}{map[string]interface{}{"Data": "Region"}},
+		"Columns":         []interface{}{map[string]interface{}{"Data": "Type", "DefaultSubtotal": true}},
+		"Data":            []interface{}{map[string]interface{}{"Data": "Sales", "Subtotal": "Sum", "Name": "Summarize by Sum"}},
+		"RowGrandTotals":  true,
+		"ColGrandTotals":  true,
+		"ShowDrill":       true,
+		"ShowRowHeaders":  true,
+		"ShowColHeaders":  true,
+		"ShowLastColumn":  true,
+		"ShowError":       true,
 	})
-	assert.NoError(t, err)
-	ret = f.(js.Value).Call("AddPivotTable", js.ValueOf(string(opts)))
+	ret = f.(js.Value).Call("AddPivotTable", opts)
 	assert.True(t, ret.Get("error").IsNull())
 
 	ret = f.(js.Value).Call("AddPivotTable")
 	assert.EqualError(t, errArgNum, ret.Get("error").String())
 
-	ret = f.(js.Value).Call("AddPivotTable", js.ValueOf(""))
-	assert.Equal(t, "unexpected end of JSON input", ret.Get("error").String())
+	ret = f.(js.Value).Call("AddPivotTable", js.ValueOf(nil))
+	assert.Equal(t, errArgType.Error(), ret.Get("error").String())
 
-	ret = f.(js.Value).Call("AddPivotTable", js.ValueOf("{}"))
+	ret = f.(js.Value).Call("AddPivotTable", map[string]interface{}{"ShowError": 1})
+	assert.Equal(t, errArgType.Error(), ret.Get("error").String())
+
+	ret = f.(js.Value).Call("AddPivotTable", js.ValueOf(map[string]interface{}{}))
 	assert.Equal(t, "parameter 'PivotTableRange' parsing error: parameter is required", ret.Get("error").String())
 }
 
@@ -365,27 +484,38 @@ func TestAddShape(t *testing.T) {
 	f := NewFile(js.Value{}, []js.Value{})
 	assert.True(t, f.(js.Value).Get("error").IsNull())
 
-	ret := f.(js.Value).Call("AddShape", js.ValueOf("Sheet1"), js.ValueOf("C30"), js.ValueOf(`{"type":"rect","paragraph":[]}`))
+	ret := f.(js.Value).Call("AddShape", js.ValueOf("Sheet1"), js.ValueOf("C30"),
+		js.ValueOf(map[string]interface{}{"Type": "rect", "Paragraph": map[string]interface{}{}}))
 	assert.True(t, ret.Get("error").IsNull())
 
 	ret = f.(js.Value).Call("AddShape")
 	assert.EqualError(t, errArgNum, ret.Get("error").String())
 
-	ret = f.(js.Value).Call("AddShape", js.ValueOf("Sheet1"), js.ValueOf("C30"), js.ValueOf(""))
-	assert.Equal(t, "unexpected end of JSON input", ret.Get("error").String())
+	ret = f.(js.Value).Call("AddShape", js.ValueOf("Sheet1"), js.ValueOf("C30"),
+		js.ValueOf(map[string]interface{}{"Type": true}))
+	assert.EqualError(t, errArgType, ret.Get("error").String())
+
+	ret = f.(js.Value).Call("AddShape", js.ValueOf("SheetN"), js.ValueOf("C30"), js.ValueOf(map[string]interface{}{}))
+	assert.Equal(t, "sheet SheetN does not exist", ret.Get("error").String())
+
+	ret = f.(js.Value).Call("AddShape", js.ValueOf("Sheet1"), js.ValueOf("C30"), js.ValueOf(nil))
+	assert.Equal(t, errArgType.Error(), ret.Get("error").String())
 }
 
 func TestAddTable(t *testing.T) {
 	f := NewFile(js.Value{}, []js.Value{})
 	assert.True(t, f.(js.Value).Get("error").IsNull())
 
-	ret := f.(js.Value).Call("AddTable", js.ValueOf("Sheet1"), js.ValueOf("B26"), js.ValueOf("A21"), js.ValueOf("{}"))
+	ret := f.(js.Value).Call("AddTable", js.ValueOf("Sheet1"), js.ValueOf("B26:A21"), js.ValueOf(map[string]interface{}{}))
 	assert.True(t, ret.Get("error").IsNull())
 
 	ret = f.(js.Value).Call("AddTable")
 	assert.EqualError(t, errArgNum, ret.Get("error").String())
 
-	ret = f.(js.Value).Call("AddTable", js.ValueOf("SheetN"), js.ValueOf("B26"), js.ValueOf("A21"), js.ValueOf("{}"))
+	ret = f.(js.Value).Call("AddTable", js.ValueOf("Sheet1"), js.ValueOf("B26:A21"), js.ValueOf(map[string]interface{}{"Name": true}))
+	assert.EqualError(t, errArgType, ret.Get("error").String())
+
+	ret = f.(js.Value).Call("AddTable", js.ValueOf("SheetN"), js.ValueOf("B26:A21"), js.ValueOf(map[string]interface{}{}))
 	assert.Equal(t, "sheet SheetN does not exist", ret.Get("error").String())
 }
 
@@ -393,13 +523,16 @@ func TestAutoFilter(t *testing.T) {
 	f := NewFile(js.Value{}, []js.Value{})
 	assert.True(t, f.(js.Value).Get("error").IsNull())
 
-	ret := f.(js.Value).Call("AutoFilter", js.ValueOf("Sheet1"), js.ValueOf("D4"), js.ValueOf("B1"), js.ValueOf(""))
+	ret := f.(js.Value).Call("AutoFilter", js.ValueOf("Sheet1"), js.ValueOf("D4:B1"), js.ValueOf(map[string]interface{}{}))
 	assert.True(t, ret.Get("error").IsNull())
 
 	ret = f.(js.Value).Call("AutoFilter")
 	assert.EqualError(t, errArgNum, ret.Get("error").String())
 
-	ret = f.(js.Value).Call("AutoFilter", js.ValueOf("SheetN"), js.ValueOf("D4"), js.ValueOf("B1"), js.ValueOf(""))
+	ret = f.(js.Value).Call("AutoFilter", js.ValueOf("Sheet1"), js.ValueOf("D4:B1"), js.ValueOf(map[string]interface{}{"Column": 1}))
+	assert.EqualError(t, errArgType, ret.Get("error").String())
+
+	ret = f.(js.Value).Call("AutoFilter", js.ValueOf("SheetN"), js.ValueOf("D4:B1"), js.ValueOf(map[string]interface{}{}))
 	assert.Equal(t, "sheet SheetN does not exist", ret.Get("error").String())
 }
 
@@ -558,11 +691,11 @@ func TestGetAppProps(t *testing.T) {
 
 	ret := f.(js.Value).Call("GetAppProps")
 	assert.True(t, ret.Get("error").IsNull())
-	assert.Equal(t, "Go Excelize", ret.Get("application").String())
+	assert.Equal(t, "Go Excelize", ret.Get("Application").String())
 
 	ret = f.(js.Value).Call("GetAppProps", js.ValueOf(1))
 	assert.EqualError(t, errArgNum, ret.Get("error").String())
-	assert.Equal(t, "", ret.Get("application").String())
+	assert.Equal(t, "", ret.Get("Application").String())
 }
 
 func TestGetCellFormula(t *testing.T) {
@@ -704,11 +837,11 @@ func TestGetCols(t *testing.T) {
 	assert.True(t, ret.Get("error").IsNull())
 	assert.Equal(t, 1, ret.Get("result").Length())
 
-	ret = f.(js.Value).Call("GetCols", js.ValueOf("Sheet1"), js.ValueOf(map[string]interface{}{"raw_cell_value": true}))
+	ret = f.(js.Value).Call("GetCols", js.ValueOf("Sheet1"), js.ValueOf(map[string]interface{}{"RawCellValue": true}))
 	assert.True(t, ret.Get("error").IsNull())
 	assert.Equal(t, 1, ret.Get("result").Length())
 
-	ret = f.(js.Value).Call("GetCols", js.ValueOf("Sheet1"), js.ValueOf(map[string]interface{}{"raw_cell_value": "true"}))
+	ret = f.(js.Value).Call("GetCols", js.ValueOf("Sheet1"), js.ValueOf(map[string]interface{}{"RawCellValue": "true"}))
 	assert.EqualError(t, errArgType, ret.Get("error").String())
 	assert.Equal(t, 0, ret.Get("result").Length())
 
@@ -779,11 +912,11 @@ func TestGetRows(t *testing.T) {
 	assert.True(t, ret.Get("error").IsNull())
 	assert.Equal(t, 1, ret.Get("result").Length())
 
-	ret = f.(js.Value).Call("GetRows", js.ValueOf("Sheet1"), js.ValueOf(map[string]interface{}{"raw_cell_value": true}))
+	ret = f.(js.Value).Call("GetRows", js.ValueOf("Sheet1"), js.ValueOf(map[string]interface{}{"RawCellValue": true}))
 	assert.True(t, ret.Get("error").IsNull())
 	assert.Equal(t, 1, ret.Get("result").Length())
 
-	ret = f.(js.Value).Call("GetRows", js.ValueOf("Sheet1"), js.ValueOf(map[string]interface{}{"raw_cell_value": "true"}))
+	ret = f.(js.Value).Call("GetRows", js.ValueOf("Sheet1"), js.ValueOf(map[string]interface{}{"RawCellValue": "true"}))
 	assert.EqualError(t, errArgType, ret.Get("error").String())
 	assert.Equal(t, 0, ret.Get("result").Length())
 
@@ -956,15 +1089,32 @@ func TestNewConditionalStyle(t *testing.T) {
 	f := NewFile(js.Value{}, []js.Value{})
 	assert.True(t, f.(js.Value).Get("error").IsNull())
 
-	ret := f.(js.Value).Call("NewConditionalStyle", js.ValueOf(`{"fill":{"type":"pattern","color":["#FEEAA0"],"pattern":1}}`))
-	assert.True(t, ret.Get("error").IsNull())
+	ret := f.(js.Value).Call("NewConditionalStyle",
+		js.ValueOf(map[string]interface{}{
+			"Fill": map[string]interface{}{
+				"Type":    "pattern",
+				"Color":   []interface{}{"#FEEAA0"},
+				"Pattern": 1,
+			},
+		}),
+	)
+	assert.True(t, ret.Get("error").IsNull(), ret.Get("error").String())
 	assert.Equal(t, 0, ret.Get("style").Int())
+
+	ret = f.(js.Value).Call("NewConditionalStyle",
+		js.ValueOf(map[string]interface{}{
+			"Font": map[string]interface{}{
+				"Size": excelize.MaxFontSize + 1,
+			},
+		}),
+	)
+	assert.EqualError(t, excelize.ErrFontSize, ret.Get("error").String())
 
 	ret = f.(js.Value).Call("NewConditionalStyle")
 	assert.EqualError(t, errArgNum, ret.Get("error").String())
 
-	ret = f.(js.Value).Call("NewConditionalStyle", js.ValueOf(""))
-	assert.Equal(t, "unexpected end of JSON input", ret.Get("error").String())
+	ret = f.(js.Value).Call("NewConditionalStyle", js.ValueOf(map[string]interface{}{"Fill": 1}))
+	assert.Equal(t, errArgType.Error(), ret.Get("error").String())
 	assert.Equal(t, 0, ret.Get("style").Int())
 }
 
@@ -989,89 +1139,98 @@ func TestNewStyle(t *testing.T) {
 	assert.True(t, f.(js.Value).Get("error").IsNull())
 
 	ret := f.(js.Value).Call("NewStyle", js.ValueOf(map[string]interface{}{
-		"number_format":        1,
-		"decimal_places":       2,
-		"custom_number_format": "0.00",
-		"lang":                 "language",
-		"negred":               true,
-		"border": []interface{}{
-			map[string]interface{}{"type": "left", "color": "000000", "style": 1},
+		"NumFmt":        1,
+		"DecimalPlaces": 2,
+		"CustomNumFmt":  "0.00",
+		"Lang":          "language",
+		"NegRed":        true,
+		"Border": []interface{}{
+			map[string]interface{}{"Type": "left", "Color": "000000", "Style": 1},
 		},
-		"fill": map[string]interface{}{
-			"type":    "gradient",
-			"color":   []interface{}{"#FFFFFF", "#E0EBF5"},
-			"shading": 1,
+		"Fill": map[string]interface{}{
+			"Type":    "gradient",
+			"Color":   []interface{}{"#FFFFFF", "#E0EBF5"},
+			"Shading": 1,
 		},
-		"alignment": map[string]interface{}{
-			"horizontal":        "left",
-			"indent":            1,
-			"justify_last_line": true,
-			"reading_order":     1,
-			"relative_indent":   1,
-			"shrink_to_fit":     true,
-			"text_rotation":     90,
-			"vertical":          "center",
-			"wrap_text":         true,
+		"Alignment": map[string]interface{}{
+			"Horizontal":      "left",
+			"Indent":          1,
+			"JustifyLastLine": true,
+			"ReadingOrder":    1,
+			"RelativeIndent":  1,
+			"ShrinkToFit":     true,
+			"TextRotation":    90,
+			"Vertical":        "center",
+			"WrapText":        true,
 		},
-		"font": map[string]interface{}{
-			"bold":       true,
-			"italic":     true,
-			"underline":  "single",
-			"family":     "Calibri",
-			"size":       12,
-			"strike":     true,
-			"color":      "000000",
-			"vert_align": "superscript",
+		"Font": map[string]interface{}{
+			"Bold":      true,
+			"Italic":    true,
+			"Underline": "single",
+			"Family":    "Calibri",
+			"Size":      12,
+			"Strike":    true,
+			"Color":     "000000",
+			"VertAlign": "superscript",
 		},
-		"protection": map[string]interface{}{
-			"hidden": true,
-			"locked": true,
+		"Protection": map[string]interface{}{
+			"Hidden": true,
+			"Locked": true,
 		},
 	}))
-	assert.True(t, ret.Get("error").IsNull())
+	assert.True(t, ret.Get("error").IsNull(), ret.Get("error").String())
 	assert.Equal(t, 1, ret.Get("style").Int())
 
 	for _, arg := range []map[string]interface{}{
-		{"number_format": "1"},
-		{"decimal_places": "2"},
-		{"custom_number_format": true},
-		{"lang": true},
-		{"negred": "true"},
-		{"border": true},
-		{"border": []interface{}{map[string]interface{}{"type": true}}},
-		{"border": []interface{}{map[string]interface{}{"color": true}}},
-		{"border": []interface{}{map[string]interface{}{"style": "1"}}},
-		{"fill": true},
-		{"fill": map[string]interface{}{"type": true}},
-		{"fill": map[string]interface{}{"color": true}},
-		{"fill": map[string]interface{}{"color": []interface{}{true}}},
-		{"fill": map[string]interface{}{"shading": "1"}},
-		{"alignment": true},
-		{"alignment": map[string]interface{}{"horizontal": true}},
-		{"alignment": map[string]interface{}{"indent": "1"}},
-		{"alignment": map[string]interface{}{"justify_last_line": "true"}},
-		{"alignment": map[string]interface{}{"reading_order": "1"}},
-		{"alignment": map[string]interface{}{"relative_indent": "1"}},
-		{"alignment": map[string]interface{}{"shrink_to_fit": "true"}},
-		{"alignment": map[string]interface{}{"text_rotation": "90"}},
-		{"alignment": map[string]interface{}{"vertical": true}},
-		{"alignment": map[string]interface{}{"wrap_text": "true"}},
-		{"font": true},
-		{"font": map[string]interface{}{"bold": "true"}},
-		{"font": map[string]interface{}{"italic": "true"}},
-		{"font": map[string]interface{}{"underline": true}},
-		{"font": map[string]interface{}{"family": true}},
-		{"font": map[string]interface{}{"size": "12"}},
-		{"font": map[string]interface{}{"strike": "true"}},
-		{"font": map[string]interface{}{"color": true}},
-		{"font": map[string]interface{}{"vert_align": true}},
-		{"protection": true},
-		{"protection": map[string]interface{}{"hidden": "true"}},
-		{"protection": map[string]interface{}{"locked": "true"}},
+		{"NumFmt": "1"},
+		{"DecimalPlaces": "2"},
+		{"CustomNumFmt": true},
+		{"Lang": true},
+		{"NegRed": "true"},
+		{"Border": true},
+		{"Border": []interface{}{map[string]interface{}{"Type": true}}},
+		{"Border": []interface{}{map[string]interface{}{"Color": true}}},
+		{"Border": []interface{}{map[string]interface{}{"Style": "1"}}},
+		{"Fill": true},
+		{"Fill": map[string]interface{}{"Type": true}},
+		{"Fill": map[string]interface{}{"Color": true}},
+		{"Fill": map[string]interface{}{"Color": []interface{}{true}}},
+		{"Fill": map[string]interface{}{"Shading": "1"}},
+		{"Alignment": true},
+		{"Alignment": map[string]interface{}{"Horizontal": true}},
+		{"Alignment": map[string]interface{}{"Indent": "1"}},
+		{"Alignment": map[string]interface{}{"JustifyLastLine": "true"}},
+		{"Alignment": map[string]interface{}{"ReadingOrder": "1"}},
+		{"Alignment": map[string]interface{}{"RelativeIndent": "1"}},
+		{"Alignment": map[string]interface{}{"ShrinkToFit": "true"}},
+		{"Alignment": map[string]interface{}{"TextRotation": "90"}},
+		{"Alignment": map[string]interface{}{"Vertical": true}},
+		{"Alignment": map[string]interface{}{"WrapText": "true"}},
+		{"Font": true},
+		{"Font": map[string]interface{}{"Bold": "true"}},
+		{"Font": map[string]interface{}{"Italic": "true"}},
+		{"Font": map[string]interface{}{"Underline": true}},
+		{"Font": map[string]interface{}{"Family": true}},
+		{"Font": map[string]interface{}{"Size": "12"}},
+		{"Font": map[string]interface{}{"Strike": "true"}},
+		{"Font": map[string]interface{}{"Color": true}},
+		{"Font": map[string]interface{}{"VertAlign": true}},
+		{"Protection": true},
+		{"Protection": map[string]interface{}{"Hidden": "true"}},
+		{"Protection": map[string]interface{}{"Locked": "true"}},
 	} {
 		ret = f.(js.Value).Call("NewStyle", js.ValueOf(arg))
 		assert.EqualError(t, errArgType, ret.Get("error").String())
 	}
+
+	ret = f.(js.Value).Call("NewStyle",
+		js.ValueOf(map[string]interface{}{
+			"Font": map[string]interface{}{
+				"Size": excelize.MaxFontSize + 1,
+			},
+		}),
+	)
+	assert.EqualError(t, excelize.ErrFontSize, ret.Get("error").String())
 
 	ret = f.(js.Value).Call("NewStyle")
 	assert.EqualError(t, errArgNum, ret.Get("error").String())
@@ -1314,13 +1473,23 @@ func TestSetConditionalFormat(t *testing.T) {
 	f := NewFile(js.Value{}, []js.Value{})
 	assert.True(t, f.(js.Value).Get("error").IsNull())
 
-	ret := f.(js.Value).Call("SetConditionalFormat", js.ValueOf("Sheet1"), js.ValueOf("A1:B2"), js.ValueOf(`[{"type":"top","criteria":"=","format":0}]`))
+	condFmt := js.ValueOf([]interface{}{
+		map[string]interface{}{
+			"Type":     "top",
+			"Criteria": "=",
+			"Format":   0,
+		},
+	})
+	ret := f.(js.Value).Call("SetConditionalFormat", js.ValueOf("Sheet1"), js.ValueOf("A1:B2"), condFmt)
 	assert.True(t, ret.Get("error").IsNull())
 
 	ret = f.(js.Value).Call("SetConditionalFormat")
 	assert.EqualError(t, errArgNum, ret.Get("error").String())
 
-	ret = f.(js.Value).Call("SetConditionalFormat", js.ValueOf("SheetN"), js.ValueOf("A1:B2"), js.ValueOf(`[{"type":"top","criteria":"=","format":0}]`))
+	ret = f.(js.Value).Call("SetConditionalFormat", js.ValueOf("Sheet1"), js.ValueOf("A1:B2"), js.ValueOf([]interface{}{map[string]interface{}{"Type": true}}))
+	assert.EqualError(t, errArgType, ret.Get("error").String())
+
+	ret = f.(js.Value).Call("SetConditionalFormat", js.ValueOf("SheetN"), js.ValueOf("A1:B2"), condFmt)
 	assert.Equal(t, "sheet SheetN does not exist", ret.Get("error").String())
 }
 
@@ -1339,13 +1508,30 @@ func TestSetPanes(t *testing.T) {
 	f := NewFile(js.Value{}, []js.Value{})
 	assert.True(t, f.(js.Value).Get("error").IsNull())
 
-	ret := f.(js.Value).Call("SetPanes", js.ValueOf("Sheet1"), js.ValueOf(`{"freeze":false,"split":false}`))
+	ret := f.(js.Value).Call("SetPanes", js.ValueOf("Sheet1"),
+		js.ValueOf(map[string]interface{}{
+			"Freeze": false,
+			"Split":  false,
+		}),
+	)
 	assert.True(t, ret.Get("error").IsNull())
 
 	ret = f.(js.Value).Call("SetPanes")
 	assert.EqualError(t, errArgNum, ret.Get("error").String())
 
-	ret = f.(js.Value).Call("SetPanes", js.ValueOf("SheetN"), js.ValueOf(`{"freeze":false,"split":false}`))
+	ret = f.(js.Value).Call("SetPanes", js.ValueOf("Sheet1"),
+		js.ValueOf(map[string]interface{}{
+			"Freeze": 0,
+		}),
+	)
+	assert.EqualError(t, errArgType, ret.Get("error").String())
+
+	ret = f.(js.Value).Call("SetPanes", js.ValueOf("SheetN"),
+		js.ValueOf(map[string]interface{}{
+			"Freeze": false,
+			"Split":  false,
+		}),
+	)
 	assert.Equal(t, "sheet SheetN does not exist", ret.Get("error").String())
 }
 
@@ -1539,15 +1725,66 @@ func TestWriteToBuffer(t *testing.T) {
 	assert.True(t, ret.Get("error").IsNull())
 
 	ret = f.(js.Value).Call("WriteToBuffer", js.ValueOf(map[string]interface{}{
-		"password": "password",
+		"Password": "password",
 	}))
 	assert.Equal(t, js.TypeObject, ret.Type())
 
 	ret = f.(js.Value).Call("WriteToBuffer", js.ValueOf(map[string]interface{}{
-		"password": true,
+		"Password": true,
 	}))
 	assert.EqualError(t, errArgType, ret.Get("error").String())
 
 	ret = f.(js.Value).Call("WriteToBuffer", js.ValueOf(true), js.ValueOf(true))
 	assert.EqualError(t, errArgNum, ret.Get("error").String())
+}
+
+func TestJsValueToGo(t *testing.T) {
+	type T1 struct{}
+	type T2 struct {
+		F1 []*T1
+		F2 []*string
+	}
+	type T3 struct {
+		F1 []*uint8
+	}
+	type T4 struct {
+		F1 []*T3
+	}
+
+	_, err := jsValueToGo(js.ValueOf(map[string]interface{}{
+		"F1": []interface{}{map[string]interface{}{}},
+		"F2": []interface{}{"f2"},
+	}), reflect.TypeOf(T2{}))
+	assert.NoError(t, err)
+	_, err = jsValueToGo(js.ValueOf(map[string]interface{}{
+		"F1": true,
+		"F2": []interface{}{"f2"},
+	}), reflect.TypeOf(T2{}))
+	assert.EqualError(t, err, errArgType.Error())
+	_, err = jsValueToGo(js.ValueOf(map[string]interface{}{
+		"F1": []interface{}{map[string]interface{}{}},
+		"F2": true,
+	}), reflect.TypeOf(T2{}))
+	assert.EqualError(t, err, errArgType.Error())
+	_, err = jsValueToGo(js.ValueOf(map[string]interface{}{
+		"F1": []interface{}{0},
+	}), reflect.TypeOf(T3{}))
+	assert.EqualError(t, err, errArgType.Error())
+	_, err = jsValueToGo(js.ValueOf(map[string]interface{}{
+		"F1": []interface{}{map[string]interface{}{
+			"F1": []interface{}{0},
+		}},
+	}), reflect.TypeOf(T4{}))
+	assert.EqualError(t, err, errArgType.Error())
+}
+
+func TestJsToGoBaseType(t *testing.T) {
+	_, err := jsToGoBaseType(js.ValueOf(0), reflect.Uint)
+	assert.NoError(t, err)
+	_, err = jsToGoBaseType(js.ValueOf(0), reflect.Int64)
+	assert.NoError(t, err)
+	_, err = jsToGoBaseType(js.ValueOf(true), reflect.Uint)
+	assert.EqualError(t, err, errArgType.Error())
+	_, err = jsToGoBaseType(js.ValueOf(true), reflect.Int64)
+	assert.EqualError(t, err, errArgType.Error())
 }

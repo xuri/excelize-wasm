@@ -46,17 +46,17 @@ npm install --save excelize-wasm
 
 ```html
 <script src="excelize-wasm/index.js"></script>
-````
+```
 
 ### 创建 Excel 文档
 
 下面是一个创建 Excel 文档的简单例子：
 
 ```javascript
-const { init } = require('excelize-wasm');
-const fs = require('fs');
+const { init } = require("excelize-wasm");
+const fs = require("fs");
 
-init('./node_modules/excelize-wasm/excelize.wasm.gz').then((excelize) => {
+init("./node_modules/excelize-wasm/excelize.wasm.gz").then((excelize) => {
   const f = excelize.NewFile();
   // 创建一个工作表
   const { index } = f.NewSheet("Sheet2")
@@ -71,7 +71,7 @@ init('./node_modules/excelize-wasm/excelize.wasm.gz').then((excelize) => {
     console.log(error);
     return
   }
-  fs.writeFile('Book1.xlsx', buffer, 'binary', (error) => {
+  fs.writeFile("Book1.xlsx", buffer, "binary", (error) => {
     if (error) {
       console.log(error);
     }
@@ -96,7 +96,7 @@ init('./node_modules/excelize-wasm/excelize.wasm.gz').then((excelize) => {
   </div>
   <script>
   function download() {
-    excelizeWASM.init('https://<服务器地址>/excelize-wasm/excelize.wasm.gz').then((excelize) => {
+    excelizeWASM.init("https://<服务器地址>/excelize-wasm/excelize.wasm.gz").then((excelize) => {
       const f = excelize.NewFile();
       // 创建一个工作表
       const { index } = f.NewSheet("Sheet2")
@@ -111,11 +111,11 @@ init('./node_modules/excelize-wasm/excelize.wasm.gz').then((excelize) => {
         console.log(error);
         return
       }
-      const link = document.createElement('a');
-      link.download = 'Book1.xlsx';
+      const link = document.createElement("a");
+      link.download = "Book1.xlsx";
       link.href = URL.createObjectURL(
         new Blob([buffer],
-        { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' })
+        { type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" })
       );
       link.click();
     });
@@ -131,11 +131,11 @@ init('./node_modules/excelize-wasm/excelize.wasm.gz').then((excelize) => {
 下面是读取 Excel 文档的例子：
 
 ```javascript
-const { init } = require('excelize-wasm');
-const fs = require('fs');
+const { init } = require("excelize-wasm");
+const fs = require("fs");
 
-init('./node_modules/excelize-wasm/excelize.wasm.gz').then((excelize) => {
-  const f = excelize.OpenReader(fs.readFileSync('Book1.xlsx'));
+init("./node_modules/excelize-wasm/excelize.wasm.gz").then((excelize) => {
+  const f = excelize.OpenReader(fs.readFileSync("Book1.xlsx"));
   // 设置单元格的值
   var { value, error } = f.GetCellValue("Sheet1", "B2")
   if (error) {
@@ -165,56 +165,62 @@ init('./node_modules/excelize-wasm/excelize.wasm.gz').then((excelize) => {
 <p align="center"><img width="650" src="https://raw.githubusercontent.com/xuri/excelize-wasm/main/chart.png" alt="使用 excelize-wasm 在 Excel 电子表格文档中创建图表"></p>
 
 ```javascript
-const { init } = require('excelize-wasm');
-const fs = require('fs');
+const { init } = require("excelize-wasm");
+const fs = require("fs");
 
-init('./node_modules/excelize-wasm/excelize.wasm.gz').then((excelize) => {
-  const categories = {
-    "A2": "Small", "A3": "Normal", "A4": "Large",
-    "B1": "Apple", "C1": "Orange", "D1": "Pear"};
-  const values = {"B2": 2, "C2": 3, "D2": 3, "B3": 5,
-    "C3": 2, "D3": 4, "B4": 6, "C4": 7, "D4": 8};
+init("./node_modules/excelize-wasm/excelize.wasm.gz").then((excelize) => {
   const f = excelize.NewFile();
-  for (const k in categories) {
-    f.SetCellValue("Sheet1", k, categories[k]);
-  };
-  for (const k in values) {
-    f.SetCellValue("Sheet1", k, values[k]);
-  };
-  var { error } = f.AddChart("Sheet1", "E1", `{
-    "type": "col3DClustered",
-    "series": [
-    {
-        "name": "Sheet1!$A$2",
-        "categories": "Sheet1!$B$1:$D$1",
-        "values": "Sheet1!$B$2:$D$2"
-    },
-    {
-        "name": "Sheet1!$A$3",
-        "categories": "Sheet1!$B$1:$D$1",
-        "values": "Sheet1!$B$3:$D$3"
-    },
-    {
-        "name": "Sheet1!$A$4",
-        "categories": "Sheet1!$B$1:$D$1",
-        "values": "Sheet1!$B$4:$D$4"
-    }],
-    "title":
-    {
-        "name": "Fruit 3D Clustered Column Chart"
+  [
+    [null, "Apple", "Orange", "Pear"],
+    ["Small", 2, 3, 3],
+    ["Normal", 5, 2, 4],
+    ["Large", 6, 7, 8],
+  ].forEach((row, idx) => {
+    var { cell, error } = excelize.CoordinatesToCellName(1, idx + 1);
+    if (error) {
+      console.log(error);
+      return;
     }
-  }`);
+    var { error } = f.SetSheetRow("Sheet1", cell, row);
+    if (error) {
+      console.log(error);
+      return;
+    }
+  });
+  var { error } = f.AddChart("Sheet1", "E1", {
+    Type: "col3DClustered",
+    Series: [
+      {
+        Name: "Sheet1!$A$2",
+        Categories: "Sheet1!$B$1:$D$1",
+        Values: "Sheet1!$B$2:$D$2",
+      },
+      {
+        Name: "Sheet1!$A$3",
+        Categories: "Sheet1!$B$1:$D$1",
+        Values: "Sheet1!$B$3:$D$3",
+      },
+      {
+        Name: "Sheet1!$A$4",
+        Categories: "Sheet1!$B$1:$D$1",
+        Values: "Sheet1!$B$4:$D$4",
+      },
+    ],
+    Title: {
+      Name: "Fruit 3D Clustered Column Chart",
+    },
+  });
   if (error) {
     console.log(error);
-    return
+    return;
   }
   // 根据指定路径保存文件
   var { buffer, error } = f.WriteToBuffer();
   if (error) {
     console.log(error);
-    return
+    return;
   }
-  fs.writeFile('Book1.xlsx', buffer, 'binary', (error) => {
+  fs.writeFile("Book1.xlsx", buffer, "binary", (error) => {
     if (error) {
       console.log(error);
     }
@@ -225,49 +231,49 @@ init('./node_modules/excelize-wasm/excelize.wasm.gz').then((excelize) => {
 ### 向 Excel 文档中插入图片
 
 ```javascript
-const { init } = require('excelize-wasm');
-const fs = require('fs');
+const { init } = require("excelize-wasm");
+const fs = require("fs");
 
-init('./node_modules/excelize-wasm/excelize.wasm.gz').then((excelize) => {
-  const f = excelize.OpenReader(fs.readFileSync('Book1.xlsx'));
+init("./node_modules/excelize-wasm/excelize.wasm.gz").then((excelize) => {
+  const f = excelize.OpenReader(fs.readFileSync("Book1.xlsx"));
   if (f.error) {
     console.log(f.error);
     return
   }
   // 插入图片
-  var { error } = f.AddPictureFromBytes("Sheet1", "A2", "",
-    "Picture 1", ".png", fs.readFileSync('image.png'))
+  var { error } = f.AddPictureFromBytes("Sheet1", "A2",
+    "Picture 1", ".png", fs.readFileSync("image.png"), {})
   if (error) {
     console.log(error);
     return
   }
   // 在工作表中插入图片，并设置图片的缩放比例
-  var { error } = f.AddPictureFromBytes("Sheet1", "D2",
-    `{"x_scale": 0.5, "y_scale": 0.5}`, "Picture 2", ".png",
-    fs.readFileSync('image.jpg'))
+  var { error } = f.AddPictureFromBytes("Sheet1", "D2", "Picture 2", ".png",
+    fs.readFileSync("image.jpg"), {ScaleX: 0.5, ScaleY: 0.5});
   if (error) {
     console.log(error);
     return
   }
   // 在工作表中插入图片，并设置图片的打印属性
-  var { error } = f.AddPictureFromBytes("Sheet1", "H2", `{
-      "x_offset": 15,
-      "y_offset": 10,
-      "print_obj": true,
-      "lock_aspect_ratio": false,
-      "locked": false
-  }`, "Picture 3", ".png", fs.readFileSync('image.gif'))
+  var { error } = f.AddPictureFromBytes("Sheet1", "H2", "Picture 3", ".png",
+    fs.readFileSync("image.gif"), {
+      OffsetX: 15,
+      OffsetY: 10,
+      PrintObject: true,
+      LockAspectRatio: false,
+      Locked: false
+  });
   if (error) {
     console.log(error);
     return
   }
   // 根据指定路径保存文件
-  const { buffer, error } = f.WriteToBuffer();
+  var { buffer, error } = f.WriteToBuffer();
   if (error) {
     console.log(error);
     return
   }
-  fs.writeFile('Book1.xlsx', buffer, 'binary', (error) => {
+  fs.writeFile("Book1.xlsx", buffer, "binary", (error) => {
     if (error) {
       console.log(error);
     }

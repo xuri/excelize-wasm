@@ -20,84 +20,401 @@ declare module 'excelize-wasm' {
    * Options define the options for open and reading spreadsheet.
    */
   export type Options = {
-    max_calc_iterations?:  number;
-    password?:             string;
-    raw_cell_value?:       boolean;
-    unzip_size_limit?:     number;
-    unzip_xml_size_limit?: number;
+    MaxCalcIterations?: number;
+    Password?:          string;
+    RawCellValue?:      boolean;
+    UnzipSizeLimit?:    number;
+    UnzipXMLSizeLimit?: number;
   };
 
   /**
    * Border directly maps the border settings of the cells.
    */
   export type Border = {
-    type?:  string;
-    color?: string;
-    style?: number;
+    Type?:  string;
+    Color?: string;
+    Style?: number;
   };
 
   /**
    * Fill directly maps the fill settings of the cells.
    */
   export type Fill = {
-    type?:    string;
-    pattern?: number;
-    color?:   string[];
-    shading?: number;
+    Type?:    string;
+    Pattern?: number;
+    Color?:   string[];
+    Shading?: number;
   };
 
   /**
    * Font directly maps the font settings of the fonts.
    */
   export type Font = {
-    bold?:       boolean;
-    italic?:     boolean;
-    underline?:  string;
-    family?:     string;
-    size?:       number;
-    strike?:     boolean;
-    color?:      string;
-    vert_align?: string;
+    Bold?:         boolean;
+    Italic?:       boolean;
+    Underline?:    string;
+    Family?:       string;
+    Size?:         number;
+    Strike?:       boolean;
+    Color?:        string;
+    ColorIndexed?: number;
+    ColorTheme?:   number;
+    ColorTint?:    number;
+    VertAlign?:    string;
   };
 
   /**
    * Alignment directly maps the alignment settings of the cells.
    */
   export type Alignment = {
-    horizontal?:        string;
-    indent?:            number;
-    justify_last_line?: boolean;
-    reading_order?:     number;
-    relative_indent?:   number;
-    shrink_to_fit?:     boolean;
-    text_rotation?:     number;
-    vertical?:          string;
-    wrap_text?:         boolean;
+    Horizontal?:      string;
+    Indent?:          number;
+    JustifyLastLine?: boolean;
+    ReadingOrder?:    number;
+    RelativeIndent?:  number;
+    ShrinkToFit?:     boolean;
+    TextRotation?:    number;
+    Vertical?:        string;
+    WrapText?:        boolean;
   };
 
   /**
    * Protection directly maps the protection settings of the cells.
    */
   export type Protection = {
-    hidden?: boolean;
-    locked?: boolean;
+    Hidden?: boolean;
+    Locked?: boolean;
   };
 
   /**
    * Style directly maps the style settings of the cells.
    */
   export type Style = {
-    border?:               Border[];
-    fill?:                 Fill;
-    font?:                 Font;
-    alignment?:            Alignment;
-    protection?:           Protection;
-    number_format?:        number;
-    decimal_places?:       number;
-    custom_number_format?: string;
-    lang?:                 string;
-    negred?:               boolean;
+    Border?:        Border[];
+    Fill?:          Fill;
+    Font?:          Font;
+    Alignment?:     Alignment;
+    Protection?:    Protection;
+    NumFmt?:        number;
+    DecimalPlaces?: number;
+    CustomNumFmt?:  string;
+    Lang?:          string;
+    NegRed?:        boolean;
+  };
+
+  /**
+   * PaneOptions directly maps the settings of the pane.
+   */
+  export type PaneOptions = {
+    SQRef?:      string;
+    ActiveCell?: string;
+    Pane?:       string;
+  };
+
+  /**
+   * Panes directly maps the settings of the panes.
+   */
+  export type Panes = {
+    Freeze?:      boolean;
+    Split?:       boolean;
+    XSplit?:      number;
+    YSplit?:      number;
+    TopLeftCell?: string;
+    ActivePane?:  string;
+    Panes?:       PaneOptions[];
+  };
+
+  /**
+   * ConditionalFormatOptions directly maps the conditional format settings of
+   * the cells.
+   */
+  export type ConditionalFormatOptions = {
+    Type?:         string;
+    AboveAverage?: boolean;
+    Percent?:      boolean;
+    Format?:       number;
+    Criteria?:     string;
+    Value?:        string;
+    Minimum?:      string;
+    Maximum?:      string;
+    MinType?:      string;
+    MidType?:      string;
+    MaxType?:      string;
+    MinValue?:     string;
+    MidValue?:     string;
+    MaxValue?:     string;
+    MinColor?:     string;
+    MidColor?:     string;
+    MaxColor?:     string;
+    MinLength?:    string;
+    MaxLength?:    string;
+    BarColor?:     string;
+  };
+
+  /**
+   * Shape directly maps the format settings of the shape.
+   */
+   export type Shape = {
+    Macro?:     string;
+    Type?:      string;
+    Width?:     number;
+    Height?:    number;
+    Format?:    GraphicOptions;
+    Color?:     ShapeColor;
+    Line?:      ShapeLine;
+    Paragraph?: ShapeParagraph[];
+  };
+
+  /**
+   * ShapeParagraph directly maps the format settings of the paragraph in the
+   * shape.
+   */
+   export type ShapeParagraph = {
+    Font?: Font;
+    Text?: string;
+  };
+
+  /**
+   * ShapeColor directly maps the color settings of the shape.
+   */
+  export type ShapeColor = {
+    Line?:   string;
+    Fill?:   string;
+    Effect?: string;
+  };
+
+  /**
+   * ShapeLine directly maps the line settings of the shape.
+   */
+  export type ShapeLine = {
+    Width?: number;
+  };
+
+  /**
+   * GraphicOptions directly maps the format settings of the picture.
+   */
+  export type GraphicOptions = {
+    PrintObject?:     boolean;
+    Locked?:          boolean;
+    LockAspectRatio?: boolean;
+    AutoFit?:         boolean;
+    OffsetX?:         number;
+    OffsetY?:         number;
+    ScaleX?:          number;
+    ScaleY?:          number;
+    Hyperlink?:       string;
+    HyperlinkType?:   string;
+    Positioning?:     string;
+  };
+
+  /**
+   * TableOptions directly maps the format settings of the table.
+   */
+  export type TableOptions = {
+    Name?:              string;
+    StyleName?:         string;
+    ShowFirstColumn?:   boolean;
+    ShowLastColumn?:    boolean;
+    ShowRowStripes?:    boolean;
+    ShowColumnStripes?: boolean;
+  };
+
+  /**
+   * AutoFilterListOptions directly maps the auto filter list settings.
+   */
+  export type AutoFilterListOptions = {
+    Column?: string;
+    Value?:  number[];
+  };
+
+  /**
+   * AutoFilterOptions directly maps the auto filter settings.
+   */
+  export type AutoFilterOptions = {
+    Column?:     string;
+    Expression?: string;
+    FilterList?: AutoFilterListOptions[];
+  };
+
+  /**
+   * ChartAxis directly maps the format settings of the chart axis.
+   */
+  export type ChartAxis = {
+    None?:           boolean;
+    MajorGridLines?: boolean;
+    MinorGridLines?: boolean;
+    MajorUnit?:      number;
+    TickLabelSkip?:  number;
+    ReverseOrder?:   boolean;
+    Maximum?:        number;
+    Minimum?:        number;
+    Font?:           Font;
+    LogBase?:        number;
+  };
+
+  /**
+   * ChartDimension directly maps the dimension of the chart.
+   */
+  export type ChartDimension = {
+    Width?:  number;
+    Height?: number;
+  };
+
+  /**
+   * ChartPlotArea directly maps the format settings of the plot area.
+   */
+  export type ChartPlotArea = {
+    ShowBubbleSize?:  boolean;
+    ShowCatName?:     boolean;
+    ShowLeaderLines?: boolean;
+    ShowPercent?:     boolean;
+    ShowSerName?:     boolean;
+    ShowVal?:         boolean;
+  };
+
+  /**
+   * Chart directly maps the format settings of the chart.
+   */
+  export type Chart = {
+    Type?:         string;
+    Series?:       ChartSeries[];
+    Format?:       GraphicOptions;
+    Dimension?:    ChartDimension;
+    Legend?:       ChartLegend;
+    Title?:        ChartTitle;
+    VaryColors?:   boolean;
+    XAxis?:        ChartAxis;
+    YAxis?:        ChartAxis;
+    PlotArea?:     ChartPlotArea;
+    ShowBlanksAs?: string;
+    HoleSize?:     number;
+  };
+
+  /**
+   * ChartLegend directly maps the format settings of the chart legend.
+   */
+  export type ChartLegend = {
+    Position?:      string
+    ShowLegendKey?: boolean;
+  };
+
+  /**
+   * ChartMarker directly maps the format settings of the chart marker.
+   */
+  export type ChartMarker = {
+    Symbol?: string;
+    Size?:   number;
+  };
+
+  /**
+   * ChartLine directly maps the format settings of the chart line.
+   */
+  export type ChartLine = {
+    Color?:  string
+    Smooth?: boolean;
+    Width?:  number;
+  };
+
+  /**
+   * ChartSeries directly maps the format settings of the chart series.
+   */
+  export type ChartSeries = {
+    Name?:       string;
+    Categories?: string;
+    Values?:     string;
+    Line?:       ChartLine;
+    Marker?:     ChartMarker;
+  };
+
+  /**
+   * ChartTitle directly maps the format settings of the chart title.
+   */
+  export type ChartTitle = {
+    Name?: string;
+  };
+
+
+  /**
+   * PivotTableOptions directly maps the format settings of the pivot table.
+   *
+   *  PivotTableStyleName: The built-in pivot table style names
+   *
+   * 	PivotStyleLight1 - PivotStyleLight28
+   * 	PivotStyleMedium1 - PivotStyleMedium28
+   * 	PivotStyleDark1 - PivotStyleDark28
+   */
+  export type PivotTableOptions = {
+    pivotTableSheetName?: string;
+    DataRange?:           string;
+    PivotTableRange?:     string;
+    Rows?:                PivotTableField[];
+    Columns?:             PivotTableField[];
+    Data?:                PivotTableField[];
+    Filter?:              PivotTableField[];
+    RowGrandTotals?:      boolean;
+    ColGrandTotals?:      boolean;
+    ShowDrill?:           boolean;
+    UseAutoFormatting?:   boolean;
+    PageOverThenDown?:    boolean;
+    MergeItem?:           boolean;
+    CompactData ?:        boolean;
+    ShowError?:           boolean;
+    ShowRowHeaders?:      boolean;
+    ShowColHeaders?:      boolean;
+    ShowRowStripes?:      boolean;
+    ShowColStripes?:      boolean;
+    ShowLastColumn?:      boolean;
+    PivotTableStyleName?: string;
+  };
+
+  /**
+   * PivotTableField directly maps the field settings of the pivot table.
+   * Subtotal specifies the aggregation function that applies to this data
+   * field. The default value is sum. The possible values for this attribute
+   * are:
+   *
+   *	Average
+   *	Count
+   *	CountNums
+   *	Max
+   *	Min
+   *	Product
+   *	StdDev
+   *	StdDevp
+   *	Sum
+   *	Var
+   *	Varp
+   *
+   * Name specifies the name of the data field. Maximum 255 characters
+   * are allowed in data field name, excess characters will be truncated.
+   */
+  export type PivotTableField = {
+    Compact?:         boolean;
+    Data?:            string;
+    Name?:            string;
+    Outline?:         boolean;
+    Subtotal?:        string;
+    DefaultSubtotal?: boolean;
+  };
+
+  /**
+   * Comment directly maps the comment information.
+   */
+  export type Comment = {
+    Author?:   string;
+    AuthorID?: number;
+    Cell?:     string;
+    Text?:     string;
+    Runs?:     RichTextRun[];
   }
+
+  /**
+   * RichTextRun directly maps the settings of the rich text run.
+   */
+  export type RichTextRun = {
+    Font?: Font;
+    Text?: string;
+  };
 
   /**
    * CellNameToCoordinates converts alphanumeric cell name to [X, Y]
@@ -189,11 +506,11 @@ declare module 'excelize-wasm' {
      * settings) and properties set.
      * @param sheet The worksheet name
      * @param cell The cell reference
-     * @param opts The chart options
+     * @param chart The chart options
      * @param combo Specifies the create a chart that combines two or more
      *  chart types in a single chart
      */
-    AddChart(sheet: string, cell: string, opts: string, combo?: string): { error: string | null }
+    AddChart(sheet: string, cell: string, chart: Chart, combo?: Chart): { error: string | null }
 
     /**
      * AddChartSheet provides the method to create a chartsheet by given chart
@@ -201,20 +518,20 @@ declare module 'excelize-wasm' {
      * settings) and properties set. In Excel a chartsheet is a worksheet that
      * only contains a chart.
      * @param sheet The worksheet name
-     * @param opts The chart options
+     * @param chart The chart options
      * @param combo Specifies the create a chart that combines two or more
      *  chart types in a single chart
      */
-    AddChartSheet(sheet: string, opts: string, combo?: string): { error: string | null }
+    AddChartSheet(sheet: string, chart: Chart, combo?: Chart): { error: string | null }
 
     /**
      * AddComment provides the method to add comment in a sheet by given
      * worksheet index, cell and format set (such as author and text). Note
      * that the max author length is 255 and the max text length is 32512.
      * @param sheet The worksheet name
-     * @param opts The comment options
+     * @param comment The comment options
      */
-    AddComment(sheet: string, opts: string): { error: string | null }
+    AddComment(sheet: string, comment: Comment): { error: string | null }
 
     /**
      * AddPictureFromBytes provides the method to add picture in a sheet by
@@ -222,12 +539,12 @@ declare module 'excelize-wasm' {
      * and print settings), file base name, extension name and file bytes.
      * @param sheet The worksheet name
      * @param cell The cell reference
-     * @param opts The picture options
      * @param name The picture name
      * @param extension The extension name
      * @param file The contents buffer of the file
+     * @param opts The graphic options
      */
-    AddPictureFromBytes(sheet: string, cell: string, opts: string, name: string, extension: string, file: Uint8Array[]): { error: string | null }
+    AddPictureFromBytes(sheet: string, cell: string, name: string, extension: string, file: Uint8Array[], opts: GraphicOptions): { error: string | null }
 
     /**
      * AddPivotTable provides the method to add pivot table by given pivot
@@ -235,7 +552,7 @@ declare module 'excelize-wasm' {
      * Filter fields at the same time.
      * @param opt The pivot table option
      */
-    AddPivotTable(opt: string): { error: string | null }
+    AddPivotTable(opt: PivotTableOptions): { error: string | null }
 
     /**
      * AddShape provides the method to add shape in a sheet by given worksheet
@@ -245,17 +562,16 @@ declare module 'excelize-wasm' {
      * @param cell The cell reference
      * @param opts The shape options
      */
-    AddShape(sheet: string, cell: string, opts: string): { error: string | null }
+    AddShape(sheet: string, cell: string, opts: Shape): { error: string | null }
 
     /**
      * AddTable provides the method to add table in a worksheet by given
      * worksheet name, range reference and format set.
      * @param sheet The worksheet name
-     * @param hCell The top-left cell reference
-     * @param vCell The right-bottom cell reference
+     * @param rangeRef The top-left and right-bottom cell range reference
      * @param opts The table options
      */
-    AddTable(sheet: string, hCell: string, vCell: string, opts: string): { error: string | null }
+    AddTable(sheet: string, rangeRef: string, opts: TableOptions): { error: string | null }
 
     /**
      * AutoFilter provides the method to add auto filter in a worksheet by
@@ -263,11 +579,10 @@ declare module 'excelize-wasm' {
      * Excel is a way of filtering a 2D range of data based on some simple
      * criteria.
      * @param sheet The worksheet name
-     * @param hCell The top-left cell reference
-     * @param vCell The right-bottom cell reference
+     * @param rangeRef The top-left and right-bottom cell range reference
      * @param opts The auto filter options
      */
-    AutoFilter(sheet: string, hCell: string, vCell: string, opts: string): { error: string | null }
+    AutoFilter(sheet: string, rangeRef: string, opts: AutoFilterOptions): { error: string | null }
 
     /**
      * CalcCellValue provides a function to get calculated cell value. This
@@ -602,7 +917,7 @@ declare module 'excelize-wasm' {
      * only support to set font, fills, alignment and borders currently.
      * @param style
      */
-    NewConditionalStyle(style: string): { style: number, error: string | null }
+    NewConditionalStyle(style: Style): { style: number, error: string | null }
 
     /**
      * NewSheet provides the function to create a new sheet by given a
@@ -806,7 +1121,7 @@ declare module 'excelize-wasm' {
      * @param reference The conditional format range reference
      * @param opts The conditional options
      */
-    SetConditionalFormat(sheet: string, reference: string, opts: string): { error: string | null }
+    SetConditionalFormat(sheet: string, reference: string, opts: ConditionalFormatOptions): { error: string | null }
 
     /**
      * SetDefaultFont changes the default font in the workbook.
@@ -820,7 +1135,7 @@ declare module 'excelize-wasm' {
      * @param sheet The worksheet name
      * @param panes The panes format
      */
-    SetPanes(sheet: string, panes: string): { error: string | null }
+    SetPanes(sheet: string, panes: Panes): { error: string | null }
 
     /**
      * SetRowHeight provides a function to set the height of a single row.
