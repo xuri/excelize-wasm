@@ -1,58 +1,64 @@
 import commonjs from '@rollup/plugin-commonjs';
-import nodePolyfills from 'rollup-plugin-polyfill-node';
 import { nodeResolve } from '@rollup/plugin-node-resolve';
+import nodePolyfills from 'rollup-plugin-polyfill-node';
 import terser from '@rollup/plugin-terser';
-import pkg from './package.json' assert {type: 'json'};
-const input = 'src/index.js';
+import typescript from '@rollup/plugin-typescript';
+import dts from 'rollup-plugin-dts';
+import pkg from './package.json' assert { type: 'json' };
+import stripCode from 'rollup-plugin-strip-code';
+
+const input = 'src/index.ts';
+
+// Removes import of node modules from browser bundles
+const stripCodePlugin = stripCode({
+  start_comment: 'START.NODE_ONLY',
+  end_comment: 'END.NODE_ONLY',
+});
 
 export default [
-    {
-        // Plain browser <script>
-        input,
-        output: {
-            file: pkg.exports.script,
-            format: 'iife',
-            generatedCode: 'es2015',
-            name: 'excelizeWASM',
-            sourcemap: false,
-        },
-        plugins: [
-            commonjs(),
-            nodePolyfills(),
-            nodeResolve(),
-            terser()
-        ]
+  // Plain browser <script>
+  {
+    input,
+    output: {
+      file: pkg.exports.script,
+      file: './dist/index.js',
+      format: 'iife',
+      generatedCode: 'es2015',
+      name: 'excelizeWASM',
+      sourcemap: true,
     },
-    {
-        // ES6 module and <script type="module">
-        input,
-        output: {
-            file: pkg.exports.default,
-            format: 'esm',
-            generatedCode: 'es2015',
-            sourcemap: false,
-        },
-        plugins: [
-            commonjs(),
-            nodePolyfills(),
-            nodeResolve(),
-            terser()
-        ]
+    plugins: [commonjs(), nodeResolve(), stripCodePlugin, typescript()],
+  },
+
+  // ES6 module and <script type="module">
+  {
+    input,
+    output: {
+      file: pkg.exports.default,
+      format: 'esm',
+      generatedCode: 'es2015',
+      sourcemap: true,
     },
-    {
-        // CommonJS Node module
-        input,
-        output: {
-            file: pkg.exports.require,
-            format: 'cjs',
-            generatedCode: 'es2015',
-            sourcemap: false,
-        },
-        external: ['path', 'fs'],
-        plugins: [
-            commonjs(),
-            nodeResolve(),
-            terser()
-        ]
-    }
+    plugins: [commonjs(), nodeResolve(), stripCodePlugin, typescript()],
+  },
+
+  // CommonJS Node module
+  {
+    input,
+    output: {
+      file: pkg.exports.require,
+      format: 'cjs',
+      generatedCode: 'es2015',
+      sourcemap: true,
+    },
+    external: ['path', 'fs', 'crypto'],
+    plugins: [commonjs(), nodeResolve(), typescript()],
+  },
+
+  // Include type definitions
+  {
+    input: './src/index.d.ts',
+    output: [{ file: 'dist/index.d.ts', format: 'es' }],
+    plugins: [dts()],
+  },
 ];

@@ -1,0 +1,14 @@
+{
+  "compileOnSave": false,
+  "compilerOptions": {
+    "allowSyntheticDefaultImports": true,
+    "resolveJsonModule": true,
+    "importHelpers": true,
+    "lib": ["es2021", "dom"],
+    "module": "esnext",
+    "moduleResolution": "node",
+    "sourceMap": true,
+    "target": "esnext"
+  },
+  "include": ["./src/**/*.ts"]
+}
