@@ -16,33 +16,33 @@ Excelize-wasm is a pure WebAssembly / Javascript port of Go [Excelize](https://g
 
 ## Environment Compatibility
 
-Browser | Version
----|---
-Chrome | &ge;57
-Chrome for Android and Android Browser | &ge;105
-Edge | &ge;16
-Safari on macOS and iOS | &ge;11
-Firefox | &ge;52
-Firefox for Android | &ge;104
-Opera | &ge;44
-Opera Mobile | &ge;64
-Samsung Internet | &ge;7.2
-UC Browser for Android | &ge;13.4
-QQ Browser | &ge;10.4
-Node.js | &ge;8.0.0
-Deno | &ge;1.0
+| Browser                                | Version    |
+| -------------------------------------- | ---------- |
+| Chrome                                 | &ge;71     |
+| Chrome for Android and Android Browser | &ge;108    |
+| Edge                                   | &ge;79     |
+| Safari on macOS and iOS                | &ge;12.2   |
+| Firefox                                | &ge;65     |
+| Firefox for Android                    | &ge;65     |
+| Opera                                  | &ge;58     |
+| Opera Mobile                           | &ge;50     |
+| Samsung Internet                       | &ge;10.1   |
+| UC Browser for Android                 | &ge;13.4   |
+| QQ Browser                             | &ge;13.1   |
+| Node.js                                | &ge;12.0.0 |
+| Deno                                   | &ge;1.0    |
 
 ## Basic Usage
 
 ### Installation
 
-#### Node.js
+#### Node.js or browser
 
 ```bash
 npm install --save excelize-wasm
 ```
 
-#### Browser
+#### Browser using script tag
 
 ```html
 <script src="excelize-wasm/index.js"></script>
@@ -59,17 +59,17 @@ const fs = require("fs");
 init("./node_modules/excelize-wasm/excelize.wasm.gz").then((excelize) => {
   const f = excelize.NewFile();
   // Create a new sheet.
-  const { index } = f.NewSheet("Sheet2")
+  const { index } = f.NewSheet("Sheet2");
   // Set value of a cell.
-  f.SetCellValue("Sheet2", "A2", "Hello world.")
-  f.SetCellValue("Sheet1", "B2", 100)
+  f.SetCellValue("Sheet2", "A2", "Hello world.");
+  f.SetCellValue("Sheet1", "B2", 100);
   // Set active sheet of the workbook.
-  f.SetActiveSheet(index)
+  f.SetActiveSheet(index);
   // Save spreadsheet by the given path.
   const { buffer, error } = f.WriteToBuffer();
   if (error) {
     console.log(error);
-    return
+    return;
   }
   fs.writeFile("Book1.xlsx", buffer, "binary", (error) => {
     if (error) {
@@ -86,42 +86,42 @@ Create spreadsheet in browser:
 
 ```html
 <html>
-<head>
-  <meta charset="utf-8">
-  <script src="https://<your_hostname>/excelize-wasm/index.js"></script>
-</head>
-<body>
-  <div>
-    <button onclick="download()">Download</button>
-  </div>
-  <script>
-  function download() {
-    excelizeWASM.init("https://<your_hostname>/excelize-wasm/excelize.wasm.gz").then((excelize) => {
-      const f = excelize.NewFile();
-      // Create a new sheet.
-      const { index } = f.NewSheet("Sheet2")
-      // Set value of a cell.
-      f.SetCellValue("Sheet2", "A2", "Hello world.")
-      f.SetCellValue("Sheet1", "B2", 100)
-      // Set active sheet of the workbook.
-      f.SetActiveSheet(index)
-      // Save spreadsheet by the given path.
-      const { buffer, error } = f.WriteToBuffer();
-      if (error) {
-        console.log(error);
-        return
+  <head>
+    <meta charset="utf-8" />
+    <script src="https://<your_hostname>/excelize-wasm/index.js"></script>
+  </head>
+  <body>
+    <div>
+      <button onclick="download()">Download</button>
+    </div>
+    <script>
+      function download() {
+        excelizeWASM.init("https://<your_hostname>/excelize-wasm/excelize.wasm.gz").then((excelize) => {
+          const f = excelize.NewFile();
+          // Create a new sheet.
+          const { index } = f.NewSheet("Sheet2");
+          // Set value of a cell.
+          f.SetCellValue("Sheet2", "A2", "Hello world.");
+          f.SetCellValue("Sheet1", "B2", 100);
+          // Set active sheet of the workbook.
+          f.SetActiveSheet(index);
+          // Save spreadsheet by the given path.
+          const { buffer, error } = f.WriteToBuffer();
+          if (error) {
+            console.log(error);
+            return;
+          }
+          const link = document.createElement("a");
+          link.download = "Book1.xlsx";
+          link.href = URL.createObjectURL(
+            new Blob([buffer], { type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" }),
+          );
+          link.click();
+        });
       }
-      const link = document.createElement("a");
-      link.download = "Book1.xlsx";
-      link.href = URL.createObjectURL(
-        new Blob([buffer],
-        { type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" })
-      );
-      link.click();
-    });
-  }
-  </script>
-</body>
+    </script>
+  </body>
+</html>
 ```
 
 </details>
@@ -137,22 +137,22 @@ const fs = require("fs");
 init("./node_modules/excelize-wasm/excelize.wasm.gz").then((excelize) => {
   const f = excelize.OpenReader(fs.readFileSync("Book1.xlsx"));
   // Set value of a cell.
-  var { value, error } = f.GetCellValue("Sheet1", "B2")
+  var { value, error } = f.GetCellValue("Sheet1", "B2");
   if (error) {
     console.log(error);
     return;
   }
-  console.log(value)
+  console.log(value);
   // Get all the rows in the Sheet1.
   var { result, error } = f.GetRows("Sheet1");
   if (error) {
     console.log(error);
     return;
   }
-  result.forEach(row => {
-    row.forEach(colCell => {
-      process.stdout.write(`${colCell}\t`)
-    })
+  result.forEach((row) => {
+    row.forEach((colCell) => {
+      process.stdout.write(`${colCell}\t`);
+    });
     console.log();
   });
 });
@@ -238,40 +238,40 @@ init("./node_modules/excelize-wasm/excelize.wasm.gz").then((excelize) => {
   const f = excelize.OpenReader(fs.readFileSync("Book1.xlsx"));
   if (f.error) {
     console.log(f.error);
-    return
+    return;
   }
   // Insert a picture.
-  var { error } = f.AddPictureFromBytes("Sheet1", "A2",
-    "Picture 1", ".png", fs.readFileSync("image.png"), {})
+  var { error } = f.AddPictureFromBytes("Sheet1", "A2", "Picture 1", ".png", fs.readFileSync("image.png"), {});
   if (error) {
     console.log(error);
-    return
+    return;
   }
   // Insert a picture to worksheet with scaling.
-  var { error } = f.AddPictureFromBytes("Sheet1", "D2", "Picture 2", ".png",
-    fs.readFileSync("image.jpg"), {ScaleX: 0.5, ScaleY: 0.5});
-  if (error) {
-    console.log(error);
-    return
-  }
-  // Insert a picture offset in the cell with printing support.
-  var { error } = f.AddPictureFromBytes("Sheet1", "H2", "Picture 3", ".png",
-    fs.readFileSync("image.gif"), {
-      OffsetX: 15,
-      OffsetY: 10,
-      PrintObject: true,
-      LockAspectRatio: false,
-      Locked: false
+  var { error } = f.AddPictureFromBytes("Sheet1", "D2", "Picture 2", ".png", fs.readFileSync("image.jpg"), {
+    ScaleX: 0.5,
+    ScaleY: 0.5,
   });
   if (error) {
     console.log(error);
-    return
+    return;
+  }
+  // Insert a picture offset in the cell with printing support.
+  var { error } = f.AddPictureFromBytes("Sheet1", "H2", "Picture 3", ".png", fs.readFileSync("image.gif"), {
+    OffsetX: 15,
+    OffsetY: 10,
+    PrintObject: true,
+    LockAspectRatio: false,
+    Locked: false,
+  });
+  if (error) {
+    console.log(error);
+    return;
   }
   // Save spreadsheet by the given path.
   var { buffer, error } = f.WriteToBuffer();
   if (error) {
     console.log(error);
-    return
+    return;
   }
   fs.writeFile("Book1.xlsx", buffer, "binary", (error) => {
     if (error) {
@@ -284,6 +284,16 @@ init("./node_modules/excelize-wasm/excelize.wasm.gz").then((excelize) => {
 ## Contributing
 
 Contributions are welcome! Open a pull request to fix a bug, or open an issue to discuss a new feature or change.
+
+### Build locally
+
+Ensure you have node and go installed.
+
+Install all dependencies with `npm install` and build with `npm run build`. This will compile the javascript to three different build targets and will build and generate the wasm gzip file.
+
+To build just the JS, you can run `npm run build:js`
+
+Run tests by running `npm run test`
 
 ## Licenses
 

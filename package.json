@@ -17,12 +17,22 @@
     "script": "./dist/index.js",
     "default": "./dist/main.js"
   },
+  "scripts": {
+    "build": "npm-run-all clean build:js build:go",
+    "build:js": "rollup -c",
+    "build:go": "cd cmd && GOOS=js GOARCH=wasm go build -o ../dist/excelize.wasm && cd ../dist && gzip -9 -v -c excelize.wasm > excelize.wasm.gz && rm excelize.wasm",
+    "clean": "rm -rf dist",
+    "test": "node test/test-nodejs.js"
+  },
   "files": [
     "excelize.wasm.gz",
     "index.d.ts",
     "index.js",
+    "index.js.map",
     "main.cjs",
-    "main.js"
+    "main.cjs.map",
+    "main.js",
+    "main.js.map"
   ],
   "types": "index.d.ts",
   "typings": "index.d.ts",
@@ -71,7 +81,11 @@
     "@rollup/plugin-node-resolve": "15.0.1",
     "@rollup/plugin-terser": "0.2.1",
     "pako": "2.1.0",
-    "rollup-plugin-polyfill-node": "0.11.0",
-    "rollup": "3.8.0"
+    "rollup": "3.8.0",
+    "rollup-plugin-polyfill-node": "0.11.0"
+  },
+  "dependencies": {
+    "npm-run-all": "^4.1.5",
+    "rollup-plugin-dts": "^5.1.1"
   }
 }

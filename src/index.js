@@ -1,20 +1,27 @@
-'use strict';
+import pako from "pako";
 
-if (typeof window === 'undefined') {
-  const nodeCrypto = require("crypto");
-  global.crypto = {
-    getRandomValues(b) {
-      nodeCrypto.randomFillSync(b);
-    }
-  };
-  global.performance = {
-    now() {
-      const [sec, nsec] = process.hrtime();
-      return sec * 1000 + nsec / 1000000;
-    }
-  };
-}
 (() => {
+  if (typeof window === "undefined") {
+    const nodeCrypto = require("crypto");
+    globalThis.crypto = {
+      getRandomValues(b) {
+        nodeCrypto.randomFillSync(b);
+      },
+    };
+
+    globalThis.performance = {
+      ...globalThis.performance,
+      now() {
+        const [sec, nsec] = process.hrtime();
+        return sec * 1000 + nsec / 1000000;
+      },
+    };
+
+    if (!globalThis.fs && globalThis.require) {
+      globalThis.fs = require("fs");
+    }
+  }
+
   const enosys = () => {
     const err = new Error("not implemented");
     err.code = "ENOSYS";
@@ -24,7 +31,14 @@ if (typeof window === 'undefined') {
   if (!globalThis.fs) {
     let outputBuf = "";
     globalThis.fs = {
-      constants: { O_WRONLY: -1, O_RDWR: -1, O_CREAT: -1, O_TRUNC: -1, O_APPEND: -1, O_EXCL: -1 }, // unused
+      constants: {
+        O_WRONLY: -1,
+        O_RDWR: -1,
+        O_CREAT: -1,
+        O_TRUNC: -1,
+        O_APPEND: -1,
+        O_EXCL: -1,
+      }, // unused
       writeSync(fd, buf) {
         outputBuf += decoder.decode(buf);
         const nl = outputBuf.lastIndexOf("\n");
@@ -42,45 +56,107 @@ if (typeof window === 'undefined') {
         const n = this.writeSync(fd, buf);
         callback(null, n);
       },
-      chmod(path, mode, callback) { callback(enosys()); },
-      chown(path, uid, gid, callback) { callback(enosys()); },
-      close(fd, callback) { callback(enosys()); },
-      fchmod(fd, mode, callback) { callback(enosys()); },
-      fchown(fd, uid, gid, callback) { callback(enosys()); },
-      fstat(fd, callback) { callback(enosys()); },
-      fsync(fd, callback) { callback(null); },
-      ftruncate(fd, length, callback) { callback(enosys()); },
-      lchown(path, uid, gid, callback) { callback(enosys()); },
-      link(path, link, callback) { callback(enosys()); },
-      lstat(path, callback) { callback(enosys()); },
-      mkdir(path, perm, callback) { callback(enosys()); },
-      open(path, flags, mode, callback) { callback(enosys()); },
-      read(fd, buffer, offset, length, position, callback) { callback(enosys()); },
-      readdir(path, callback) { callback(enosys()); },
-      readlink(path, callback) { callback(enosys()); },
-      rename(from, to, callback) { callback(enosys()); },
-      rmdir(path, callback) { callback(enosys()); },
-      stat(path, callback) { callback(enosys()); },
-      symlink(path, link, callback) { callback(enosys()); },
-      truncate(path, length, callback) { callback(enosys()); },
-      unlink(path, callback) { callback(enosys()); },
-      utimes(path, atime, mtime, callback) { callback(enosys()); },
+      chmod(path, mode, callback) {
+        callback(enosys());
+      },
+      chown(path, uid, gid, callback) {
+        callback(enosys());
+      },
+      close(fd, callback) {
+        callback(enosys());
+      },
+      fchmod(fd, mode, callback) {
+        callback(enosys());
+      },
+      fchown(fd, uid, gid, callback) {
+        callback(enosys());
+      },
+      fstat(fd, callback) {
+        callback(enosys());
+      },
+      fsync(fd, callback) {
+        callback(null);
+      },
+      ftruncate(fd, length, callback) {
+        callback(enosys());
+      },
+      lchown(path, uid, gid, callback) {
+        callback(enosys());
+      },
+      link(path, link, callback) {
+        callback(enosys());
+      },
+      lstat(path, callback) {
+        callback(enosys());
+      },
+      mkdir(path, perm, callback) {
+        callback(enosys());
+      },
+      open(path, flags, mode, callback) {
+        callback(enosys());
+      },
+      read(fd, buffer, offset, length, position, callback) {
+        callback(enosys());
+      },
+      readdir(path, callback) {
+        callback(enosys());
+      },
+      readlink(path, callback) {
+        callback(enosys());
+      },
+      rename(from, to, callback) {
+        callback(enosys());
+      },
+      rmdir(path, callback) {
+        callback(enosys());
+      },
+      stat(path, callback) {
+        callback(enosys());
+      },
+      symlink(path, link, callback) {
+        callback(enosys());
+      },
+      truncate(path, length, callback) {
+        callback(enosys());
+      },
+      unlink(path, callback) {
+        callback(enosys());
+      },
+      utimes(path, atime, mtime, callback) {
+        callback(enosys());
+      },
     };
   }
 
   if (!globalThis.process) {
     globalThis.process = {
-      getuid() { return -1; },
-      getgid() { return -1; },
-      geteuid() { return -1; },
-      getegid() { return -1; },
-      getgroups() { throw enosys(); },
+      getuid() {
+        return -1;
+      },
+      getgid() {
+        return -1;
+      },
+      geteuid() {
+        return -1;
+      },
+      getegid() {
+        return -1;
+      },
+      getgroups() {
+        throw enosys();
+      },
       pid: -1,
       ppid: -1,
-      umask() { throw enosys(); },
-      cwd() { throw enosys(); },
-      chdir() { throw enosys(); },
-    }
+      umask() {
+        throw enosys();
+      },
+      cwd() {
+        throw enosys();
+      },
+      chdir() {
+        throw enosys();
+      },
+    };
   }
 
   if (!globalThis.crypto) {
@@ -121,13 +197,13 @@ if (typeof window === 'undefined') {
       const setInt64 = (addr, v) => {
         this.mem.setUint32(addr + 0, v, true);
         this.mem.setUint32(addr + 4, Math.floor(v / 4294967296), true);
-      }
+      };
 
       const getInt64 = (addr) => {
         const low = this.mem.getUint32(addr + 0, true);
         const high = this.mem.getInt32(addr + 4, true);
         return low + high * 4294967296;
-      }
+      };
 
       const loadValue = (addr) => {
         const f = this.mem.getFloat64(addr, true);
@@ -140,10 +216,10 @@ if (typeof window === 'undefined') {
 
         const id = this.mem.getUint32(addr, true);
         return this._values[id];
-      }
+      };
 
       const storeValue = (addr, v) => {
-        const nanHead = 0x7FF80000;
+        const nanHead = 0x7ff80000;
 
         if (typeof v === "number" && v !== 0) {
           if (isNaN(v)) {
@@ -190,13 +266,13 @@ if (typeof window === 'undefined') {
         }
         this.mem.setUint32(addr + 4, nanHead | typeFlag, true);
         this.mem.setUint32(addr, id, true);
-      }
+      };
 
       const loadSlice = (addr) => {
         const array = getInt64(addr + 0);
         const len = getInt64(addr + 8);
         return new Uint8Array(this._inst.exports.mem.buffer, array, len);
-      }
+      };
 
       const loadSliceOfValues = (addr) => {
         const array = getInt64(addr + 0);
@@ -206,13 +282,13 @@ if (typeof window === 'undefined') {
           a[i] = loadValue(array + i * 8);
         }
         return a;
-      }
+      };
 
       const loadString = (addr) => {
         const saddr = getInt64(addr + 0);
         const len = getInt64(addr + 8);
         return decoder.decode(new DataView(this._inst.exports.mem.buffer, saddr, len));
-      }
+      };
 
       const timeOrigin = Date.now() - performance.now();
       this.importObject = {
@@ -259,7 +335,7 @@ if (typeof window === 'undefined') {
           // func walltime() (sec int64, nsec int32)
           "runtime.walltime": (sp) => {
             sp >>>= 0;
-            const msec = (new Date).getTime();
+            const msec = new Date().getTime();
             setInt64(sp + 8, msec / 1000);
             this.mem.setInt32(sp + 16, (msec % 1000) * 1000000, true);
           },
@@ -269,18 +345,21 @@ if (typeof window === 'undefined') {
             sp >>>= 0;
             const id = this._nextCallbackTimeoutID;
             this._nextCallbackTimeoutID++;
-            this._scheduledTimeouts.set(id, setTimeout(
-              () => {
-                this._resume();
-                while (this._scheduledTimeouts.has(id)) {
-                  // for some reason Go failed to register the timeout event, log and try again
-                  // (temporary workaround for https://github.com/golang/go/issues/28975)
-                  console.warn("scheduleTimeoutEvent: missed timeout event");
+            this._scheduledTimeouts.set(
+              id,
+              setTimeout(
+                () => {
                   this._resume();
-                }
-              },
-              getInt64(sp + 8) + 1, // setTimeout has been seen to fire up to 1 millisecond early
-            ));
+                  while (this._scheduledTimeouts.has(id)) {
+                    // for some reason Go failed to register the timeout event, log and try again
+                    // (temporary workaround for https://github.com/golang/go/issues/28975)
+                    console.warn("scheduleTimeoutEvent: missed timeout event");
+                    this._resume();
+                  }
+                },
+                getInt64(sp + 8) + 1, // setTimeout has been seen to fire up to 1 millisecond early
+              ),
+            );
             this.mem.setInt32(sp + 16, id, true);
           },
 
@@ -425,7 +504,7 @@ if (typeof window === 'undefined') {
           // func valueInstanceOf(v ref, t ref) bool
           "syscall/js.valueInstanceOf": (sp) => {
             sp >>>= 0;
-            this.mem.setUint8(sp + 24, (loadValue(sp + 8) instanceof loadValue(sp + 16)) ? 1 : 0);
+            this.mem.setUint8(sp + 24, loadValue(sp + 8) instanceof loadValue(sp + 16) ? 1 : 0);
           },
 
           // func copyBytesToGo(dst []byte, src ref) (int, bool)
@@ -458,10 +537,10 @@ if (typeof window === 'undefined') {
             this.mem.setUint8(sp + 48, 1);
           },
 
-          "debug": (value) => {
+          debug: (value) => {
             console.log(value);
           },
-        }
+        },
       };
     }
 
@@ -471,17 +550,11 @@ if (typeof window === 'undefined') {
       }
       this._inst = instance;
       this.mem = new DataView(this._inst.exports.mem.buffer);
-      this._values = [ // JS values that Go currently has references to, indexed by reference id
-        NaN,
-        0,
-        null,
-        true,
-        false,
-        globalThis,
-        this,
-      ];
+      // JS values that Go currently has references to, indexed by reference id
+      this._values = [NaN, 0, null, true, false, globalThis, this];
       this._goRefCounts = new Array(this._values.length).fill(Infinity); // number of references that Go has to a JS value, indexed by reference id
-      this._ids = new Map([ // mapping from JS values to reference ids
+      // mapping from JS values to reference ids
+      this._ids = new Map([
         [0, 1],
         [null, 2],
         [true, 3],
@@ -489,7 +562,7 @@ if (typeof window === 'undefined') {
         [globalThis, 5],
         [this, 6],
       ]);
-      this._idPool = [];   // unused ids that have been garbage collected
+      this._idPool = []; // unused ids that have been garbage collected
       this.exited = false; // whether the Go program has exited
 
       // Pass command line arguments and environment variables to WebAssembly by writing them to the linear memory.
@@ -560,29 +633,27 @@ if (typeof window === 'undefined') {
         return event.result;
       };
     }
-  }
+  };
 })();
-
-import pako from 'pako';
 
 export async function init(wasmPath) {
   const go = new Go();
-  var buffer;
-  if (typeof window === 'undefined') {
-    global.excelize = {};
-  } else {
-    window.excelize = {};
-  }
-  if (typeof window === 'undefined') {
-    const fs = require('fs');
+  let buffer;
+  globalThis.excelize = {};
+
+  if (typeof window === "undefined") {
+    const fs = require("fs");
     buffer = pako.ungzip(fs.readFileSync(wasmPath));
   } else {
     buffer = pako.ungzip(await (await fetch(wasmPath)).arrayBuffer());
   }
+
   if (buffer[0] === 0x1f && buffer[1] === 0x8b) {
-      buffer = pako.ungzip(buffer);
+    buffer = pako.ungzip(buffer);
   }
+
   const result = await WebAssembly.instantiate(buffer, go.importObject);
   go.run(result.instance);
+
   return excelize;
-};
+}
