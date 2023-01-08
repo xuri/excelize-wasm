@@ -1,19 +1,18 @@
 // Type definitions for excelize-wasm
 
-declare module 'excelize-wasm' {
-
+declare module "excelize-wasm" {
   /**
    * AppProperties directly maps the document application properties.
    */
   export type AppProperties = {
-    application?:        string;
-    scale_crop?:         boolean;
-    doc_security?:       number;
-    company?:            string;
-    links_up_to_date?:   boolean;
+    application?: string;
+    scale_crop?: boolean;
+    doc_security?: number;
+    company?: string;
+    links_up_to_date?: boolean;
     hyperlinks_changed?: boolean;
-    app_version?:        string;
-    error?:              string | null;
+    app_version?: string;
+    error?: string | null;
   };
 
   /**
@@ -21,9 +20,9 @@ declare module 'excelize-wasm' {
    */
   export type Options = {
     MaxCalcIterations?: number;
-    Password?:          string;
-    RawCellValue?:      boolean;
-    UnzipSizeLimit?:    number;
+    Password?: string;
+    RawCellValue?: boolean;
+    UnzipSizeLimit?: number;
     UnzipXMLSizeLimit?: number;
   };
 
@@ -31,7 +30,7 @@ declare module 'excelize-wasm' {
    * Border directly maps the border settings of the cells.
    */
   export type Border = {
-    Type?:  string;
+    Type?: string;
     Color?: string;
     Style?: number;
   };
@@ -40,9 +39,9 @@ declare module 'excelize-wasm' {
    * Fill directly maps the fill settings of the cells.
    */
   export type Fill = {
-    Type?:    string;
+    Type?: string;
     Pattern?: number;
-    Color?:   string[];
+    Color?: string[];
     Shading?: number;
   };
 
@@ -50,32 +49,32 @@ declare module 'excelize-wasm' {
    * Font directly maps the font settings of the fonts.
    */
   export type Font = {
-    Bold?:         boolean;
-    Italic?:       boolean;
-    Underline?:    string;
-    Family?:       string;
-    Size?:         number;
-    Strike?:       boolean;
-    Color?:        string;
+    Bold?: boolean;
+    Italic?: boolean;
+    Underline?: string;
+    Family?: string;
+    Size?: number;
+    Strike?: boolean;
+    Color?: string;
     ColorIndexed?: number;
-    ColorTheme?:   number;
-    ColorTint?:    number;
-    VertAlign?:    string;
+    ColorTheme?: number;
+    ColorTint?: number;
+    VertAlign?: string;
   };
 
   /**
    * Alignment directly maps the alignment settings of the cells.
    */
   export type Alignment = {
-    Horizontal?:      string;
-    Indent?:          number;
+    Horizontal?: string;
+    Indent?: number;
     JustifyLastLine?: boolean;
-    ReadingOrder?:    number;
-    RelativeIndent?:  number;
-    ShrinkToFit?:     boolean;
-    TextRotation?:    number;
-    Vertical?:        string;
-    WrapText?:        boolean;
+    ReadingOrder?: number;
+    RelativeIndent?: number;
+    ShrinkToFit?: boolean;
+    TextRotation?: number;
+    Vertical?: string;
+    WrapText?: boolean;
   };
 
   /**
@@ -90,38 +89,38 @@ declare module 'excelize-wasm' {
    * Style directly maps the style settings of the cells.
    */
   export type Style = {
-    Border?:        Border[];
-    Fill?:          Fill;
-    Font?:          Font;
-    Alignment?:     Alignment;
-    Protection?:    Protection;
-    NumFmt?:        number;
+    Border?: Border[];
+    Fill?: Fill;
+    Font?: Font;
+    Alignment?: Alignment;
+    Protection?: Protection;
+    NumFmt?: number;
     DecimalPlaces?: number;
-    CustomNumFmt?:  string;
-    Lang?:          string;
-    NegRed?:        boolean;
+    CustomNumFmt?: string;
+    Lang?: string;
+    NegRed?: boolean;
   };
 
   /**
    * PaneOptions directly maps the settings of the pane.
    */
   export type PaneOptions = {
-    SQRef?:      string;
+    SQRef?: string;
     ActiveCell?: string;
-    Pane?:       string;
+    Pane?: string;
   };
 
   /**
    * Panes directly maps the settings of the panes.
    */
   export type Panes = {
-    Freeze?:      boolean;
-    Split?:       boolean;
-    XSplit?:      number;
-    YSplit?:      number;
+    Freeze?: boolean;
+    Split?: boolean;
+    XSplit?: number;
+    YSplit?: number;
     TopLeftCell?: string;
-    ActivePane?:  string;
-    Panes?:       PaneOptions[];
+    ActivePane?: string;
+    Panes?: PaneOptions[];
   };
 
   /**
@@ -129,39 +128,39 @@ declare module 'excelize-wasm' {
    * the cells.
    */
   export type ConditionalFormatOptions = {
-    Type?:         string;
+    Type?: string;
     AboveAverage?: boolean;
-    Percent?:      boolean;
-    Format?:       number;
-    Criteria?:     string;
-    Value?:        string;
-    Minimum?:      string;
-    Maximum?:      string;
-    MinType?:      string;
-    MidType?:      string;
-    MaxType?:      string;
-    MinValue?:     string;
-    MidValue?:     string;
-    MaxValue?:     string;
-    MinColor?:     string;
-    MidColor?:     string;
-    MaxColor?:     string;
-    MinLength?:    string;
-    MaxLength?:    string;
-    BarColor?:     string;
+    Percent?: boolean;
+    Format?: number;
+    Criteria?: string;
+    Value?: string;
+    Minimum?: string;
+    Maximum?: string;
+    MinType?: string;
+    MidType?: string;
+    MaxType?: string;
+    MinValue?: string;
+    MidValue?: string;
+    MaxValue?: string;
+    MinColor?: string;
+    MidColor?: string;
+    MaxColor?: string;
+    MinLength?: string;
+    MaxLength?: string;
+    BarColor?: string;
   };
 
   /**
    * Shape directly maps the format settings of the shape.
    */
-   export type Shape = {
-    Macro?:     string;
-    Type?:      string;
-    Width?:     number;
-    Height?:    number;
-    Format?:    GraphicOptions;
-    Color?:     ShapeColor;
-    Line?:      ShapeLine;
+  export type Shape = {
+    Macro?: string;
+    Type?: string;
+    Width?: number;
+    Height?: number;
+    Format?: GraphicOptions;
+    Color?: ShapeColor;
+    Line?: ShapeLine;
     Paragraph?: ShapeParagraph[];
   };
 
@@ -169,7 +168,7 @@ declare module 'excelize-wasm' {
    * ShapeParagraph directly maps the format settings of the paragraph in the
    * shape.
    */
-   export type ShapeParagraph = {
+  export type ShapeParagraph = {
     Font?: Font;
     Text?: string;
   };
@@ -178,8 +177,8 @@ declare module 'excelize-wasm' {
    * ShapeColor directly maps the color settings of the shape.
    */
   export type ShapeColor = {
-    Line?:   string;
-    Fill?:   string;
+    Line?: string;
+    Fill?: string;
     Effect?: string;
   };
 
@@ -194,28 +193,28 @@ declare module 'excelize-wasm' {
    * GraphicOptions directly maps the format settings of the picture.
    */
   export type GraphicOptions = {
-    PrintObject?:     boolean;
-    Locked?:          boolean;
+    PrintObject?: boolean;
+    Locked?: boolean;
     LockAspectRatio?: boolean;
-    AutoFit?:         boolean;
-    OffsetX?:         number;
-    OffsetY?:         number;
-    ScaleX?:          number;
-    ScaleY?:          number;
-    Hyperlink?:       string;
-    HyperlinkType?:   string;
-    Positioning?:     string;
+    AutoFit?: boolean;
+    OffsetX?: number;
+    OffsetY?: number;
+    ScaleX?: number;
+    ScaleY?: number;
+    Hyperlink?: string;
+    HyperlinkType?: string;
+    Positioning?: string;
   };
 
   /**
    * TableOptions directly maps the format settings of the table.
    */
   export type TableOptions = {
-    Name?:              string;
-    StyleName?:         string;
-    ShowFirstColumn?:   boolean;
-    ShowLastColumn?:    boolean;
-    ShowRowStripes?:    boolean;
+    Name?: string;
+    StyleName?: string;
+    ShowFirstColumn?: boolean;
+    ShowLastColumn?: boolean;
+    ShowRowStripes?: boolean;
     ShowColumnStripes?: boolean;
   };
 
@@ -224,14 +223,14 @@ declare module 'excelize-wasm' {
    */
   export type AutoFilterListOptions = {
     Column?: string;
-    Value?:  number[];
+    Value?: number[];
   };
 
   /**
    * AutoFilterOptions directly maps the auto filter settings.
    */
   export type AutoFilterOptions = {
-    Column?:     string;
+    Column?: string;
     Expression?: string;
     FilterList?: AutoFilterListOptions[];
   };
@@ -240,23 +239,23 @@ declare module 'excelize-wasm' {
    * ChartAxis directly maps the format settings of the chart axis.
    */
   export type ChartAxis = {
-    None?:           boolean;
+    None?: boolean;
     MajorGridLines?: boolean;
     MinorGridLines?: boolean;
-    MajorUnit?:      number;
-    TickLabelSkip?:  number;
-    ReverseOrder?:   boolean;
-    Maximum?:        number;
-    Minimum?:        number;
-    Font?:           Font;
-    LogBase?:        number;
+    MajorUnit?: number;
+    TickLabelSkip?: number;
+    ReverseOrder?: boolean;
+    Maximum?: number;
+    Minimum?: number;
+    Font?: Font;
+    LogBase?: number;
   };
 
   /**
    * ChartDimension directly maps the dimension of the chart.
    */
   export type ChartDimension = {
-    Width?:  number;
+    Width?: number;
     Height?: number;
   };
 
@@ -264,37 +263,37 @@ declare module 'excelize-wasm' {
    * ChartPlotArea directly maps the format settings of the plot area.
    */
   export type ChartPlotArea = {
-    ShowBubbleSize?:  boolean;
-    ShowCatName?:     boolean;
+    ShowBubbleSize?: boolean;
+    ShowCatName?: boolean;
     ShowLeaderLines?: boolean;
-    ShowPercent?:     boolean;
-    ShowSerName?:     boolean;
-    ShowVal?:         boolean;
+    ShowPercent?: boolean;
+    ShowSerName?: boolean;
+    ShowVal?: boolean;
   };
 
   /**
    * Chart directly maps the format settings of the chart.
    */
   export type Chart = {
-    Type?:         string;
-    Series?:       ChartSeries[];
-    Format?:       GraphicOptions;
-    Dimension?:    ChartDimension;
-    Legend?:       ChartLegend;
-    Title?:        ChartTitle;
-    VaryColors?:   boolean;
-    XAxis?:        ChartAxis;
-    YAxis?:        ChartAxis;
-    PlotArea?:     ChartPlotArea;
+    Type?: string;
+    Series?: ChartSeries[];
+    Format?: GraphicOptions;
+    Dimension?: ChartDimension;
+    Legend?: ChartLegend;
+    Title?: ChartTitle;
+    VaryColors?: boolean;
+    XAxis?: ChartAxis;
+    YAxis?: ChartAxis;
+    PlotArea?: ChartPlotArea;
     ShowBlanksAs?: string;
-    HoleSize?:     number;
+    HoleSize?: number;
   };
 
   /**
    * ChartLegend directly maps the format settings of the chart legend.
    */
   export type ChartLegend = {
-    Position?:      string
+    Position?: string;
     ShowLegendKey?: boolean;
   };
 
@@ -303,27 +302,27 @@ declare module 'excelize-wasm' {
    */
   export type ChartMarker = {
     Symbol?: string;
-    Size?:   number;
+    Size?: number;
   };
 
   /**
    * ChartLine directly maps the format settings of the chart line.
    */
   export type ChartLine = {
-    Color?:  string
+    Color?: string;
     Smooth?: boolean;
-    Width?:  number;
+    Width?: number;
   };
 
   /**
    * ChartSeries directly maps the format settings of the chart series.
    */
   export type ChartSeries = {
-    Name?:       string;
+    Name?: string;
     Categories?: string;
-    Values?:     string;
-    Line?:       ChartLine;
-    Marker?:     ChartMarker;
+    Values?: string;
+    Line?: ChartLine;
+    Marker?: ChartMarker;
   };
 
   /**
@@ -332,7 +331,6 @@ declare module 'excelize-wasm' {
   export type ChartTitle = {
     Name?: string;
   };
-
 
   /**
    * PivotTableOptions directly maps the format settings of the pivot table.
@@ -345,25 +343,25 @@ declare module 'excelize-wasm' {
    */
   export type PivotTableOptions = {
     pivotTableSheetName?: string;
-    DataRange?:           string;
-    PivotTableRange?:     string;
-    Rows?:                PivotTableField[];
-    Columns?:             PivotTableField[];
-    Data?:                PivotTableField[];
-    Filter?:              PivotTableField[];
-    RowGrandTotals?:      boolean;
-    ColGrandTotals?:      boolean;
-    ShowDrill?:           boolean;
-    UseAutoFormatting?:   boolean;
-    PageOverThenDown?:    boolean;
-    MergeItem?:           boolean;
-    CompactData ?:        boolean;
-    ShowError?:           boolean;
-    ShowRowHeaders?:      boolean;
-    ShowColHeaders?:      boolean;
-    ShowRowStripes?:      boolean;
-    ShowColStripes?:      boolean;
-    ShowLastColumn?:      boolean;
+    DataRange?: string;
+    PivotTableRange?: string;
+    Rows?: PivotTableField[];
+    Columns?: PivotTableField[];
+    Data?: PivotTableField[];
+    Filter?: PivotTableField[];
+    RowGrandTotals?: boolean;
+    ColGrandTotals?: boolean;
+    ShowDrill?: boolean;
+    UseAutoFormatting?: boolean;
+    PageOverThenDown?: boolean;
+    MergeItem?: boolean;
+    CompactData?: boolean;
+    ShowError?: boolean;
+    ShowRowHeaders?: boolean;
+    ShowColHeaders?: boolean;
+    ShowRowStripes?: boolean;
+    ShowColStripes?: boolean;
+    ShowLastColumn?: boolean;
     PivotTableStyleName?: string;
   };
 
@@ -389,11 +387,11 @@ declare module 'excelize-wasm' {
    * are allowed in data field name, excess characters will be truncated.
    */
   export type PivotTableField = {
-    Compact?:         boolean;
-    Data?:            string;
-    Name?:            string;
-    Outline?:         boolean;
-    Subtotal?:        string;
+    Compact?: boolean;
+    Data?: string;
+    Name?: string;
+    Outline?: boolean;
+    Subtotal?: string;
     DefaultSubtotal?: boolean;
   };
 
@@ -401,12 +399,12 @@ declare module 'excelize-wasm' {
    * Comment directly maps the comment information.
    */
   export type Comment = {
-    Author?:   string;
+    Author?: string;
     AuthorID?: number;
-    Cell?:     string;
-    Text?:     string;
-    Runs?:     RichTextRun[];
-  }
+    Cell?: string;
+    Text?: string;
+    Runs?: RichTextRun[];
+  };
 
   /**
    * RichTextRun directly maps the settings of the rich text run.
@@ -421,7 +419,7 @@ declare module 'excelize-wasm' {
    * coordinates or returns an error.
    * @param cell The cell reference
    */
-  export function CellNameToCoordinates(cell: string): { col: number, row: number, error: string | null }
+  export function CellNameToCoordinates(cell: string): { col: number; row: number; error: string | null };
 
   /**
    * ColumnNameToNumber provides a function to convert Excel sheet column name
@@ -429,14 +427,14 @@ declare module 'excelize-wasm' {
    * incorrect.
    * @param name The column name
    */
-  export function ColumnNameToNumber(name: string): { col: number, error: string | null }
+  export function ColumnNameToNumber(name: string): { col: number; error: string | null };
 
   /**
    * ColumnNumberToName provides a function to convert the integer to Excel
    * sheet column title.
    * @param num The column name
    */
-  export function ColumnNumberToName(num: number): { col: string, error: string | null }
+  export function ColumnNumberToName(num: number): { col: string; error: string | null };
 
   /**
    * CoordinatesToCellName converts [X, Y] coordinates to alpha-numeric cell
@@ -445,7 +443,11 @@ declare module 'excelize-wasm' {
    * @param row The row number
    * @param abs Specifies the absolute cell references
    */
-  export function CoordinatesToCellName(col: number, row: number, abs?: boolean): { cell: string, error: string | null }
+  export function CoordinatesToCellName(
+    col: number,
+    row: number,
+    abs?: boolean,
+  ): { cell: string; error: string | null };
 
   /**
    * HSLToRGB converts an HSL triple to a RGB triple.
@@ -453,14 +455,14 @@ declare module 'excelize-wasm' {
    * @param s Saturation
    * @param l Lightness
    */
-  export function HSLToRGB(h: number, s: number, l: number): { r: number, g: number, b: number, error: string | null }
+  export function HSLToRGB(h: number, s: number, l: number): { r: number; g: number; b: number; error: string | null };
 
   /**
    * JoinCellName joins cell name from column name and row number.
    * @param col The column name
    * @param row The row number
    */
-  export function JoinCellName(col: string, row: number): { cell: string, error: string | null }
+  export function JoinCellName(col: string, row: number): { cell: string; error: string | null };
 
   /**
    * RGBToHSL converts an RGB triple to a HSL triple.
@@ -468,20 +470,20 @@ declare module 'excelize-wasm' {
    * @param g Green
    * @param b Blue
    */
-  export function RGBToHSL(r: number, g: number, b: number): { h: number, s: number, l: number, error: string | null }
+  export function RGBToHSL(r: number, g: number, b: number): { h: number; s: number; l: number; error: string | null };
 
   /**
    * SplitCellName splits cell name to column name and row number.
    * @param cell The cell reference
    */
-  export function SplitCellName(cell: string): { col: string, row: number, error: string | null }
+  export function SplitCellName(cell: string): { col: string; row: number; error: string | null };
 
   /**
    * ThemeColor applied the color with tint value.
    * @param baseColor Base color in hex format
    * @param tint A mixture of a color with white
    */
-  export function ThemeColor(baseColor: string, tint: number): { color: string, error: string | null }
+  export function ThemeColor(baseColor: string, tint: number): { color: string; error: string | null };
 
   /**
    * NewFile provides a function to create new file by default template.
@@ -510,7 +512,7 @@ declare module 'excelize-wasm' {
      * @param combo Specifies the create a chart that combines two or more
      *  chart types in a single chart
      */
-    AddChart(sheet: string, cell: string, chart: Chart, combo?: Chart): { error: string | null }
+    AddChart(sheet: string, cell: string, chart: Chart, combo?: Chart): { error: string | null };
 
     /**
      * AddChartSheet provides the method to create a chartsheet by given chart
@@ -522,7 +524,7 @@ declare module 'excelize-wasm' {
      * @param combo Specifies the create a chart that combines two or more
      *  chart types in a single chart
      */
-    AddChartSheet(sheet: string, chart: Chart, combo?: Chart): { error: string | null }
+    AddChartSheet(sheet: string, chart: Chart, combo?: Chart): { error: string | null };
 
     /**
      * AddComment provides the method to add comment in a sheet by given
@@ -531,7 +533,7 @@ declare module 'excelize-wasm' {
      * @param sheet The worksheet name
      * @param comment The comment options
      */
-    AddComment(sheet: string, comment: Comment): { error: string | null }
+    AddComment(sheet: string, comment: Comment): { error: string | null };
 
     /**
      * AddPictureFromBytes provides the method to add picture in a sheet by
@@ -544,7 +546,14 @@ declare module 'excelize-wasm' {
      * @param file The contents buffer of the file
      * @param opts The graphic options
      */
-    AddPictureFromBytes(sheet: string, cell: string, name: string, extension: string, file: Uint8Array[], opts: GraphicOptions): { error: string | null }
+    AddPictureFromBytes(
+      sheet: string,
+      cell: string,
+      name: string,
+      extension: string,
+      file: Uint8Array[],
+      opts: GraphicOptions,
+    ): { error: string | null };
 
     /**
      * AddPivotTable provides the method to add pivot table by given pivot
@@ -552,7 +561,7 @@ declare module 'excelize-wasm' {
      * Filter fields at the same time.
      * @param opt The pivot table option
      */
-    AddPivotTable(opt: PivotTableOptions): { error: string | null }
+    AddPivotTable(opt: PivotTableOptions): { error: string | null };
 
     /**
      * AddShape provides the method to add shape in a sheet by given worksheet
@@ -562,7 +571,7 @@ declare module 'excelize-wasm' {
      * @param cell The cell reference
      * @param opts The shape options
      */
-    AddShape(sheet: string, cell: string, opts: Shape): { error: string | null }
+    AddShape(sheet: string, cell: string, opts: Shape): { error: string | null };
 
     /**
      * AddTable provides the method to add table in a worksheet by given
@@ -571,7 +580,7 @@ declare module 'excelize-wasm' {
      * @param rangeRef The top-left and right-bottom cell range reference
      * @param opts The table options
      */
-    AddTable(sheet: string, rangeRef: string, opts: TableOptions): { error: string | null }
+    AddTable(sheet: string, rangeRef: string, opts: TableOptions): { error: string | null };
 
     /**
      * AutoFilter provides the method to add auto filter in a worksheet by
@@ -582,7 +591,7 @@ declare module 'excelize-wasm' {
      * @param rangeRef The top-left and right-bottom cell range reference
      * @param opts The auto filter options
      */
-    AutoFilter(sheet: string, rangeRef: string, opts: AutoFilterOptions): { error: string | null }
+    AutoFilter(sheet: string, rangeRef: string, opts: AutoFilterOptions): { error: string | null };
 
     /**
      * CalcCellValue provides a function to get calculated cell value. This
@@ -592,7 +601,7 @@ declare module 'excelize-wasm' {
      * @param sheet The worksheet name
      * @param cell The cell reference
      */
-    CalcCellValue(sheet: string, cell: string): { value: string, error: string | null }
+    CalcCellValue(sheet: string, cell: string): { value: string; error: string | null };
 
     /**
      * CopySheet provides a function to duplicate a worksheet by gave source
@@ -601,7 +610,7 @@ declare module 'excelize-wasm' {
      * @param from Source sheet index
      * @param to Target sheet index
      */
-    CopySheet(from: number, to: number): { error: string | null }
+    CopySheet(from: number, to: number): { error: string | null };
 
     /**
      * DeleteChart provides a function to delete chart in spreadsheet by given
@@ -609,7 +618,7 @@ declare module 'excelize-wasm' {
      * @param sheet The worksheet name
      * @param cell The cell reference
      */
-    DeleteChart(sheet: string, cell: string): { error: string | null }
+    DeleteChart(sheet: string, cell: string): { error: string | null };
 
     /**
      * DeleteComment provides the method to delete comment in a sheet by given
@@ -617,7 +626,7 @@ declare module 'excelize-wasm' {
      * @param sheet The worksheet name
      * @param cell The cell reference
      */
-    DeleteComment(sheet: string, cell: string): { error: string | null }
+    DeleteComment(sheet: string, cell: string): { error: string | null };
 
     /**
      * DeleteDataValidation delete data validation by given worksheet name and
@@ -626,7 +635,7 @@ declare module 'excelize-wasm' {
      * @param sheet The worksheet name
      * @param sqref The cell reference sequence
      */
-    DeleteDataValidation(sheet: string, sqref?: string): { error: string | null }
+    DeleteDataValidation(sheet: string, sqref?: string): { error: string | null };
 
     /**
      * DeletePicture provides a function to delete charts in spreadsheet by
@@ -635,7 +644,7 @@ declare module 'excelize-wasm' {
      * @param sheet The worksheet name
      * @param cell The cell reference
      */
-    DeletePicture(sheet: string, cell: string): { error: string | null }
+    DeletePicture(sheet: string, cell: string): { error: string | null };
 
     /**
      * DeleteSheet provides a function to delete worksheet in a workbook by
@@ -646,7 +655,7 @@ declare module 'excelize-wasm' {
      * worksheet is left.
      * @param sheet The worksheet name
      */
-    DeleteSheet(sheet: string): { error: string | null }
+    DeleteSheet(sheet: string): { error: string | null };
 
     /**
      * DuplicateRow inserts a copy of specified row (by its Excel row number)
@@ -658,7 +667,7 @@ declare module 'excelize-wasm' {
      * @param sheet The worksheet name
      * @param row The row number
      */
-    DuplicateRow(sheet: string, row: number): { error: string | null }
+    DuplicateRow(sheet: string, row: number): { error: string | null };
 
     /**
      * DuplicateRowTo inserts a copy of specified row by it Excel number to
@@ -671,13 +680,13 @@ declare module 'excelize-wasm' {
      * @param row The source row number
      * @param row2 The target row number
      */
-    DuplicateRowTo(sheet: string, row: number, row2: number): { error: string | null }
+    DuplicateRowTo(sheet: string, row: number, row2: number): { error: string | null };
 
     /**
      * GetActiveSheetIndex provides a function to get active sheet index of the
      * spreadsheet. If not found the active sheet will be return integer 0.
      */
-    GetActiveSheetIndex(): { index: number, error: string | null }
+    GetActiveSheetIndex(): { index: number; error: string | null };
 
     /**
      * GetAppProps provides a function to get document application properties.
@@ -691,7 +700,7 @@ declare module 'excelize-wasm' {
      * @param sheet The worksheet name
      * @param cell The cell reference
      */
-    GetCellFormula(sheet: string, cell: string): { formula: string, error: string | null }
+    GetCellFormula(sheet: string, cell: string): { formula: string; error: string | null };
 
     /**
      * GetCellHyperLink gets a cell hyperlink based on the given worksheet name
@@ -701,7 +710,7 @@ declare module 'excelize-wasm' {
      * @param sheet The worksheet name
      * @param cell The cell reference
      */
-    GetCellHyperLink(sheet: string, cell: string): { ok: boolean, location: string, error: string | null }
+    GetCellHyperLink(sheet: string, cell: string): { ok: boolean; location: string; error: string | null };
 
     /**
      * GetCellStyle provides a function to get cell style index by given
@@ -709,7 +718,7 @@ declare module 'excelize-wasm' {
      * @param sheet The worksheet name
      * @param cell The cell reference
      */
-    GetCellStyle(sheet: string, cell: string): { style: number, error: string | null }
+    GetCellStyle(sheet: string, cell: string): { style: number; error: string | null };
 
     /**
      * GetCellValue provides a function to get formatted value from cell by
@@ -721,7 +730,7 @@ declare module 'excelize-wasm' {
      * @param sheet The worksheet name
      * @param cell The cell reference
      */
-    GetCellValue(sheet: string, cell: string): { value: string, error: string | null }
+    GetCellValue(sheet: string, cell: string): { value: string; error: string | null };
 
     /**
      * GetColOutlineLevel provides a function to get outline level of a single
@@ -729,7 +738,7 @@ declare module 'excelize-wasm' {
      * @param sheet The worksheet name
      * @param col The column name
      */
-    GetColOutlineLevel(sheet: string, col: string): { level: number, error: string | null }
+    GetColOutlineLevel(sheet: string, col: string): { level: number; error: string | null };
 
     /**
      * GetColStyle provides a function to get column style ID by given
@@ -737,7 +746,7 @@ declare module 'excelize-wasm' {
      * @param sheet The worksheet name
      * @param col The column name
      */
-    GetColStyle(sheet: string, col: string): { style: number, error: string | null }
+    GetColStyle(sheet: string, col: string): { style: number; error: string | null };
 
     /**
      * GetColVisible provides a function to get visible of a single column by
@@ -745,7 +754,7 @@ declare module 'excelize-wasm' {
      * @param sheet The worksheet name
      * @param col The column name
      */
-    GetColVisible(sheet: string, col: string): { visible: boolean, error: string | null }
+    GetColVisible(sheet: string, col: string): { visible: boolean; error: string | null };
 
     /**
      * GetColWidth provides a function to get column width by given worksheet
@@ -753,7 +762,7 @@ declare module 'excelize-wasm' {
      * @param sheet The worksheet name
      * @param col The column name
      */
-    GetColWidth(sheet: string, col: string): { width: number, error: string | null }
+    GetColWidth(sheet: string, col: string): { width: number; error: string | null };
 
     /**
      * GetCols gets the value of all cells by columns on the worksheet based on
@@ -764,7 +773,7 @@ declare module 'excelize-wasm' {
      * @param sheet The worksheet name
      * @param opts
      */
-    GetCols(sheet: string, opts?: Options): { result: string[][], error: string | null }
+    GetCols(sheet: string, opts?: Options): { result: string[][]; error: string | null };
 
     /**
      * GetRowHeight provides a function to get row height by given worksheet
@@ -772,7 +781,7 @@ declare module 'excelize-wasm' {
      * @param sheet The worksheet name
      * @param row The row number
      */
-    GetRowHeight(sheet: string, row: number): { height: number, error: string | null }
+    GetRowHeight(sheet: string, row: number): { height: number; error: string | null };
 
     /**
      * GetRowOutlineLevel provides a function to get outline level number of a
@@ -780,7 +789,7 @@ declare module 'excelize-wasm' {
      * @param sheet The worksheet name
      * @param row The row number
      */
-    GetRowOutlineLevel(sheet: string, row: number): { level: number, error: string | null }
+    GetRowOutlineLevel(sheet: string, row: number): { level: number; error: string | null };
 
     /**
      * GetRowVisible provides a function to get visible of a single row by
@@ -788,7 +797,7 @@ declare module 'excelize-wasm' {
      * @param sheet The worksheet name
      * @param row The row number
      */
-    GetRowVisible(sheet: string, row: number): { visible: boolean, error: string | null }
+    GetRowVisible(sheet: string, row: number): { visible: boolean; error: string | null };
 
     /**
      * GetRows return all the rows in a sheet by given worksheet name, returned
@@ -801,7 +810,7 @@ declare module 'excelize-wasm' {
      * @param sheet The worksheet name
      * @param opts The options for get rows
      */
-    GetRows(sheet: string, opts?: Options): { result: string[][], error: string | null }
+    GetRows(sheet: string, opts?: Options): { result: string[][]; error: string | null };
 
     /**
      * GetSheetIndex provides a function to get a sheet index of the workbook
@@ -809,19 +818,19 @@ declare module 'excelize-wasm' {
      * doesn't exist, it will return an integer type value -1.
      * @param sheet The worksheet name
      */
-    GetSheetIndex(sheet: string): { index: number, error: string | null }
+    GetSheetIndex(sheet: string): { index: number; error: string | null };
 
     /**
      * GetSheetList provides a function to get worksheets, chart sheets, and
      * dialog sheets name list of the workbook.
      */
-    GetSheetList(): { list: string[] }
+    GetSheetList(): { list: string[] };
 
     /**
      * GetSheetMap provides a function to get worksheets, chart sheets, dialog
      * sheets ID and name map of the workbook.
      */
-    GetSheetMap(): { sheets: Map<string,string>, error: string | null }
+    GetSheetMap(): { sheets: Map<string, string>; error: string | null };
 
     /**
      * GetSheetName provides a function to get the sheet name of the workbook
@@ -829,21 +838,21 @@ declare module 'excelize-wasm' {
      * return an empty string.
      * @param index The sheet index
      */
-    GetSheetName(index: number): { name: string, error: string | null }
+    GetSheetName(index: number): { name: string; error: string | null };
 
     /**
      * GetSheetVisible provides a function to get worksheet visible by given
      * worksheet name.
      * @param sheet The worksheet name
      */
-    GetSheetVisible(sheet: string): { visible: boolean, error: string | null }
+    GetSheetVisible(sheet: string): { visible: boolean; error: string | null };
 
     /**
      * GroupSheets provides a function to group worksheets by given worksheets
      * name. Group worksheets must contain an active worksheet.
      * @param sheets The worksheet names
      */
-    GroupSheets(sheets: string[]): { error: string | null }
+    GroupSheets(sheets: string[]): { error: string | null };
 
     /**
      * InsertCols provides a function to insert new columns before the given
@@ -857,7 +866,7 @@ declare module 'excelize-wasm' {
      * @param col The base column name
      * @param n The insert columns count
      */
-    InsertCols(sheet: string, col: string, n: number): { error: string | null }
+    InsertCols(sheet: string, col: string, n: number): { error: string | null };
 
     /**
      * InsertPageBreak create a page break to determine where the printed page
@@ -867,7 +876,7 @@ declare module 'excelize-wasm' {
      * @param sheet The worksheet name
      * @param cell The cell reference
      */
-    InsertPageBreak(sheet: string, cell: string): { error: string | null }
+    InsertPageBreak(sheet: string, cell: string): { error: string | null };
 
     /**
      * InsertRows provides a function to insert new rows after the given Excel
@@ -881,7 +890,7 @@ declare module 'excelize-wasm' {
      * @param row The base row number
      * @param n Insert rows count
      */
-    InsertRows(sheet: string, row: number, n: number): { error: string | null }
+    InsertRows(sheet: string, row: number, n: number): { error: string | null };
 
     /**
      * MergeCell provides a function to merge cells by given range reference
@@ -908,7 +917,7 @@ declare module 'excelize-wasm' {
      * @param hCell The top-left cell reference
      * @param vCell The right-bottom cell reference
      */
-    MergeCell(sheet: string, hCell: string, vCell: string): { error: string | null }
+    MergeCell(sheet: string, hCell: string, vCell: string): { error: string | null };
 
     /**
      * NewConditionalStyle provides a function to create style for conditional
@@ -917,7 +926,7 @@ declare module 'excelize-wasm' {
      * only support to set font, fills, alignment and borders currently.
      * @param style
      */
-    NewConditionalStyle(style: Style): { style: number, error: string | null }
+    NewConditionalStyle(style: Style): { style: number; error: string | null };
 
     /**
      * NewSheet provides the function to create a new sheet by given a
@@ -926,14 +935,14 @@ declare module 'excelize-wasm' {
      * worksheet named `Sheet1` will be created.
      * @param sheet The worksheet name
      */
-    NewSheet(sheet: string): { index: number, error: string | null }
+    NewSheet(sheet: string): { index: number; error: string | null };
 
     /**
      * NewStyle provides a function to create the style for cells by given
      * options. Note that the color field uses RGB color code.
      * @param style The style options
      */
-    NewStyle(style: Style): { style: number, error: string | null }
+    NewStyle(style: Style): { style: number; error: string | null };
 
     /**
      * RemoveCol provides a function to remove single column by given worksheet
@@ -946,7 +955,7 @@ declare module 'excelize-wasm' {
      * @param sheet The worksheet name
      * @param col The column name
      */
-    RemoveCol(sheet: string, col: string): { error: string | null }
+    RemoveCol(sheet: string, col: string): { error: string | null };
 
     /**
      * RemovePageBreak remove a page break by given worksheet name and cell
@@ -954,7 +963,7 @@ declare module 'excelize-wasm' {
      * @param sheet The worksheet name
      * @param cell The cell reference
      */
-    RemovePageBreak(sheet: string, cell: string): { error: string | null }
+    RemovePageBreak(sheet: string, cell: string): { error: string | null };
 
     /**
      * RemoveRow provides a function to remove single row by given worksheet
@@ -967,7 +976,7 @@ declare module 'excelize-wasm' {
      * @param sheet The worksheet name
      * @param row The row number
      */
-    RemoveRow(sheet: string, row: number): { error: string | null }
+    RemoveRow(sheet: string, row: number): { error: string | null };
 
     /**
      * SearchSheet provides a function to get cell reference by given worksheet
@@ -979,7 +988,7 @@ declare module 'excelize-wasm' {
      * @param value The cell value to search
      * @param reg Specifies if search with regular expression
      */
-    SearchSheet(sheet: string, value: string, reg?: boolean): { result: string[], error: string | null }
+    SearchSheet(sheet: string, value: string, reg?: boolean): { result: string[]; error: string | null };
 
     /**
      * SetActiveSheet provides a function to set the default active sheet of
@@ -988,7 +997,7 @@ declare module 'excelize-wasm' {
      * than or equal to 0 and less than the total worksheet numbers.
      * @param index The sheet index
      */
-    SetActiveSheet(index: number): { error: string | null }
+    SetActiveSheet(index: number): { error: string | null };
 
     /**
      * SetCellBool provides a function to set bool type value of a cell by
@@ -997,7 +1006,7 @@ declare module 'excelize-wasm' {
      * @param cell The cell reference
      * @param value The cell value to be write
      */
-    SetCellBool(sheet: string, cell: string, value: boolean): { error: string | null }
+    SetCellBool(sheet: string, cell: string, value: boolean): { error: string | null };
 
     /**
      * SetCellDefault provides a function to set string type value of a cell as
@@ -1006,7 +1015,7 @@ declare module 'excelize-wasm' {
      * @param cell The cell reference
      * @param value The cell value to be write
      */
-    SetCellDefault(sheet: string, cell: string, value: string): { error: string | null }
+    SetCellDefault(sheet: string, cell: string, value: string): { error: string | null };
 
     /**
      * SetCellFloat sets a floating point value into a cell. The precision
@@ -1022,7 +1031,13 @@ declare module 'excelize-wasm' {
      * @param bitSize BitSize is 32 or 64 depending on if a float32 or float64
      *  was originally used for the value
      */
-    SetCellFloat(sheet: string, cell: string, value: number, precision: number, bitSize: number): { error: string | null }
+    SetCellFloat(
+      sheet: string,
+      cell: string,
+      value: number,
+      precision: number,
+      bitSize: number,
+    ): { error: string | null };
 
     /**
      * SetCellInt provides a function to set int type value of a cell by given
@@ -1031,7 +1046,7 @@ declare module 'excelize-wasm' {
      * @param cell The cell reference
      * @param value The cell value to be write
      */
-    SetCellInt(sheet: string, cell: string, value: number): { error: string | null }
+    SetCellInt(sheet: string, cell: string, value: number): { error: string | null };
 
     /**
      * SetCellStr provides a function to set string type value of a cell. Total
@@ -1040,7 +1055,7 @@ declare module 'excelize-wasm' {
      * @param cell The cell reference
      * @param value The cell value to be write
      */
-    SetCellStr(sheet: string, cell: string, value: string): { error: string | null }
+    SetCellStr(sheet: string, cell: string, value: string): { error: string | null };
 
     /**
      * SetCellStyle provides a function to add style attribute for cells by
@@ -1053,7 +1068,7 @@ declare module 'excelize-wasm' {
      * @param vCell The right-bottom cell reference
      * @param styleID The style ID
      */
-    SetCellStyle(sheet: string, hCell: string, vCell: string, styleID: number): { error: string | null }
+    SetCellStyle(sheet: string, hCell: string, vCell: string, styleID: number): { error: string | null };
 
     /**
      * SetCellValue provides a function to set the value of a cell. The
@@ -1070,7 +1085,7 @@ declare module 'excelize-wasm' {
      * @param cell The cell reference
      * @param value The cell value to be write
      */
-    SetCellValue(sheet: string, cell: string, value: boolean | number | string ): { error: string | null }
+    SetCellValue(sheet: string, cell: string, value: boolean | number | string): { error: string | null };
 
     /**
      * SetColOutlineLevel provides a function to set outline level of a single
@@ -1080,7 +1095,7 @@ declare module 'excelize-wasm' {
      * @param col The column name
      * @param level The outline level of the column
      */
-    SetColOutlineLevel(sheet: string, col: string, level: number): { error: string | null }
+    SetColOutlineLevel(sheet: string, col: string, level: number): { error: string | null };
 
     /**
      * SetColStyle provides a function to set style of columns by given
@@ -1091,7 +1106,7 @@ declare module 'excelize-wasm' {
      * @param columns The column range
      * @param styleID The style ID
      */
-    SetColStyle(sheet: string, columns: string, styleID: number): { error: string | null }
+    SetColStyle(sheet: string, columns: string, styleID: number): { error: string | null };
 
     /**
      * SetColVisible provides a function to set visible columns by given
@@ -1100,7 +1115,7 @@ declare module 'excelize-wasm' {
      * @param columns The column name
      * @param visible The column's visibility
      */
-    SetColVisible(sheet: string, columns: string, visible: boolean): { error: string | null }
+    SetColVisible(sheet: string, columns: string, visible: boolean): { error: string | null };
 
     /**
      * SetColWidth provides a function to set the width of a single column or
@@ -1110,7 +1125,7 @@ declare module 'excelize-wasm' {
      * @param endCol The end column name
      * @param width The width of the column
      */
-    SetColWidth(sheet: string, startCol: string, endCol: string, width: number): { error: string | null }
+    SetColWidth(sheet: string, startCol: string, endCol: string, width: number): { error: string | null };
 
     /**
      * SetConditionalFormat provides a function to create conditional
@@ -1121,13 +1136,13 @@ declare module 'excelize-wasm' {
      * @param reference The conditional format range reference
      * @param opts The conditional options
      */
-    SetConditionalFormat(sheet: string, reference: string, opts: ConditionalFormatOptions): { error: string | null }
+    SetConditionalFormat(sheet: string, reference: string, opts: ConditionalFormatOptions): { error: string | null };
 
     /**
      * SetDefaultFont changes the default font in the workbook.
      * @param fontName The font name
      */
-    SetDefaultFont(fontName: string): { error: string | null }
+    SetDefaultFont(fontName: string): { error: string | null };
 
     /**
      * SetPanes provides a function to create and remove freeze panes and split
@@ -1135,7 +1150,7 @@ declare module 'excelize-wasm' {
      * @param sheet The worksheet name
      * @param panes The panes format
      */
-    SetPanes(sheet: string, panes: Panes): { error: string | null }
+    SetPanes(sheet: string, panes: Panes): { error: string | null };
 
     /**
      * SetRowHeight provides a function to set the height of a single row.
@@ -1143,7 +1158,7 @@ declare module 'excelize-wasm' {
      * @param row The row number
      * @param height The height of the row
      */
-    SetRowHeight(sheet: string, row: number, height : number): { error: string | null }
+    SetRowHeight(sheet: string, row: number, height: number): { error: string | null };
 
     /**
      * SetRowOutlineLevel provides a function to set outline level number of a
@@ -1153,7 +1168,7 @@ declare module 'excelize-wasm' {
      * @param row The row number
      * @param level The outline level of the row
      */
-    SetRowOutlineLevel(sheet: string, row: number, level: number): { error: string | null }
+    SetRowOutlineLevel(sheet: string, row: number, level: number): { error: string | null };
 
     /**
      * SetRowStyle provides a function to set the style of rows by given
@@ -1165,7 +1180,7 @@ declare module 'excelize-wasm' {
      * @param end Then end row number
      * @param styleID The style ID
      */
-    SetRowStyle(sheet: string, start: number, end: number, styleID: number): { error: string | null }
+    SetRowStyle(sheet: string, start: number, end: number, styleID: number): { error: string | null };
 
     /**
      * SetRowStyle provides a function to set the style of rows by given
@@ -1176,7 +1191,7 @@ declare module 'excelize-wasm' {
      * @param row The row number
      * @param visible The row's visibility
      */
-    SetRowVisible(sheet: string, row: number, visible: boolean): { error: string | null }
+    SetRowVisible(sheet: string, row: number, visible: boolean): { error: string | null };
 
     /**
      * SetSheetCol writes an array to column by given worksheet name, starting
@@ -1185,7 +1200,7 @@ declare module 'excelize-wasm' {
      * @param cell The cell reference
      * @param slice The column cells to be write
      */
-    SetSheetCol(sheet: string, cell: string, slice: Array<boolean | number | string>): { error: string | null }
+    SetSheetCol(sheet: string, cell: string, slice: Array<boolean | number | string>): { error: string | null };
 
     /**
      * SetSheetName provides a function to set the worksheet name by given
@@ -1197,7 +1212,7 @@ declare module 'excelize-wasm' {
      * @param source The source sheet name
      * @param target The target sheet name
      */
-    SetSheetName(source: string, target: string): { error: string | null }
+    SetSheetName(source: string, target: string): { error: string | null };
 
     /**
      * SetSheetRow writes an array to row by given worksheet name, starting
@@ -1206,7 +1221,7 @@ declare module 'excelize-wasm' {
      * @param cell The starting cell reference
      * @param slice The array for writes
      */
-    SetSheetRow(sheet: string, cell: string, slice: Array<boolean | number | string>): { error: string | null }
+    SetSheetRow(sheet: string, cell: string, slice: Array<boolean | number | string>): { error: string | null };
 
     /**
      * SetSheetVisible provides a function to set worksheet visible by given
@@ -1216,12 +1231,12 @@ declare module 'excelize-wasm' {
      * @param sheet The worksheet name
      * @param visible The worksheet visibility
      */
-    SetSheetVisible(sheet: string, visible: boolean): { error: string | null }
+    SetSheetVisible(sheet: string, visible: boolean): { error: string | null };
 
     /**
      * UngroupSheets provides a function to ungroup worksheets.
      */
-    UngroupSheets(): { error: string | null }
+    UngroupSheets(): { error: string | null };
 
     /**
      * UnmergeCell provides a function to unmerge a given range reference.
@@ -1229,7 +1244,7 @@ declare module 'excelize-wasm' {
      * @param hCell The top-left cell reference
      * @param vCell The right-bottom cell reference
      */
-    UnmergeCell(sheet: string, hCell: string, vCell: string): { error: string | null }
+    UnmergeCell(sheet: string, hCell: string, vCell: string): { error: string | null };
 
     /**
      * UnprotectSheet provides a function to remove protection for a sheet,
@@ -1238,7 +1253,7 @@ declare module 'excelize-wasm' {
      * @param sheet The worksheet name
      * @param password The password for sheet protection
      */
-    UnprotectSheet(sheet: string, password?: string): { error: string | null }
+    UnprotectSheet(sheet: string, password?: string): { error: string | null };
 
     /**
      * UnsetConditionalFormat provides a function to unset the conditional
@@ -1246,14 +1261,14 @@ declare module 'excelize-wasm' {
      * @param sheet The worksheet name
      * @param reference The conditional format range reference
      */
-    UnsetConditionalFormat(sheet: string, reference: string): { error: string | null }
+    UnsetConditionalFormat(sheet: string, reference: string): { error: string | null };
 
     /**
      * UpdateLinkedValue fix linked values within a spreadsheet are not
      * updating in Office Excel application. This function will be remove
      * value tag when met a cell have a linked value.
      */
-    UpdateLinkedValue(): { error: string | null }
+    UpdateLinkedValue(): { error: string | null };
 
     /**
      * WriteToBuffer provides a function to get the contents buffer from the
@@ -1261,7 +1276,7 @@ declare module 'excelize-wasm' {
      * size is large.
      * @param opts The options for save the spreadsheet
      */
-    WriteToBuffer(opts?: Options): { buffer: BlobPart, error: string | null };
+    WriteToBuffer(opts?: Options): { buffer: BlobPart; error: string | null };
 
     /**
      * Error message
@@ -1269,22 +1284,24 @@ declare module 'excelize-wasm' {
     error?: string | null;
   }
 
+  type Init = {
+    CellNameToCoordinates: typeof CellNameToCoordinates;
+    ColumnNameToNumber: typeof ColumnNameToNumber;
+    ColumnNumberToName: typeof ColumnNumberToName;
+    CoordinatesToCellName: typeof CoordinatesToCellName;
+    HSLToRGB: typeof HSLToRGB;
+    JoinCellName: typeof JoinCellName;
+    RGBToHSL: typeof RGBToHSL;
+    SplitCellName: typeof SplitCellName;
+    ThemeColor: typeof ThemeColor;
+    NewFile: typeof NewFile;
+    OpenReader: typeof OpenReader;
+  };
+
   /**
    * init provides a function to compile and instantiate WebAssembly code by a
    * given compressed wasm archive path.
    * @param path The compressed wasm archive path
    */
-  export function init(path: string): Promise<{
-    CellNameToCoordinates: typeof CellNameToCoordinates,
-    ColumnNameToNumber:    typeof ColumnNameToNumber,
-    ColumnNumberToName:    typeof ColumnNumberToName,
-    CoordinatesToCellName: typeof CoordinatesToCellName,
-    HSLToRGB:              typeof HSLToRGB,
-    JoinCellName:          typeof JoinCellName,
-    RGBToHSL:              typeof RGBToHSL,
-    SplitCellName:         typeof SplitCellName,
-    ThemeColor:            typeof ThemeColor,
-    NewFile:               typeof NewFile;
-    OpenReader:            typeof OpenReader;
-  }>;
+  export function init(path: string): Promise<Init>;
 }
