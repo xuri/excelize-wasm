@@ -13,7 +13,7 @@ export async function init(wasmPath: string) {
   globalThis.excelize = {};
 
   let buffer: Uint8Array;
-  if (typeof window === 'undefined') {
+  if (typeof globalThis.window === 'undefined') {
     buffer = pako.ungzip(fs.readFileSync(wasmPath));
   } else {
     buffer = pako.ungzip(await (await fetch(wasmPath)).arrayBuffer());

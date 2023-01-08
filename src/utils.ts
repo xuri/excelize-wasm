@@ -56,7 +56,7 @@ export function addPolyfills() {
 
 export async function getCrypto() {
   /*START.NODE_ONLY*/
-  if (typeof window === 'undefined') {
+  if (typeof globalThis.window === 'undefined') {
     const nodeCrypto = await import('crypto');
     return {
       getRandomValues: (b: any) => nodeCrypto.randomFillSync(b),
@@ -69,7 +69,7 @@ export async function getCrypto() {
 
 export async function getFsOrPolyfill(decoder: TextDecoder) {
   /*START.NODE_ONLY*/
-  if (typeof window === 'undefined') {
+  if (typeof globalThis.window === 'undefined') {
     return await import('fs');
   }
   /*END.NODE_ONLY*/

@@ -24,7 +24,7 @@ export class Go {
     [this, 6],
   ]);
   _pendingEvent: { id: string; this: Go; args: IArguments; result: unknown };
-  _idPool;
+  _idPool: number[];
   _scheduledTimeouts = new Map();
   _nextCallbackTimeoutID;
   _resolveExitPromise: (value?: unknown) => void;
