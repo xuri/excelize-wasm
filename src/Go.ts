@@ -176,7 +176,7 @@ export class Go {
     return this.decoder.decode(new DataView((this._inst.exports.mem as WebAssembly.Memory).buffer, saddr, len));
   }
 
-  async run(instance: Go) {
+  async run(instance: WebAssembly.Instance) {
     console.log('run called');
     if (!(instance instanceof WebAssembly.Instance)) {
       throw new Error('Go.run: WebAssembly.Instance expected');

@@ -1,18 +1,12 @@
 import pako from 'pako';
 import { Go } from './Go';
-import { getCrypto, getFsOrPolyfill } from './utils';
-
-if (!globalThis.TextEncoder) {
-  throw new Error('globalThis.TextEncoder is not available, polyfill required');
-}
-
-if (!globalThis.TextDecoder) {
-  throw new Error('globalThis.TextDecoder is not available, polyfill required');
-}
+import { addPolyfills, getCrypto, getFsOrPolyfill } from './utils';
 
 export async function init(wasmPath: string) {
+  addPolyfills();
   const encoder = new TextEncoder();
   const decoder = new TextDecoder('utf-8');
+
   const [fs, crypto] = await Promise.all([getFsOrPolyfill(decoder), getCrypto()]);
   const go = new Go(fs, crypto, encoder, decoder);
   globalThis.go = go; // do we need this to be global?

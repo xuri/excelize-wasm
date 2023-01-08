@@ -13,6 +13,47 @@ export class EnosysError extends Error {
   }
 }
 
+export function addPolyfills() {
+  if (!globalThis.TextEncoder) {
+    throw new Error('globalThis.TextEncoder is not available, polyfill required');
+  }
+
+  if (!globalThis.TextDecoder) {
+    throw new Error('globalThis.TextDecoder is not available, polyfill required');
+  }
+
+  if (!globalThis.process) {
+    (globalThis as any).process = {
+      getuid() {
+        return -1;
+      },
+      getgid() {
+        return -1;
+      },
+      geteuid() {
+        return -1;
+      },
+      getegid() {
+        return -1;
+      },
+      getgroups() {
+        throw new EnosysError();
+      },
+      pid: -1,
+      ppid: -1,
+      umask() {
+        throw new EnosysError();
+      },
+      cwd() {
+        throw new EnosysError();
+      },
+      chdir() {
+        throw new EnosysError();
+      },
+    };
+  }
+}
+
 export async function getCrypto() {
   /*START.NODE_ONLY*/
   if (typeof window === 'undefined') {
