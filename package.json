@@ -20,7 +20,7 @@
   "scripts": {
     "build": "npm-run-all clean build:js build:go",
     "build:js": "rollup -c",
-    "build:go": "cd cmd && GOOS=js GOARCH=wasm go build -o ../dist/excelize.wasm && cd ../dist && gzip -9 -v -c excelize.wasm > excelize.wasm.gz && rm excelize.wasm",
+    "build:go": "cd cmd && GOOS=js GOARCH=wasm go build -ldflags=\"-s -w\" -o ../dist/excelize.wasm && cd ../dist && gzip -9 -v -c excelize.wasm > excelize.wasm.gz && rm excelize.wasm",
     "clean": "rm -rf dist",
     "test": "node test/test-nodejs.js"
   },
