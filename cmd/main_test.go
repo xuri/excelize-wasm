@@ -691,11 +691,11 @@ func TestGetAppProps(t *testing.T) {
 
 	ret := f.(js.Value).Call("GetAppProps")
 	assert.True(t, ret.Get("error").IsNull())
-	assert.Equal(t, "Go Excelize", ret.Get("Application").String())
+	assert.Equal(t, "Go Excelize", ret.Get("props").Get("Application").String())
 
 	ret = f.(js.Value).Call("GetAppProps", js.ValueOf(1))
 	assert.EqualError(t, errArgNum, ret.Get("error").String())
-	assert.Equal(t, "", ret.Get("Application").String())
+	assert.True(t, ret.Get("props").IsUndefined())
 }
 
 func TestGetCellFormula(t *testing.T) {
@@ -752,6 +752,14 @@ func TestGetCellValue(t *testing.T) {
 
 	ret := f.(js.Value).Call("GetCellValue", js.ValueOf("Sheet1"), js.ValueOf("A1"))
 	assert.True(t, ret.Get("error").IsNull())
+	assert.Equal(t, "", ret.Get("value").String())
+
+	ret = f.(js.Value).Call("GetCellValue", js.ValueOf("Sheet1"), js.ValueOf("A1"), js.ValueOf(map[string]interface{}{"RawCellValue": true}))
+	assert.True(t, ret.Get("error").IsNull())
+	assert.Equal(t, "", ret.Get("value").String())
+
+	ret = f.(js.Value).Call("GetCellValue", js.ValueOf("Sheet1"), js.ValueOf("A1"), js.ValueOf(map[string]interface{}{"RawCellValue": "true"}))
+	assert.EqualError(t, errArgType, ret.Get("error").String())
 	assert.Equal(t, "", ret.Get("value").String())
 
 	ret = f.(js.Value).Call("GetCellValue")
@@ -851,6 +859,18 @@ func TestGetCols(t *testing.T) {
 	ret = f.(js.Value).Call("GetCols", js.ValueOf("SheetN"))
 	assert.Equal(t, "sheet SheetN does not exist", ret.Get("error").String())
 	assert.Equal(t, 0, ret.Get("result").Length())
+}
+
+func TestGetDefaultFont(t *testing.T) {
+	f := NewFile(js.Value{}, []js.Value{})
+	assert.True(t, f.(js.Value).Get("error").IsNull())
+
+	ret := f.(js.Value).Call("GetDefaultFont")
+	assert.True(t, ret.Get("error").IsNull())
+	assert.Equal(t, "Calibri", ret.Get("fontName").String())
+
+	ret = f.(js.Value).Call("GetDefaultFont", js.ValueOf("Sheet1"))
+	assert.EqualError(t, errArgNum, ret.Get("error").String())
 }
 
 func TestGetRowHeight(t *testing.T) {
