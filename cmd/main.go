@@ -185,6 +185,7 @@ func regInteropFunc(f *excelize.File, fn map[string]interface{}) interface{} {
 		"SetCellBool":            SetCellBool(f),
 		"SetCellDefault":         SetCellDefault(f),
 		"SetCellFloat":           SetCellFloat(f),
+		"SetCellFormula":         SetCellFormula(f),
 		"SetCellInt":             SetCellInt(f),
 		"SetCellStr":             SetCellStr(f),
 		"SetCellStyle":           SetCellStyle(f),
@@ -1900,6 +1901,41 @@ func SetCellFloat(f *excelize.File) func(this js.Value, args []js.Value) interfa
 			return js.ValueOf(ret)
 		}
 		if err := f.SetCellFloat(args[0].String(), args[1].String(), args[2].Float(), args[3].Int(), args[4].Int()); err != nil {
+			ret["error"] = err.Error()
+		}
+		return js.ValueOf(ret)
+	}
+}
+
+// SetCellFormula provides a function to set formula on the cell is taken
+// according to the given worksheet name and cell formula settings. The result
+// of the formula cell can be calculated when the worksheet is opened by the
+// Office Excel application or can be using the "CalcCellValue" function also
+// can get the calculated cell value. If the Excel application doesn't
+// calculate the formula automatically when the workbook has been opened,
+// please call "UpdateLinkedValue" after setting the cell formula functions.
+func SetCellFormula(f *excelize.File) func(this js.Value, args []js.Value) interface{} {
+	return func(this js.Value, args []js.Value) interface{} {
+		ret := map[string]interface{}{"error": nil}
+		if err := prepareArgs(args, []argsRule{
+			{types: []js.Type{js.TypeString}},
+			{types: []js.Type{js.TypeString}},
+			{types: []js.Type{js.TypeString}},
+			{types: []js.Type{js.TypeObject}, opts: true},
+		}); err != nil {
+			ret["error"] = err.Error()
+			return js.ValueOf(ret)
+		}
+		var opts excelize.FormulaOpts
+		if len(args) == 4 {
+			goVal, err := jsValueToGo(args[3], reflect.TypeOf(excelize.FormulaOpts{}))
+			if err != nil {
+				ret["error"] = err.Error()
+				return js.ValueOf(ret)
+			}
+			opts = goVal.Elem().Interface().(excelize.FormulaOpts)
+		}
+		if err := f.SetCellFormula(args[0].String(), args[1].String(), args[2].String(), opts); err != nil {
 			ret["error"] = err.Error()
 		}
 		return js.ValueOf(ret)

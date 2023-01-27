@@ -1374,6 +1374,26 @@ func TestSetCellFloat(t *testing.T) {
 	assert.Equal(t, "sheet SheetN does not exist", ret.Get("error").String())
 }
 
+func TestSetCellFormula(t *testing.T) {
+	f := NewFile(js.Value{}, []js.Value{})
+	assert.True(t, f.(js.Value).Get("error").IsNull())
+
+	ret := f.(js.Value).Call("SetCellFormula", js.ValueOf("Sheet1"), js.ValueOf("A3"), js.ValueOf("=SUM(A1,B1)"))
+	assert.True(t, ret.Get("error").IsNull())
+
+	ret = f.(js.Value).Call("SetCellFormula", js.ValueOf("Sheet1"), js.ValueOf("A3"), js.ValueOf("=A1+B1"), js.ValueOf(map[string]interface{}{"Type": "shared", "Ref": "C1:C5"}))
+	assert.True(t, ret.Get("error").IsNull())
+
+	ret = f.(js.Value).Call("SetCellFormula")
+	assert.EqualError(t, errArgNum, ret.Get("error").String())
+
+	ret = f.(js.Value).Call("SetCellFormula", js.ValueOf("SheetN"), js.ValueOf("A3"), js.ValueOf("=SUM(A1,B1)"))
+	assert.Equal(t, "sheet SheetN does not exist", ret.Get("error").String())
+
+	ret = f.(js.Value).Call("SetCellFormula", js.ValueOf("Sheet1"), js.ValueOf("A3"), js.ValueOf("=A1+B1"), js.ValueOf(map[string]interface{}{"Type": true, "Ref": "C1:C5"}))
+	assert.Equal(t, errArgType.Error(), ret.Get("error").String())
+}
+
 func TestSetCellInt(t *testing.T) {
 	f := NewFile(js.Value{}, []js.Value{})
 	assert.True(t, f.(js.Value).Get("error").IsNull())
