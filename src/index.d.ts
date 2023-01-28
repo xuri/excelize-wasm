@@ -351,7 +351,6 @@ declare module 'excelize-wasm' {
    * 	PivotStyleDark1 - PivotStyleDark28
    */
   export type PivotTableOptions = {
-    pivotTableSheetName?: string;
     DataRange?:           string;
     PivotTableRange?:     string;
     Rows?:                PivotTableField[];
@@ -429,6 +428,15 @@ declare module 'excelize-wasm' {
   export type FormulaOptions = {
     Ref?:  string;
     Type?: string;
+  };
+
+  /**
+   * HyperlinkOpts can be passed to SetCellHyperlink to set optional hyperlink
+   * attributes (e.g. display value).
+   */
+  export type HyperlinkOpts = {
+    Display?: string;
+    Tooltip?: string;
   };
 
   /**
@@ -1079,7 +1087,7 @@ declare module 'excelize-wasm' {
      * Example 5, set range array formula "A1:A2" for the cell "A3" on "Sheet1":
      *
      * const { error } = f.SetCellFormula("Sheet1", "A3", "=A1:A2",
-     *     {Ref: "A3:A3", Type: "aray"})
+     *     {Ref: "A3:A3", Type: "array"})
      *
      * Example 6, set shared formula "=A1+B1" for the cell "C1:C5"
      * on "Sheet1", "C1" is the master cell:
@@ -1092,6 +1100,22 @@ declare module 'excelize-wasm' {
      * @param opts The formula options
      */
     SetCellFormula(sheet: string, cell: string, formula: string, opts?: FormulaOptions): { error: string | null }
+
+    /**
+     * SetCellHyperLink provides a function to set cell hyperlink by given
+     * worksheet name and link URL address. LinkType defines two types of
+     * hyperlink "External" for website or "Location" for moving to one of cell
+     * in this workbook. Maximum limit hyperlinks in a worksheet is 65530. This
+     * function is only used to set the hyperlink of the cell and doesn't
+     * affect the value of the cell. If you need to set the value of the cell,
+     * please use the other functions such as `SetCellStyle` or `SetSheetRow`.
+     * @param sheet The worksheet name
+     * @param cell The cell reference
+     * @param link The hyperlink
+     * @param linkType The hyperlink type
+     * @param opts The hyperlink options
+     */
+    SetCellHyperLink(sheet: string, cell: string, link: string, linkType: string, opts?: HyperlinkOpts): { error: string | null }
 
     /**
      * SetCellInt provides a function to set int type value of a cell by given

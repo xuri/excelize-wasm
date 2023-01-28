@@ -186,6 +186,7 @@ func regInteropFunc(f *excelize.File, fn map[string]interface{}) interface{} {
 		"SetCellDefault":         SetCellDefault(f),
 		"SetCellFloat":           SetCellFloat(f),
 		"SetCellFormula":         SetCellFormula(f),
+		"SetCellHyperLink":       SetCellHyperLink(f),
 		"SetCellInt":             SetCellInt(f),
 		"SetCellStr":             SetCellStr(f),
 		"SetCellStyle":           SetCellStyle(f),
@@ -1936,6 +1937,42 @@ func SetCellFormula(f *excelize.File) func(this js.Value, args []js.Value) inter
 			opts = goVal.Elem().Interface().(excelize.FormulaOpts)
 		}
 		if err := f.SetCellFormula(args[0].String(), args[1].String(), args[2].String(), opts); err != nil {
+			ret["error"] = err.Error()
+		}
+		return js.ValueOf(ret)
+	}
+}
+
+// SetCellHyperLink provides a function to set cell hyperlink by given
+// worksheet name and link URL address. LinkType defines two types of
+// hyperlink "External" for website or "Location" for moving to one of cell in
+// this workbook. Maximum limit hyperlinks in a worksheet is 65530. This
+// function is only used to set the hyperlink of the cell and doesn't affect
+// the value of the cell. If you need to set the value of the cell, please use
+// the other functions such as `SetCellStyle` or `SetSheetRow`.
+func SetCellHyperLink(f *excelize.File) func(this js.Value, args []js.Value) interface{} {
+	return func(this js.Value, args []js.Value) interface{} {
+		ret := map[string]interface{}{"error": nil}
+		if err := prepareArgs(args, []argsRule{
+			{types: []js.Type{js.TypeString}},
+			{types: []js.Type{js.TypeString}},
+			{types: []js.Type{js.TypeString}},
+			{types: []js.Type{js.TypeString}},
+			{types: []js.Type{js.TypeObject}, opts: true},
+		}); err != nil {
+			ret["error"] = err.Error()
+			return js.ValueOf(ret)
+		}
+		var opts excelize.HyperlinkOpts
+		if len(args) == 5 {
+			goVal, err := jsValueToGo(args[4], reflect.TypeOf(excelize.HyperlinkOpts{}))
+			if err != nil {
+				ret["error"] = err.Error()
+				return js.ValueOf(ret)
+			}
+			opts = goVal.Elem().Interface().(excelize.HyperlinkOpts)
+		}
+		if err := f.SetCellHyperLink(args[0].String(), args[1].String(), args[2].String(), args[3].String(), opts); err != nil {
 			ret["error"] = err.Error()
 		}
 		return js.ValueOf(ret)

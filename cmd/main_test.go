@@ -1394,6 +1394,25 @@ func TestSetCellFormula(t *testing.T) {
 	assert.Equal(t, errArgType.Error(), ret.Get("error").String())
 }
 
+func TestSetCellHyperLink(t *testing.T) {
+	f := NewFile(js.Value{}, []js.Value{})
+	assert.True(t, f.(js.Value).Get("error").IsNull())
+
+	display, tooltip := "https://github.com/xuri/excelize-wasm", "excelize-wasm on GitHub"
+
+	ret := f.(js.Value).Call("SetCellHyperLink", js.ValueOf("Sheet1"), js.ValueOf("A3"), js.ValueOf(display), js.ValueOf("External"), js.ValueOf(map[string]interface{}{"Display": display, "Tooltip": tooltip}))
+	assert.True(t, ret.Get("error").IsNull())
+
+	ret = f.(js.Value).Call("SetCellHyperLink")
+	assert.EqualError(t, errArgNum, ret.Get("error").String())
+
+	ret = f.(js.Value).Call("SetCellHyperLink", js.ValueOf("SheetN"), js.ValueOf("A3"), js.ValueOf(display), js.ValueOf("External"), js.ValueOf(map[string]interface{}{"Display": display, "Tooltip": tooltip}))
+	assert.Equal(t, "sheet SheetN does not exist", ret.Get("error").String())
+
+	ret = f.(js.Value).Call("SetCellHyperLink", js.ValueOf("Sheet1"), js.ValueOf("A3"), js.ValueOf(display), js.ValueOf("External"), js.ValueOf(map[string]interface{}{"Display": true, "Tooltip": tooltip}))
+	assert.Equal(t, errArgType.Error(), ret.Get("error").String())
+}
+
 func TestSetCellInt(t *testing.T) {
 	f := NewFile(js.Value{}, []js.Value{})
 	assert.True(t, f.(js.Value).Get("error").IsNull())
