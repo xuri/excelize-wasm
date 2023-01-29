@@ -1427,6 +1427,33 @@ func TestSetCellInt(t *testing.T) {
 	assert.Equal(t, "sheet SheetN does not exist", ret.Get("error").String())
 }
 
+func TestSetCellRichText(t *testing.T) {
+	f := NewFile(js.Value{}, []js.Value{})
+	assert.True(t, f.(js.Value).Get("error").IsNull())
+
+	runs := js.ValueOf([]interface{}{
+		map[string]interface{}{
+			"Text": "bold",
+			"Font": map[string]interface{}{
+				"Bold":   true,
+				"Color":  "2354e8",
+				"Family": "Times New Roman",
+			},
+		},
+	})
+	ret := f.(js.Value).Call("SetCellRichText", js.ValueOf("Sheet1"), js.ValueOf("A1"), runs)
+	assert.True(t, ret.Get("error").IsNull())
+
+	ret = f.(js.Value).Call("SetCellRichText")
+	assert.EqualError(t, errArgNum, ret.Get("error").String())
+
+	ret = f.(js.Value).Call("SetCellRichText", js.ValueOf("Sheet1"), js.ValueOf("A1"), js.ValueOf([]interface{}{map[string]interface{}{"Text": true}}))
+	assert.EqualError(t, errArgType, ret.Get("error").String())
+
+	ret = f.(js.Value).Call("SetCellRichText", js.ValueOf("SheetN"), js.ValueOf("A1"), runs)
+	assert.Equal(t, "sheet SheetN does not exist", ret.Get("error").String())
+}
+
 func TestSetCellStr(t *testing.T) {
 	f := NewFile(js.Value{}, []js.Value{})
 	assert.True(t, f.(js.Value).Get("error").IsNull())

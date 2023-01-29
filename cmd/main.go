@@ -188,6 +188,7 @@ func regInteropFunc(f *excelize.File, fn map[string]interface{}) interface{} {
 		"SetCellFormula":         SetCellFormula(f),
 		"SetCellHyperLink":       SetCellHyperLink(f),
 		"SetCellInt":             SetCellInt(f),
+		"SetCellRichText":        SetCellRichText(f),
 		"SetCellStr":             SetCellStr(f),
 		"SetCellStyle":           SetCellStyle(f),
 		"SetCellValue":           SetCellValue(f),
@@ -1993,6 +1994,35 @@ func SetCellInt(f *excelize.File) func(this js.Value, args []js.Value) interface
 			return js.ValueOf(ret)
 		}
 		if err := f.SetCellInt(args[0].String(), args[1].String(), args[2].Int()); err != nil {
+			ret["error"] = err.Error()
+		}
+		return js.ValueOf(ret)
+	}
+}
+
+// SetCellRichText provides a function to set cell with rich text by given
+// worksheet.
+func SetCellRichText(f *excelize.File) func(this js.Value, args []js.Value) interface{} {
+	return func(this js.Value, args []js.Value) interface{} {
+		ret := map[string]interface{}{"error": nil}
+		if err := prepareArgs(args, []argsRule{
+			{types: []js.Type{js.TypeString}},
+			{types: []js.Type{js.TypeString}},
+			{types: []js.Type{js.TypeObject}},
+		}); err != nil {
+			ret["error"] = err.Error()
+			return js.ValueOf(ret)
+		}
+		var runs []excelize.RichTextRun
+		for i := 0; i < args[2].Length(); i++ {
+			goVal, err := jsValueToGo(args[2].Index(i), reflect.TypeOf(excelize.RichTextRun{}))
+			if err != nil {
+				ret["error"] = err.Error()
+				return js.ValueOf(ret)
+			}
+			runs = append(runs, goVal.Elem().Interface().(excelize.RichTextRun))
+		}
+		if err := f.SetCellRichText(args[0].String(), args[1].String(), runs); err != nil {
 			ret["error"] = err.Error()
 		}
 		return js.ValueOf(ret)

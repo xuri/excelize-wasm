@@ -412,7 +412,7 @@ declare module 'excelize-wasm' {
     Cell?:     string;
     Text?:     string;
     Runs?:     RichTextRun[];
-  }
+  };
 
   /**
    * RichTextRun directly maps the settings of the rich text run.
@@ -1094,6 +1094,55 @@ declare module 'excelize-wasm' {
      *
      * const { error } = f.SetCellFormula("Sheet1", "C1", "=A1+B1",
      *     {Ref: "C1:C5", Type: "shared"})
+     *
+     * Example 7, set table formula "=SUM(Table1[[A]:[B]])" for the cell "C2"
+     * on "Sheet1":
+     *
+     * ```typescript
+     * const { init } = require('excelize-wasm');
+     * const fs = require('fs');
+     *
+     * init('./node_modules/excelize-wasm/excelize.wasm.gz').then((excelize) => {
+     *   const f = excelize.NewFile();
+     *   [
+     *     ['A', 'B', 'C'],
+     *     [1, 2],
+     *   ].forEach((row, idx) => {
+     *     var { error } = f.SetSheetRow('Sheet1', `A${idx + 1}`, row);
+     *     if (error) {
+     *       console.log(error);
+     *       return;
+     *     }
+     *   });
+     *   var { error } = f.AddTable('Sheet1', 'A1:C2', {
+     *     Name: 'Table1',
+     *     StyleName: 'TableStyleMedium2',
+     *   });
+     *   if (error) {
+     *     console.log(error);
+     *     return;
+     *   }
+     *   var { error } = f.SetCellFormula('Sheet1', 'C2', '=SUM(Table1[[A]:[B]])', {
+     *     Type: 'dataTable',
+     *   });
+     *   if (error) {
+     *     console.log(error);
+     *     return;
+     *   }
+     *   // Save spreadsheet by the given path.
+     *   var { buffer, error } = f.WriteToBuffer();
+     *   if (error) {
+     *     console.log(error);
+     *     return;
+     *   }
+     *   fs.writeFile('Book1.xlsx', buffer, 'binary', (error) => {
+     *     if (error) {
+     *       console.log(error);
+     *     }
+     *   });
+     * });
+     * ```
+     *
      * @param sheet The worksheet name
      * @param cell The cell reference
      * @param formula The cell formula
@@ -1125,6 +1174,139 @@ declare module 'excelize-wasm' {
      * @param value The cell value to be write
      */
     SetCellInt(sheet: string, cell: string, value: number): { error: string | null }
+
+    /**
+     * SetCellRichText provides a function to set cell with rich text by given
+     * worksheet. For example, set rich text on the A1 cell of the worksheet
+     * named Sheet1:
+     *
+     * ```typescript
+     * const { init } = require('excelize-wasm');
+     * const fs = require('fs');
+     *
+     * init('./node_modules/excelize-wasm/excelize.wasm.gz').then((excelize) => {
+     *   const f = excelize.NewFile();
+     *   var { error } = f.SetRowHeight('Sheet1', 1, 35);
+     *   if (error) {
+     *     console.log(error);
+     *     return;
+     *   }
+     *   var { error } = f.SetColWidth('Sheet1', 'A', 'A', 44);
+     *   if (error) {
+     *     console.log(error);
+     *     return;
+     *   }
+     *   var { error } = f.SetCellRichText('Sheet1', 'A1', [
+     *     {
+     *       Text: 'bold',
+     *       Font: {
+     *         Bold: true,
+     *         Color: '2354e8',
+     *         Family: 'Times New Roman',
+     *       },
+     *     },
+     *     {
+     *       Text: ' and ',
+     *       Font: {
+     *         Family: 'Times New Roman',
+     *       },
+     *     },
+     *     {
+     *       Text: 'italic ',
+     *       Font: {
+     *         Bold: true,
+     *         Color: 'e83723',
+     *         Italic: true,
+     *         Family: 'Times New Roman',
+     *       },
+     *     },
+     *     {
+     *       Text: 'text with color and font-family,',
+     *       Font: {
+     *         Bold: true,
+     *         Color: '2354e8',
+     *         Family: 'Times New Roman',
+     *       },
+     *     },
+     *     {
+     *       Text: '\r\nlarge text with ',
+     *       Font: {
+     *         Size: 14,
+     *         Color: 'ad23e8',
+     *       },
+     *     },
+     *     {
+     *       Text: 'strike',
+     *       Font: {
+     *         Color: 'e89923',
+     *         Strike: true,
+     *       },
+     *     },
+     *     {
+     *       Text: ' superscript',
+     *       Font: {
+     *         Color: 'dbc21f',
+     *         VertAlign: 'superscript',
+     *       },
+     *     },
+     *     {
+     *       Text: ' and ',
+     *       Font: {
+     *         Size: 14,
+     *         Color: 'ad23e8',
+     *         VertAlign: 'baseline',
+     *       },
+     *     },
+     *     {
+     *       Text: 'underline',
+     *       Font: {
+     *         Color: '23e833',
+     *         Underline: 'single',
+     *       },
+     *     },
+     *     {
+     *       Text: ' subscript.',
+     *       Font: {
+     *         Color: '017505',
+     *         VertAlign: 'subscript',
+     *       },
+     *     },
+     *   ]);
+     *   if (error) {
+     *     console.log(error);
+     *     return;
+     *   }
+     *   var { style, error } = f.NewStyle({
+     *     Alignment: { WrapText: true },
+     *   });
+     *   if (error) {
+     *     console.log(error);
+     *     return;
+     *   }
+     *   var { error } = f.SetCellStyle('Sheet1', 'A1', 'A1', style);
+     *   if (error) {
+     *     console.log(error);
+     *     return;
+     *   }
+     *   // Save spreadsheet by the given path.
+     *   var { buffer, error } = f.WriteToBuffer();
+     *   if (error) {
+     *     console.log(error);
+     *     return;
+     *   }
+     *   fs.writeFile('Book1.xlsx', buffer, 'binary', (error) => {
+     *     if (error) {
+     *       console.log(error);
+     *     }
+     *   });
+     * });
+     * ```
+     *
+     * @param sheet The worksheet name
+     * @param cell The cell reference
+     * @param runs The rich text runs
+     */
+    SetCellRichText(sheet: string, cell: string, runs: RichTextRun[]): { error: string | null }
 
     /**
      * SetCellStr provides a function to set string type value of a cell. Total
@@ -1214,7 +1396,7 @@ declare module 'excelize-wasm' {
      * @param reference The conditional format range reference
      * @param opts The conditional options
      */
-    SetConditionalFormat(sheet: string, reference: string, opts: ConditionalFormatOptions): { error: string | null }
+    SetConditionalFormat(sheet: string, reference: string, opts: ConditionalFormatOptions[]): { error: string | null }
 
     /**
      * SetDefaultFont changes the default font in the workbook.
