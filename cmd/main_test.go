@@ -1256,6 +1256,35 @@ func TestNewStyle(t *testing.T) {
 	assert.EqualError(t, errArgNum, ret.Get("error").String())
 }
 
+func TestProtectSheet(t *testing.T) {
+	f := NewFile(js.Value{}, []js.Value{})
+	assert.True(t, f.(js.Value).Get("error").IsNull())
+
+	ret := f.(js.Value).Call("ProtectSheet", js.ValueOf("Sheet1"),
+		js.ValueOf(map[string]interface{}{
+			"Password": "password",
+		}),
+	)
+	assert.True(t, ret.Get("error").IsNull())
+
+	ret = f.(js.Value).Call("ProtectSheet")
+	assert.EqualError(t, errArgNum, ret.Get("error").String())
+
+	ret = f.(js.Value).Call("ProtectSheet", js.ValueOf("SheetN"),
+		js.ValueOf(map[string]interface{}{
+			"Password": "password",
+		}),
+	)
+	assert.Equal(t, "sheet SheetN does not exist", ret.Get("error").String())
+
+	ret = f.(js.Value).Call("ProtectSheet", js.ValueOf("Sheet1"),
+		js.ValueOf(map[string]interface{}{
+			"Password": true,
+		}),
+	)
+	assert.EqualError(t, errArgType, ret.Get("error").String())
+}
+
 func TestRemoveCol(t *testing.T) {
 	f := NewFile(js.Value{}, []js.Value{})
 	assert.True(t, f.(js.Value).Get("error").IsNull())

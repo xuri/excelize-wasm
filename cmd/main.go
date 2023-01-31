@@ -177,6 +177,7 @@ func regInteropFunc(f *excelize.File, fn map[string]interface{}) interface{} {
 		"NewConditionalStyle":    NewConditionalStyle(f),
 		"NewSheet":               NewSheet(f),
 		"NewStyle":               NewStyle(f),
+		"ProtectSheet":           ProtectSheet(f),
 		"RemoveCol":              RemoveCol(f),
 		"RemovePageBreak":        RemovePageBreak(f),
 		"RemoveRow":              RemoveRow(f),
@@ -1721,6 +1722,35 @@ func NewStyle(f *excelize.File) func(this js.Value, args []js.Value) interface{}
 		if ret["style"], err = f.NewStyle(&style); err != nil {
 			ret["error"] = err.Error()
 			return js.ValueOf(ret)
+		}
+		return js.ValueOf(ret)
+	}
+}
+
+// ProtectSheet provides a function to prevent other users from accidentally or
+// deliberately changing, moving, or deleting data in a worksheet. The
+// optional field AlgorithmName specified hash algorithm, support XOR, MD4,
+// MD5, SHA-1, SHA2-56, SHA-384, and SHA-512 currently, if no hash algorithm
+// specified, will be using the XOR algorithm as default.
+func ProtectSheet(f *excelize.File) func(this js.Value, args []js.Value) interface{} {
+	return func(this js.Value, args []js.Value) interface{} {
+		ret := map[string]interface{}{"error": nil}
+		if err := prepareArgs(args, []argsRule{
+			{types: []js.Type{js.TypeString}},
+			{types: []js.Type{js.TypeObject}},
+		}); err != nil {
+			ret["error"] = err.Error()
+			return js.ValueOf(ret)
+		}
+		var opts excelize.SheetProtectionOptions
+		goVal, err := jsValueToGo(args[1], reflect.TypeOf(excelize.SheetProtectionOptions{}))
+		if err != nil {
+			ret["error"] = err.Error()
+			return js.ValueOf(ret)
+		}
+		opts = goVal.Elem().Interface().(excelize.SheetProtectionOptions)
+		if err := f.ProtectSheet(args[0].String(), &opts); err != nil {
+			ret["error"] = err.Error()
 		}
 		return js.ValueOf(ret)
 	}

@@ -440,6 +440,29 @@ declare module 'excelize-wasm' {
   };
 
   /**
+   * SheetProtectionOptions directly maps the settings of worksheet protection.
+   */
+  export type SheetProtectionOptions = {
+    AlgorithmName?:       string;
+    AutoFilter?:          boolean;
+    DeleteColumns?:       boolean;
+    DeleteRows?:          boolean;
+    EditObjects?:         boolean;
+    EditScenarios?:       boolean;
+    FormatCells?:         boolean;
+    FormatColumns?:       boolean;
+    FormatRows?:          boolean;
+    InsertColumns?:       boolean;
+    InsertHyperlinks?:    boolean;
+    InsertRows?:          boolean;
+    Password?:            string;
+    PivotTables?:         boolean;
+    SelectLockedCells?:   boolean;
+    SelectUnlockedCells?: boolean;
+    Sort?:                boolean;
+  };
+
+  /**
    * CellNameToCoordinates converts alphanumeric cell name to [X, Y]
    * coordinates or returns an error.
    * @param cell The cell reference
@@ -957,6 +980,29 @@ declare module 'excelize-wasm' {
      * @param sheet The worksheet name
      */
     NewSheet(sheet: string): { index: number, error: string | null }
+
+    /**
+     * ProtectSheet provides a function to prevent other users from
+     * accidentally or deliberately changing, moving, or deleting data in a
+     * worksheet. The optional field AlgorithmName specified hash algorithm,
+     * support XOR, MD4, MD5, SHA-1, SHA2-56, SHA-384, and SHA-512 currently,
+     * if no hash algorithm specified, will be using the XOR algorithm as
+     * default. For example, protect Sheet1 with protection settings:
+     *
+     * ```typescript
+     * const { error } = f.ProtectSheet("Sheet1", {
+     *   AlgorithmName:       "SHA-512",
+     *   Password:            "password",
+     *   SelectLockedCells:   true,
+     *   SelectUnlockedCells: true,
+     *   EditScenarios:       true,
+     * })
+     * ```
+     *
+     * @param sheet The worksheet name
+     * @param opts The worksheet protection options
+     */
+    ProtectSheet(sheet: string, opts: SheetProtectionOptions): { error: string | null }
 
     /**
      * NewStyle provides a function to create the style for cells by given
