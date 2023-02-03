@@ -613,6 +613,36 @@ func TestDeleteDataValidation(t *testing.T) {
 	assert.Equal(t, "sheet SheetN does not exist", ret.Get("error").String())
 }
 
+func TestDeleteDefinedName(t *testing.T) {
+	f := NewFile(js.Value{}, []js.Value{})
+	assert.True(t, f.(js.Value).Get("error").IsNull())
+
+	ret := f.(js.Value).Call("SetDefinedName", js.ValueOf(map[string]interface{}{
+		"Name":     "Amount",
+		"RefersTo": "Sheet1!$A$2:$D$5",
+		"Comment":  "defined name comment",
+	}))
+	assert.True(t, ret.Get("error").IsNull())
+
+	ret = f.(js.Value).Call("DeleteDefinedName", js.ValueOf(map[string]interface{}{
+		"Name": "Amount",
+	}))
+	assert.True(t, ret.Get("error").IsNull())
+
+	ret = f.(js.Value).Call("DeleteDefinedName", js.ValueOf(map[string]interface{}{
+		"Name": "No Exist Defined Name",
+	}))
+	assert.EqualError(t, excelize.ErrDefinedNameScope, ret.Get("error").String())
+
+	ret = f.(js.Value).Call("DeleteDefinedName")
+	assert.EqualError(t, errArgNum, ret.Get("error").String())
+
+	ret = f.(js.Value).Call("DeleteDefinedName", js.ValueOf(map[string]interface{}{
+		"Name": true,
+	}))
+	assert.EqualError(t, errArgType, ret.Get("error").String())
+}
+
 func TestDeletePicture(t *testing.T) {
 	f := NewFile(js.Value{}, []js.Value{})
 	assert.True(t, f.(js.Value).Get("error").IsNull())

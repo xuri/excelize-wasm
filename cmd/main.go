@@ -144,6 +144,7 @@ func regInteropFunc(f *excelize.File, fn map[string]interface{}) interface{} {
 		"DeleteChart":            DeleteChart(f),
 		"DeleteComment":          DeleteComment(f),
 		"DeleteDataValidation":   DeleteDataValidation(f),
+		"DeleteDefinedName":      DeleteDefinedName(f),
 		"DeletePicture":          DeletePicture(f),
 		"DeleteSheet":            DeleteSheet(f),
 		"DuplicateRow":           DuplicateRow(f),
@@ -941,6 +942,34 @@ func DeleteDataValidation(f *excelize.File) func(this js.Value, args []js.Value)
 		}
 		if err != nil {
 			ret["error"] = err.Error()
+		}
+		return js.ValueOf(ret)
+	}
+}
+
+// DeleteDefinedName provides a function to delete the defined names of the
+// workbook or worksheet. If not specified scope, the default scope is
+// workbook.
+func DeleteDefinedName(f *excelize.File) func(this js.Value, args []js.Value) interface{} {
+	return func(this js.Value, args []js.Value) interface{} {
+		ret := map[string]interface{}{"error": nil}
+		err := prepareArgs(args, []argsRule{
+			{types: []js.Type{js.TypeObject}},
+		})
+		if err != nil {
+			ret["error"] = err.Error()
+			return js.ValueOf(ret)
+		}
+		var definedName excelize.DefinedName
+		goVal, err := jsValueToGo(args[0], reflect.TypeOf(excelize.DefinedName{}))
+		if err != nil {
+			ret["error"] = err.Error()
+			return js.ValueOf(ret)
+		}
+		definedName = goVal.Elem().Interface().(excelize.DefinedName)
+		if err = f.DeleteDefinedName(&definedName); err != nil {
+			ret["error"] = err.Error()
+			return js.ValueOf(ret)
 		}
 		return js.ValueOf(ret)
 	}

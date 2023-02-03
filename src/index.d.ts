@@ -685,6 +685,14 @@ declare module 'excelize-wasm' {
     DeleteDataValidation(sheet: string, sqref?: string): { error: string | null }
 
     /**
+     * DeleteDefinedName provides a function to delete the defined names of the
+     * workbook or worksheet. If not specified scope, the default scope is
+     * workbook.
+     * @param definedName The name for a cell or cell range on a worksheet
+     */
+    DeleteDefinedName(definedName: DefinedName): { error: string | null }
+
+    /**
      * DeletePicture provides a function to delete charts in spreadsheet by
      * given worksheet name and cell reference. Note that the image file won't
      * be deleted from the document currently.
@@ -1464,7 +1472,7 @@ declare module 'excelize-wasm' {
      * SetDefinedName provides a function to set the defined names of the
      * workbook or worksheet. If not specified scope, the default scope is
      * workbook.
-     * @param definedName The name for a cell or cell range on a
+     * @param definedName The name for a cell or cell range on a worksheet
      */
     SetDefinedName(definedName: DefinedName): { error: string | null }
 
