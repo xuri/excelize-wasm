@@ -463,6 +463,16 @@ declare module 'excelize-wasm' {
   };
 
   /**
+   * DefinedName directly maps the name for a cell or cell range on a worksheet.
+   */
+  export type DefinedName = {
+    Name?:     string;
+    Comment?:  string;
+    RefersTo?: string;
+    Scope?:    string;
+  };
+
+  /**
    * CellNameToCoordinates converts alphanumeric cell name to [X, Y]
    * coordinates or returns an error.
    * @param cell The cell reference
@@ -1449,6 +1459,14 @@ declare module 'excelize-wasm' {
      * @param fontName The font name
      */
     SetDefaultFont(fontName: string): { error: string | null }
+
+    /**
+     * SetDefinedName provides a function to set the defined names of the
+     * workbook or worksheet. If not specified scope, the default scope is
+     * workbook.
+     * @param definedName The name for a cell or cell range on a
+     */
+    SetDefinedName(definedName: DefinedName): { error: string | null }
 
     /**
      * SetPanes provides a function to create and remove freeze panes and split

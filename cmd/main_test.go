@@ -1619,6 +1619,33 @@ func TestSetDefaultFont(t *testing.T) {
 	assert.EqualError(t, errArgNum, ret.Get("error").String())
 }
 
+func TestSetDefinedName(t *testing.T) {
+	f := NewFile(js.Value{}, []js.Value{})
+	assert.True(t, f.(js.Value).Get("error").IsNull())
+
+	ret := f.(js.Value).Call("SetDefinedName", js.ValueOf(map[string]interface{}{
+		"Name":     "Amount",
+		"RefersTo": "Sheet1!$A$2:$D$5",
+		"Comment":  "defined name comment",
+	}))
+	assert.True(t, ret.Get("error").IsNull())
+
+	ret = f.(js.Value).Call("SetDefinedName")
+	assert.EqualError(t, errArgNum, ret.Get("error").String())
+
+	ret = f.(js.Value).Call("SetDefinedName", js.ValueOf(map[string]interface{}{
+		"Name":     true,
+		"RefersTo": "Sheet1!$A$2:$D$5",
+	}))
+	assert.EqualError(t, errArgType, ret.Get("error").String())
+
+	// Test set defined name without name
+	ret = f.(js.Value).Call("SetDefinedName", js.ValueOf(map[string]interface{}{
+		"RefersTo": "Sheet1!$A$2:$D$5",
+	}))
+	assert.EqualError(t, excelize.ErrParameterInvalid, ret.Get("error").String())
+}
+
 func TestSetPanes(t *testing.T) {
 	f := NewFile(js.Value{}, []js.Value{})
 	assert.True(t, f.(js.Value).Get("error").IsNull())
