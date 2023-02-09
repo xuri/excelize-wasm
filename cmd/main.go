@@ -179,11 +179,13 @@ func regInteropFunc(f *excelize.File, fn map[string]interface{}) interface{} {
 		"NewSheet":               NewSheet(f),
 		"NewStyle":               NewStyle(f),
 		"ProtectSheet":           ProtectSheet(f),
+		"ProtectWorkbook":        ProtectWorkbook(f),
 		"RemoveCol":              RemoveCol(f),
 		"RemovePageBreak":        RemovePageBreak(f),
 		"RemoveRow":              RemoveRow(f),
 		"SearchSheet":            SearchSheet(f),
 		"SetActiveSheet":         SetActiveSheet(f),
+		"SetAppProps":            SetAppProps(f),
 		"SetCellBool":            SetCellBool(f),
 		"SetCellDefault":         SetCellDefault(f),
 		"SetCellFloat":           SetCellFloat(f),
@@ -1786,6 +1788,36 @@ func ProtectSheet(f *excelize.File) func(this js.Value, args []js.Value) interfa
 	}
 }
 
+// ProtectWorkbook provides a function to prevent other users from viewing
+// hidden worksheets, adding, moving, deleting, or hiding worksheets, and
+// renaming worksheets in a workbook. The optional field AlgorithmName
+// specified hash algorithm, support XOR, MD4, MD5, SHA-1, SHA2-56, SHA-384,
+// and SHA-512 currently, if no hash algorithm specified, will be using the XOR
+// algorithm as default. The generated workbook only works on Microsoft Office
+// 2007 and later.
+func ProtectWorkbook(f *excelize.File) func(this js.Value, args []js.Value) interface{} {
+	return func(this js.Value, args []js.Value) interface{} {
+		ret := map[string]interface{}{"error": nil}
+		if err := prepareArgs(args, []argsRule{
+			{types: []js.Type{js.TypeObject}},
+		}); err != nil {
+			ret["error"] = err.Error()
+			return js.ValueOf(ret)
+		}
+		var opts excelize.WorkbookProtectionOptions
+		goVal, err := jsValueToGo(args[0], reflect.TypeOf(excelize.WorkbookProtectionOptions{}))
+		if err != nil {
+			ret["error"] = err.Error()
+			return js.ValueOf(ret)
+		}
+		opts = goVal.Elem().Interface().(excelize.WorkbookProtectionOptions)
+		if err := f.ProtectWorkbook(&opts); err != nil {
+			ret["error"] = err.Error()
+		}
+		return js.ValueOf(ret)
+	}
+}
+
 // RemoveCol provides a function to remove single column by given worksheet
 // name and column index.
 //
@@ -1900,6 +1932,30 @@ func SetActiveSheet(f *excelize.File) func(this js.Value, args []js.Value) inter
 			return js.ValueOf(ret)
 		}
 		f.SetActiveSheet(args[0].Int())
+		return js.ValueOf(ret)
+	}
+}
+
+// SetAppProps provides a function to set document application properties.
+func SetAppProps(f *excelize.File) func(this js.Value, args []js.Value) interface{} {
+	return func(this js.Value, args []js.Value) interface{} {
+		ret := map[string]interface{}{"error": nil}
+		if err := prepareArgs(args, []argsRule{
+			{types: []js.Type{js.TypeObject}},
+		}); err != nil {
+			ret["error"] = err.Error()
+			return js.ValueOf(ret)
+		}
+		var props excelize.AppProperties
+		goVal, err := jsValueToGo(args[0], reflect.TypeOf(excelize.AppProperties{}))
+		if err != nil {
+			ret["error"] = err.Error()
+			return js.ValueOf(ret)
+		}
+		props = goVal.Elem().Interface().(excelize.AppProperties)
+		if err := f.SetAppProps(&props); err != nil {
+			ret["error"] = err.Error()
+		}
 		return js.ValueOf(ret)
 	}
 }

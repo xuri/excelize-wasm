@@ -8,6 +8,7 @@ import (
 	"os"
 	"path/filepath"
 	"reflect"
+	"strings"
 	"syscall/js"
 	"testing"
 
@@ -1315,6 +1316,35 @@ func TestProtectSheet(t *testing.T) {
 	assert.EqualError(t, errArgType, ret.Get("error").String())
 }
 
+func TestProtectWorkbook(t *testing.T) {
+	f := NewFile(js.Value{}, []js.Value{})
+	assert.True(t, f.(js.Value).Get("error").IsNull())
+
+	ret := f.(js.Value).Call("ProtectWorkbook",
+		js.ValueOf(map[string]interface{}{
+			"Password": "password",
+		}),
+	)
+	assert.True(t, ret.Get("error").IsNull())
+
+	ret = f.(js.Value).Call("ProtectWorkbook")
+	assert.EqualError(t, errArgNum, ret.Get("error").String())
+
+	ret = f.(js.Value).Call("ProtectWorkbook",
+		js.ValueOf(map[string]interface{}{
+			"Password": strings.Repeat("s", excelize.MaxFieldLength+1),
+		}),
+	)
+	assert.EqualError(t, excelize.ErrPasswordLengthInvalid, ret.Get("error").String())
+
+	ret = f.(js.Value).Call("ProtectWorkbook",
+		js.ValueOf(map[string]interface{}{
+			"Password": true,
+		}),
+	)
+	assert.EqualError(t, errArgType, ret.Get("error").String())
+}
+
 func TestRemoveCol(t *testing.T) {
 	f := NewFile(js.Value{}, []js.Value{})
 	assert.True(t, f.(js.Value).Get("error").IsNull())
@@ -1389,6 +1419,28 @@ func TestSetActiveSheet(t *testing.T) {
 
 	ret = f.(js.Value).Call("SetActiveSheet")
 	assert.EqualError(t, errArgNum, ret.Get("error").String())
+}
+
+func TestSetAppProps(t *testing.T) {
+	f := NewFile(js.Value{}, []js.Value{})
+	assert.True(t, f.(js.Value).Get("error").IsNull())
+
+	ret := f.(js.Value).Call("SetAppProps",
+		js.ValueOf(map[string]interface{}{
+			"Company": "Company Name",
+		}),
+	)
+	assert.True(t, ret.Get("error").IsNull())
+
+	ret = f.(js.Value).Call("SetAppProps")
+	assert.EqualError(t, errArgNum, ret.Get("error").String())
+
+	ret = f.(js.Value).Call("SetAppProps",
+		js.ValueOf(map[string]interface{}{
+			"Application": true,
+		}),
+	)
+	assert.EqualError(t, errArgType, ret.Get("error").String())
 }
 
 func TestSetCellBool(t *testing.T) {

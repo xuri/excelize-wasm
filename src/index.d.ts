@@ -15,13 +15,13 @@ declare module 'excelize-wasm' {
    * AppProperties directly maps the document application properties.
    */
   export type AppProperties = {
-    Application:       string;
-    ScaleCrop:         boolean;
-    DocSecurity:       number;
-    Company:           string;
-    LinksUpToDate:     boolean;
-    HyperlinksChanged: boolean;
-    AppVersion:        string;
+    Application?:       string;
+    ScaleCrop?:         boolean;
+    DocSecurity?:       number;
+    Company?:           string;
+    LinksUpToDate?:     boolean;
+    HyperlinksChanged?: boolean;
+    AppVersion?:        string;
   };
 
   /**
@@ -463,13 +463,25 @@ declare module 'excelize-wasm' {
   };
 
   /**
-   * DefinedName directly maps the name for a cell or cell range on a worksheet.
+   * DefinedName directly maps the name for a cell or cell range on a
+   * worksheet.
    */
   export type DefinedName = {
     Name?:     string;
     Comment?:  string;
     RefersTo?: string;
     Scope?:    string;
+  };
+
+  /**
+   * WorkbookProtectionOptions directly maps the settings of workbook
+   * protection.
+   */
+  export type WorkbookProtectionOptions = {
+    AlgorithmName?: string;
+    Password?:      string;
+    LockStructure?: boolean;
+    LockWindows?:   boolean;
   };
 
   /**
@@ -1023,6 +1035,27 @@ declare module 'excelize-wasm' {
     ProtectSheet(sheet: string, opts: SheetProtectionOptions): { error: string | null }
 
     /**
+     * ProtectWorkbook provides a function to prevent other users from viewing
+     * hidden worksheets, adding, moving, deleting, or hiding worksheets, and
+     * renaming worksheets in a workbook. The optional field AlgorithmName
+     * specified hash algorithm, support XOR, MD4, MD5, SHA-1, SHA2-56,
+     * SHA-384, and SHA-512 currently, if no hash algorithm specified, will be
+     * using the XOR algorithm as default. The generated workbook only works on
+     * Microsoft Office 2007 and later. For example, protect workbook with
+     * protection settings:
+     *
+     * ```typescript
+     * const { error } = f.ProtectWorkbook({
+     *   Password:      "password",
+     *   LockStructure: true,
+     * })
+     * ```
+     *
+     * @param opts The workbook protection options
+     */
+    ProtectWorkbook(opts: WorkbookProtectionOptions): { error: string | null }
+
+    /**
      * NewStyle provides a function to create the style for cells by given
      * options. Note that the color field uses RGB color code.
      * @param style The style options
@@ -1083,6 +1116,69 @@ declare module 'excelize-wasm' {
      * @param index The sheet index
      */
     SetActiveSheet(index: number): { error: string | null }
+
+    /**
+     * SetAppProps provides a function to set document application properties.
+     * The properties that can be set are:
+     *
+     *      Property          | Description
+     *     -------------------+---------------------------------------------------
+     *      Application       | The name of the application that created this
+     *                        | document.
+     *                        |
+     *      ScaleCrop         | Indicates the display mode of the document
+     *                        | thumbnail. Set this element to 'true' to enable
+     *                        | scaling of the document thumbnail to the display.
+     *                        | Set this element to 'false' to enable cropping of
+     *                        | the document thumbnail to show only sections that
+     *                        | will fit the display.
+     *                        |
+     *      DocSecurity       | Security level of a document as a numeric value.
+     *                        | Document security is
+     *                        |
+     *                        | defined as:
+     *                        | 1 - Document is password protected.
+     *                        | 2 - Document is recommended to be opened as read-only.
+     *                        | 3 - Document is enforced to be opened as read-only.
+     *                        | 4 - Document is locked for annotation.
+     *                        |
+     *      Company           | The name of a company associated with the document.
+     *                        |
+     *      LinksUpToDate     | Indicates whether hyperlinks in a document are
+     *                        | up-to-date. Set this
+     *                        | element to 'true' to indicate that hyperlinks are
+     *                        | updated. Set this element to 'false' to indicate
+     *                        | that hyperlinks are outdated.
+     *                        |
+     *      HyperlinksChanged | Specifies that one or more hyperlinks in this part
+     *                        | were updated exclusively in this part by a
+     *                        | producer. The next producer to open this document
+     *                        | shall update the hyperlink relationships with the
+     *                        | new hyperlinks specified in this part.
+     *                        |
+     *      AppVersion        | Specifies the version of the application which
+     *                        | produced this document. The content of this
+     *                        | element shall be of the form XX.YYYY where X and Y
+     *                        | represent numerical values, or the document shall
+     *                        | be considered non-conformant.
+     *
+     * For example:
+     *
+     * ```typescript
+     * const { error } = f.SetAppProps({
+     *   Application:       "Microsoft Excel",
+     *   ScaleCrop:         true,
+     *   DocSecurity:       3,
+     *   Company:           "Company Name",
+     *   LinksUpToDate:     true,
+     *   HyperlinksChanged: true,
+     *   AppVersion:        "16.0000",
+     * })
+     * ```
+     *
+     * @param props The application properties
+     */
+    SetAppProps(props: AppProperties): { error: string | null }
 
     /**
      * SetCellBool provides a function to set bool type value of a cell by
