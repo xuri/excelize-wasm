@@ -1728,6 +1728,49 @@ func TestSetDefinedName(t *testing.T) {
 	assert.EqualError(t, excelize.ErrParameterInvalid, ret.Get("error").String())
 }
 
+func TestSetDocProps(t *testing.T) {
+	f := NewFile(js.Value{}, []js.Value{})
+	assert.True(t, f.(js.Value).Get("error").IsNull())
+
+	ret := f.(js.Value).Call("SetDocProps", js.ValueOf(map[string]interface{}{
+		"Category": "category",
+	}))
+	assert.True(t, ret.Get("error").IsNull())
+
+	ret = f.(js.Value).Call("SetDocProps")
+	assert.EqualError(t, errArgNum, ret.Get("error").String())
+
+	ret = f.(js.Value).Call("SetDocProps", js.ValueOf(map[string]interface{}{
+		"Category": true,
+	}))
+	assert.EqualError(t, errArgType, ret.Get("error").String())
+}
+
+func TestSetHeaderFooter(t *testing.T) {
+	f := NewFile(js.Value{}, []js.Value{})
+	assert.True(t, f.(js.Value).Get("error").IsNull())
+
+	ret := f.(js.Value).Call("SetHeaderFooter", js.ValueOf("Sheet1"),
+		js.ValueOf(map[string]interface{}{"OddHeader": "header"}),
+	)
+	assert.True(t, ret.Get("error").IsNull())
+
+	ret = f.(js.Value).Call("SetHeaderFooter")
+	assert.EqualError(t, errArgNum, ret.Get("error").String())
+
+	ret = f.(js.Value).Call("SetHeaderFooter", js.ValueOf("Sheet1"),
+		js.ValueOf(map[string]interface{}{"OddHeader": true}))
+	assert.EqualError(t, errArgType, ret.Get("error").String())
+
+	// Test set header and footer with illegal setting
+	ret = f.(js.Value).Call("SetHeaderFooter", js.ValueOf("Sheet1"),
+		js.ValueOf(map[string]interface{}{
+			"OddHeader": strings.Repeat("c", excelize.MaxFieldLength+1),
+		}),
+	)
+	assert.Equal(t, "field OddHeader must be less than or equal to 255 characters", ret.Get("error").String())
+}
+
 func TestSetPanes(t *testing.T) {
 	f := NewFile(js.Value{}, []js.Value{})
 	assert.True(t, f.(js.Value).Get("error").IsNull())

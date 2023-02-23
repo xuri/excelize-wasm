@@ -203,6 +203,8 @@ func regInteropFunc(f *excelize.File, fn map[string]interface{}) interface{} {
 		"SetConditionalFormat":   SetConditionalFormat(f),
 		"SetDefaultFont":         SetDefaultFont(f),
 		"SetDefinedName":         SetDefinedName(f),
+		"SetDocProps":            SetDocProps(f),
+		"SetHeaderFooter":        SetHeaderFooter(f),
 		"SetPanes":               SetPanes(f),
 		"SetRowHeight":           SetRowHeight(f),
 		"SetRowOutlineLevel":     SetRowOutlineLevel(f),
@@ -2376,6 +2378,60 @@ func SetDefinedName(f *excelize.File) func(this js.Value, args []js.Value) inter
 		}
 		definedName = goVal.Elem().Interface().(excelize.DefinedName)
 		if err = f.SetDefinedName(&definedName); err != nil {
+			ret["error"] = err.Error()
+			return js.ValueOf(ret)
+		}
+		return js.ValueOf(ret)
+	}
+}
+
+// SetDocProps provides a function to set document core properties.
+func SetDocProps(f *excelize.File) func(this js.Value, args []js.Value) interface{} {
+	return func(this js.Value, args []js.Value) interface{} {
+		ret := map[string]interface{}{"error": nil}
+		err := prepareArgs(args, []argsRule{
+			{types: []js.Type{js.TypeObject}},
+		})
+		if err != nil {
+			ret["error"] = err.Error()
+			return js.ValueOf(ret)
+		}
+		var props excelize.DocProperties
+		goVal, err := jsValueToGo(args[0], reflect.TypeOf(excelize.DocProperties{}))
+		if err != nil {
+			ret["error"] = err.Error()
+			return js.ValueOf(ret)
+		}
+		props = goVal.Elem().Interface().(excelize.DocProperties)
+		if err = f.SetDocProps(&props); err != nil {
+			ret["error"] = err.Error()
+			return js.ValueOf(ret)
+		}
+		return js.ValueOf(ret)
+	}
+}
+
+// SetHeaderFooter provides a function to set headers and footers by given
+// worksheet name and the control characters.
+func SetHeaderFooter(f *excelize.File) func(this js.Value, args []js.Value) interface{} {
+	return func(this js.Value, args []js.Value) interface{} {
+		ret := map[string]interface{}{"error": nil}
+		err := prepareArgs(args, []argsRule{
+			{types: []js.Type{js.TypeString}},
+			{types: []js.Type{js.TypeObject}},
+		})
+		if err != nil {
+			ret["error"] = err.Error()
+			return js.ValueOf(ret)
+		}
+		var opts excelize.HeaderFooterOptions
+		goVal, err := jsValueToGo(args[1], reflect.TypeOf(excelize.HeaderFooterOptions{}))
+		if err != nil {
+			ret["error"] = err.Error()
+			return js.ValueOf(ret)
+		}
+		opts = goVal.Elem().Interface().(excelize.HeaderFooterOptions)
+		if err = f.SetHeaderFooter(args[0].String(), &opts); err != nil {
 			ret["error"] = err.Error()
 			return js.ValueOf(ret)
 		}

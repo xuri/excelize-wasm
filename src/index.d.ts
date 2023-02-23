@@ -137,26 +137,30 @@ declare module 'excelize-wasm' {
    * the cells.
    */
   export type ConditionalFormatOptions = {
-    Type?:         string;
-    AboveAverage?: boolean;
-    Percent?:      boolean;
-    Format?:       number;
-    Criteria?:     string;
-    Value?:        string;
-    Minimum?:      string;
-    Maximum?:      string;
-    MinType?:      string;
-    MidType?:      string;
-    MaxType?:      string;
-    MinValue?:     string;
-    MidValue?:     string;
-    MaxValue?:     string;
-    MinColor?:     string;
-    MidColor?:     string;
-    MaxColor?:     string;
-    MinLength?:    string;
-    MaxLength?:    string;
-    BarColor?:     string;
+    Type?:           string;
+    AboveAverage?:   boolean;
+    Percent?:        boolean;
+    Format?:         number;
+    Criteria?:       string;
+    Value?:          string;
+    MinType?:        string;
+    MidType?:        string;
+    MaxType?:        string;
+    MinValue?:       string;
+    MidValue?:       string;
+    MaxValue?:       string;
+    MinColor?:       string;
+    MidColor?:       string;
+    MaxColor?:       string;
+    BarColor?:       string;
+    BarBorderColor?: string;
+    BarDirection?:   string;
+    BarOnly?:        boolean;
+    BarSolid?:       boolean;
+    IconStyle?:      string;
+    ReverseIcons?:   boolean;
+    IconsOnly?:      boolean;
+    StopIfTrue?:     boolean;
   };
 
   /**
@@ -471,6 +475,42 @@ declare module 'excelize-wasm' {
     Comment?:  string;
     RefersTo?: string;
     Scope?:    string;
+  };
+
+  /**
+   * DocProperties directly maps the document core properties.
+   */
+  export type DocProperties = {
+    Category?:       string;
+    ContentStatus?:  string;
+    Created?:        string;
+    Creator?:        string;
+    Description?:    string;
+    Identifier?:     string;
+    Keywords?:       string;
+    LastModifiedBy?: string;
+    Modified?:       string;
+    Revision?:       string;
+    Subject?:        string;
+    Title?:          string;
+    Language?:       string;
+    Version?:        string;
+  };
+
+  /**
+   * HeaderFooterOptions directly maps the settings of header and footer.
+   */
+  export type HeaderFooterOptions = {
+    AlignWithMargins?: boolean;
+    DifferentFirst?:   boolean;
+    DifferentOddEven?: boolean;
+    ScaleWithDoc?:     boolean;
+    OddHeader?:        string;
+    OddFooter?:        string;
+    EvenHeader?:       string;
+    EvenFooter?:       string;
+    FirstHeader?:      string;
+    FirstFooter?:      string;
   };
 
   /**
@@ -1571,6 +1611,205 @@ declare module 'excelize-wasm' {
      * @param definedName The name for a cell or cell range on a worksheet
      */
     SetDefinedName(definedName: DefinedName): { error: string | null }
+
+    /**
+     * SetDocProps provides a function to set document core properties. The
+     * properties that can be set are:
+     *
+     *      Property       | Description
+     *     ----------------+-----------------------------------------------------------
+     *      Title          | The name given to the resource.
+     *                     |
+     *      Subject        | The topic of the content of the resource.
+     *                     |
+     *      Creator        | An entity primarily responsible for making the content of
+     *                     | the resource.
+     *                     |
+     *      Keywords       | A delimited set of keywords to support searching and
+     *                     | indexing. This is typically a list of terms that are not
+     *                     | available elsewhere in the properties.
+     *                     |
+     *      Description    | An explanation of the content of the resource.
+     *                     |
+     *      LastModifiedBy | The user who performed the last modification. The
+     *                     | identification is environment-specific.
+     *                     |
+     *      Language       | The language of the intellectual content of the resource.
+     *                     |
+     *      Identifier     | An unambiguous reference to the resource within a given
+     *                     | context.
+     *                     |
+     *      Revision       | The topic of the content of the resource.
+     *                     |
+     *      ContentStatus  | The status of the content. For example: Values might
+     *                     | include "Draft", "Reviewed" and "Final"
+     *                     |
+     *      Category       | A categorization of the content of this package.
+     *                     |
+     *      Version        | The version number. This value is set by the user or by
+     *                     | the application.
+     *                     |
+     *      Created        | The created time of the content of the resource which
+     *                     | represent in ISO 8601 UTC format, for example
+     *                     | "2019-06-04T22:00:10Z".
+     *                     |
+     *      Modified       | The modified time of the content of the resource which
+     *                     | represent in ISO 8601 UTC format, for example
+     *                     | "2019-06-04T22:00:10Z".
+     *                     |
+     *
+     * For example:
+     *
+     * ```typescript
+     *	var { error } = f.SetDocProps({
+     *	    Category:       'category',
+     *	    ContentStatus:  'Draft',
+     *	    Created:        '2019-06-04T22:00:10Z',
+     *	    Creator:        'Go Excelize',
+     *	    Description:    'This file created by Go Excelize',
+     *	    Identifier:     'xlsx',
+     *	    Keywords:       'Spreadsheet',
+     *	    LastModifiedBy: 'Go Author',
+     *	    Modified:       '2019-06-04T22:00:10Z',
+     *	    Revision:       '0',
+     *	    Subject:        'Test Subject',
+     *	    Title:          'Test Title',
+     *	    Language:       'en-US',
+     *	    Version:        '1.0.0',
+     *	});
+     * ```
+     *
+     * @param docProperties The document core properties
+     */
+    SetDocProps(docProperties: DocProperties): { error: string | null }
+
+    /**
+     * SetHeaderFooter provides a function to set headers and footers by given
+     * worksheet name and the control characters.
+     *
+     * Headers and footers are specified using the following settings fields:
+     *
+     *      Fields           | Description
+     *     ------------------+-----------------------------------------------------------
+     *      AlignWithMargins | Align header footer margins with page margins
+     *      DifferentFirst   | Different first-page header and footer indicator
+     *      DifferentOddEven | Different odd and even page headers and footers indicator
+     *      ScaleWithDoc     | Scale header and footer with document scaling
+     *      OddFooter        | Odd Page Footer
+     *      OddHeader        | Odd Header
+     *      EvenFooter       | Even Page Footer
+     *      EvenHeader       | Even Page Header
+     *      FirstFooter      | First Page Footer
+     *      FirstHeader      | First Page Header
+     *
+     * The following formatting codes can be used in 6 string type fields:
+     * OddHeader, OddFooter, EvenHeader, EvenFooter, FirstFooter, FirstHeader
+     *
+     *      Formatting Code        | Description
+     *     ------------------------+----------------------------------------------------
+     *      &&                     | The character "&"
+     *                             |
+     *      &font-size             | Size of the text font, where font-size is a decimal
+     *                             | font size in points
+     *                             |
+     *      &"font name,font type" | A text font-name string, font name, and a text
+     *                             | font-type string, font type
+     *                             |
+     *      &"-,Regular"           | Regular text format. Toggles bold and italic modes
+     *                             | to off
+     *                             |
+     *      &A                     | Current worksheet's tab name
+     *                             |
+     *      &B or &"-,Bold"        | Bold text format, from off to on, or vice versa. The
+     *                             | default mode is off
+     *                             |
+     *      &D                     | Current date
+     *                             |
+     *      &C                     | Center section
+     *                             |
+     *      &E                     | Double-underline text format
+     *                             |
+     *      &F                     | Current workbook's file name
+     *                             |
+     *      &G                     | Drawing object as background (Not support currently)
+     *                             |
+     *      &H                     | Shadow text format
+     *                             |
+     *      &I or &"-,Italic"      | Italic text format
+     *                             |
+     *      &K                     | Text font color
+     *                             |
+     *                             | An RGB Color is specified as RRGGBB
+     *                             |
+     *                             | A Theme Color is specified as TTSNNN where TT is the
+     *                             | theme color Id, S is either "+" or "-" of the
+     *                             | tint/shade value, and NNN is the tint/shade value
+     *                             |
+     *      &L                     | Left section
+     *                             |
+     *      &N                     | Total number of pages
+     *                             |
+     *      &O                     | Outline text format
+     *                             |
+     *      &P[[+|-]n]             | Without the optional suffix, the current page
+     *                             | number in decimal
+     *                             |
+     *      &R                     | Right section
+     *                             |
+     *      &S                     | Strike through text format
+     *                             |
+     *      &T                     | Current time
+     *                             |
+     *      &U                     | Single-underline text format. If double-underline
+     *                             | mode is on, the next occurrence in a section
+     *                             | specifier toggles double-underline mode to off;
+     *                             | otherwise, it toggles single-underline mode, from
+     *                             | off to on, or vice versa. The default mode is off
+     *                             |
+     *      &X                     | Superscript text format
+     *                             |
+     *      &Y                     | Subscript text format
+     *                             |
+     *      &Z                     | Current workbook's file path
+     *
+     * For example:
+     *
+     * ```typescript
+     *	var { error } = f.SetHeaderFooter("Sheet1", {
+     *	    DifferentFirst:   true,
+     *	    DifferentOddEven: true,
+     *	    OddHeader:        '&R&P',
+     *	    OddFooter:        '&C&F',
+     *	    EvenHeader:       '&L&P',
+     *	    EvenFooter:       '&L&D&R&T',
+     *	    FirstHeader:      `&CCenter &"-,Bold"Bold&"-,Regular"HeaderU+000A&D`,
+     *	})
+     * ```
+     *
+     * This example shows:
+     *
+     * - The first page has its own header and footer
+     *
+     * - Odd and even-numbered pages have different headers and footers
+     *
+     * - Current page number in the right section of odd-page headers
+     *
+     * - Current workbook's file name in the center section of odd-page footers
+     *
+     * - Current page number in the left section of even-page headers
+     *
+     * - Current date in the left section and the current time in the right section
+     * of even-page footers
+     *
+     * - The text "Center Bold Header" on the first line of the center section of
+     * the first page, and the date on the second line of the center section of
+     * that same page
+     *
+     * - No footer on the first page
+     * @param sheet The worksheet name
+     * @param opts The header footer options
+     */
+    SetHeaderFooter(sheet: string, opts: HeaderFooterOptions): { error: string | null }
 
     /**
      * SetPanes provides a function to create and remove freeze panes and split
