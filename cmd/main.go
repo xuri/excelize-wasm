@@ -205,6 +205,8 @@ func regInteropFunc(f *excelize.File, fn map[string]interface{}) interface{} {
 		"SetDefinedName":         SetDefinedName(f),
 		"SetDocProps":            SetDocProps(f),
 		"SetHeaderFooter":        SetHeaderFooter(f),
+		"SetPageLayout":          SetPageLayout(f),
+		"SetPageMargins":         SetPageMargins(f),
 		"SetPanes":               SetPanes(f),
 		"SetRowHeight":           SetRowHeight(f),
 		"SetRowOutlineLevel":     SetRowOutlineLevel(f),
@@ -212,6 +214,7 @@ func regInteropFunc(f *excelize.File, fn map[string]interface{}) interface{} {
 		"SetRowVisible":          SetRowVisible(f),
 		"SetSheetCol":            SetSheetCol(f),
 		"SetSheetName":           SetSheetName(f),
+		"SetSheetProps":          SetSheetProps(f),
 		"SetSheetRow":            SetSheetRow(f),
 		"SetSheetVisible":        SetSheetVisible(f),
 		"UngroupSheets":          UngroupSheets(f),
@@ -831,14 +834,16 @@ func AutoFilter(f *excelize.File) func(this js.Value, args []js.Value) interface
 			ret["error"] = err.Error()
 			return js.ValueOf(ret)
 		}
-		var opts excelize.AutoFilterOptions
-		goVal, err := jsValueToGo(args[2], reflect.TypeOf(excelize.AutoFilterOptions{}))
-		if err != nil {
-			ret["error"] = err.Error()
-			return js.ValueOf(ret)
+		var opts []excelize.AutoFilterOptions
+		for i := 0; i < args[2].Length(); i++ {
+			goVal, err := jsValueToGo(args[2].Index(i), reflect.TypeOf(excelize.AutoFilterOptions{}))
+			if err != nil {
+				ret["error"] = err.Error()
+				return js.ValueOf(ret)
+			}
+			opts = append(opts, goVal.Elem().Interface().(excelize.AutoFilterOptions))
 		}
-		opts = goVal.Elem().Interface().(excelize.AutoFilterOptions)
-		if err := f.AutoFilter(args[0].String(), args[1].String(), &opts); err != nil {
+		if err := f.AutoFilter(args[0].String(), args[1].String(), opts); err != nil {
 			ret["error"] = err.Error()
 		}
 		return js.ValueOf(ret)
@@ -2439,6 +2444,60 @@ func SetHeaderFooter(f *excelize.File) func(this js.Value, args []js.Value) inte
 	}
 }
 
+// SetPageLayout provides a function to sets worksheet page layout.
+func SetPageLayout(f *excelize.File) func(this js.Value, args []js.Value) interface{} {
+	return func(this js.Value, args []js.Value) interface{} {
+		ret := map[string]interface{}{"error": nil}
+		err := prepareArgs(args, []argsRule{
+			{types: []js.Type{js.TypeString}},
+			{types: []js.Type{js.TypeObject}},
+		})
+		if err != nil {
+			ret["error"] = err.Error()
+			return js.ValueOf(ret)
+		}
+		var opts excelize.PageLayoutOptions
+		goVal, err := jsValueToGo(args[1], reflect.TypeOf(excelize.PageLayoutOptions{}))
+		if err != nil {
+			ret["error"] = err.Error()
+			return js.ValueOf(ret)
+		}
+		opts = goVal.Elem().Interface().(excelize.PageLayoutOptions)
+		if err = f.SetPageLayout(args[0].String(), &opts); err != nil {
+			ret["error"] = err.Error()
+			return js.ValueOf(ret)
+		}
+		return js.ValueOf(ret)
+	}
+}
+
+// SetPageMargins provides a function to set worksheet page margins.
+func SetPageMargins(f *excelize.File) func(this js.Value, args []js.Value) interface{} {
+	return func(this js.Value, args []js.Value) interface{} {
+		ret := map[string]interface{}{"error": nil}
+		err := prepareArgs(args, []argsRule{
+			{types: []js.Type{js.TypeString}},
+			{types: []js.Type{js.TypeObject}},
+		})
+		if err != nil {
+			ret["error"] = err.Error()
+			return js.ValueOf(ret)
+		}
+		var opts excelize.PageLayoutMarginsOptions
+		goVal, err := jsValueToGo(args[1], reflect.TypeOf(excelize.PageLayoutMarginsOptions{}))
+		if err != nil {
+			ret["error"] = err.Error()
+			return js.ValueOf(ret)
+		}
+		opts = goVal.Elem().Interface().(excelize.PageLayoutMarginsOptions)
+		if err = f.SetPageMargins(args[0].String(), &opts); err != nil {
+			ret["error"] = err.Error()
+			return js.ValueOf(ret)
+		}
+		return js.ValueOf(ret)
+	}
+}
+
 // SetPanes provides a function to create and remove freeze panes and split
 // panes by given worksheet name and panes format set.
 func SetPanes(f *excelize.File) func(this js.Value, args []js.Value) interface{} {
@@ -2598,6 +2657,33 @@ func SetSheetName(f *excelize.File) func(this js.Value, args []js.Value) interfa
 		}
 		if err := f.SetSheetName(args[0].String(), args[1].String()); err != nil {
 			ret["error"] = err.Error()
+		}
+		return js.ValueOf(ret)
+	}
+}
+
+// SetSheetProps provides a function to set worksheet properties.
+func SetSheetProps(f *excelize.File) func(this js.Value, args []js.Value) interface{} {
+	return func(this js.Value, args []js.Value) interface{} {
+		ret := map[string]interface{}{"error": nil}
+		err := prepareArgs(args, []argsRule{
+			{types: []js.Type{js.TypeString}},
+			{types: []js.Type{js.TypeObject}},
+		})
+		if err != nil {
+			ret["error"] = err.Error()
+			return js.ValueOf(ret)
+		}
+		var opts excelize.SheetPropsOptions
+		goVal, err := jsValueToGo(args[1], reflect.TypeOf(excelize.SheetPropsOptions{}))
+		if err != nil {
+			ret["error"] = err.Error()
+			return js.ValueOf(ret)
+		}
+		opts = goVal.Elem().Interface().(excelize.SheetPropsOptions)
+		if err = f.SetSheetProps(args[0].String(), &opts); err != nil {
+			ret["error"] = err.Error()
+			return js.ValueOf(ret)
 		}
 		return js.ValueOf(ret)
 	}
