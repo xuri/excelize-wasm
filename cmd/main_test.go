@@ -503,6 +503,43 @@ func TestAddShape(t *testing.T) {
 	assert.Equal(t, errArgType.Error(), ret.Get("error").String())
 }
 
+func TestAddSparkline(t *testing.T) {
+	f := NewFile(js.Value{}, []js.Value{})
+	assert.True(t, f.(js.Value).Get("error").IsNull())
+
+	ret := f.(js.Value).Call("AddSparkline", js.ValueOf("Sheet1"),
+		js.ValueOf(map[string]interface{}{
+			"Location": []interface{}{"A2"},
+			"Range":    []interface{}{"Sheet1!B1:J1"},
+		}),
+	)
+	assert.True(t, ret.Get("error").IsNull(), ret.Get("error").String())
+
+	ret = f.(js.Value).Call("AddSparkline", js.ValueOf("Sheet1"))
+	assert.EqualError(t, errArgNum, ret.Get("error").String(), ret.Get("error").String())
+
+	ret = f.(js.Value).Call("AddSparkline", js.ValueOf("Sheet1"),
+		js.ValueOf(map[string]interface{}{"Location": true}))
+	assert.EqualError(t, errArgType, ret.Get("error").String(), ret.Get("error").String())
+
+	ret = f.(js.Value).Call("AddSparkline", js.ValueOf("Sheet1"),
+		js.ValueOf(map[string]interface{}{
+			"Location": []interface{}{"A2"},
+			"Range":    []interface{}{"Sheet1!B1:J1"},
+			"Style":    -1,
+		}),
+	)
+	assert.Equal(t, "parameter 'Style' must between 0-35", ret.Get("error").String(), ret.Get("error").String())
+
+	ret = f.(js.Value).Call("AddSparkline", js.ValueOf("SheetN"),
+		js.ValueOf(map[string]interface{}{
+			"Location": []interface{}{"A2"},
+			"Range":    []interface{}{"Sheet1!B1:J1"},
+		}),
+	)
+	assert.Equal(t, "sheet SheetN does not exist", ret.Get("error").String())
+}
+
 func TestAddTable(t *testing.T) {
 	f := NewFile(js.Value{}, []js.Value{})
 	assert.True(t, f.(js.Value).Get("error").IsNull())
@@ -1144,7 +1181,7 @@ func TestNewConditionalStyle(t *testing.T) {
 		js.ValueOf(map[string]interface{}{
 			"Fill": map[string]interface{}{
 				"Type":    "pattern",
-				"Color":   []interface{}{"#FEEAA0"},
+				"Color":   []interface{}{"FEEAA0"},
 				"Pattern": 1,
 			},
 		}),
@@ -1200,7 +1237,7 @@ func TestNewStyle(t *testing.T) {
 		},
 		"Fill": map[string]interface{}{
 			"Type":    "gradient",
-			"Color":   []interface{}{"#FFFFFF", "#E0EBF5"},
+			"Color":   []interface{}{"FFFFFF", "E0EBF5"},
 			"Shading": 1,
 		},
 		"Alignment": map[string]interface{}{
@@ -2004,6 +2041,27 @@ func TestSetSheetVisible(t *testing.T) {
 
 	ret = f.(js.Value).Call("SetSheetVisible", js.ValueOf("SheetN"), js.ValueOf(true))
 	assert.True(t, ret.Get("error").IsNull())
+}
+
+func TestSetWorkbookProps(t *testing.T) {
+	f := NewFile(js.Value{}, []js.Value{})
+	assert.True(t, f.(js.Value).Get("error").IsNull())
+
+	ret := f.(js.Value).Call("SetWorkbookProps",
+		js.ValueOf(map[string]interface{}{
+			"Date1904":      true,
+			"FilterPrivacy": true,
+			"CodeName":      "code",
+		}),
+	)
+	assert.True(t, ret.Get("error").IsNull())
+
+	ret = f.(js.Value).Call("SetWorkbookProps")
+	assert.EqualError(t, errArgNum, ret.Get("error").String())
+
+	ret = f.(js.Value).Call("SetWorkbookProps",
+		js.ValueOf(map[string]interface{}{"CodeName": true}))
+	assert.EqualError(t, errArgType, ret.Get("error").String())
 }
 
 func TestUngroupSheets(t *testing.T) {

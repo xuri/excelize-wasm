@@ -203,6 +203,39 @@ declare module 'excelize-wasm' {
   };
 
   /**
+   * SparklineOptions directly maps the settings of the sparkline.
+   */
+  export type SparklineOptions = {
+    Location?:      string[];
+    Range?:         string[];
+    Max?:           number;
+    CustMax?:       number;
+    Min?:           number;
+    CustMin?:       number;
+    Type?:          string;
+    Weight?:        number;
+    DateAxis?:      boolean;
+    Markers?:       boolean;
+    High?:          boolean;
+    Low?:           boolean;
+    First?:         boolean;
+    Last?:          boolean;
+    Negative?:      boolean;
+    Axis?:          boolean;
+    Hidden?:        boolean;
+    Reverse?:       boolean;
+    Style?:         number;
+    SeriesColor?:   string;
+    NegativeColor?: string;
+    MarkersColor?:  string;
+    FirstColor?:    string;
+    LastColor?:     string;
+    HightColor?:    string;
+    LowColor?:      string;
+    EmptyCells?:    string;
+  };
+
+  /**
    * GraphicOptions directly maps the format settings of the picture.
    */
   export type GraphicOptions = {
@@ -598,6 +631,15 @@ declare module 'excelize-wasm' {
   };
 
   /**
+   * WorkbookPropsOptions directly maps the settings of workbook proprieties.
+   */
+  export type WorkbookPropsOptions = {
+    Date1904?:      boolean;
+    FilterPrivacy?: boolean;
+    CodeName?:      string;
+  };
+
+  /**
    * WorkbookProtectionOptions directly maps the settings of workbook
    * protection.
    */
@@ -755,6 +797,45 @@ declare module 'excelize-wasm' {
      * @param opts The shape options
      */
     AddShape(sheet: string, cell: string, opts: Shape): { error: string | null }
+
+    /**
+     * AddSparkline provides a function to add sparklines to the worksheet by
+     * given formatting options. Sparklines are small charts that fit in a single
+     * cell and are used to show trends in data. Sparklines are a feature of Excel
+     * 2010 and later only. You can write them to an XLSX file that can be read by
+     * Excel 2007, but they won't be displayed. For example, add a grouped
+     * sparkline. Changes are applied to all three:
+     *
+     * ```typescript
+     *	const { error } = f.AddSparkline("Sheet1", {
+     *	    Location: ["A1", "A2", "A3"],
+     *	    Range:    ["Sheet2!A1:J1", "Sheet2!A2:J2", "Sheet2!A3:J3"],
+     *	    Markers:  true,
+     *	})
+     * ```
+     *
+     * The following shows the formatting options of sparkline supported by excelize-wasm:
+     *
+     *      Parameter   | Description
+     *     -------------+--------------------------------------------
+     *      Location    | Required, must have the same number with 'Range' parameter
+     *      Range       | Required, must have the same number with 'Location' parameter
+     *      Type        | Enumeration value: line, column, win_loss
+     *      Style       | Value range: 0 - 35
+     *      Hight       | Toggle sparkline high points
+     *      Low         | Toggle sparkline low points
+     *      First       | Toggle sparkline first points
+     *      Last        | Toggle sparkline last points
+     *      Negative    | Toggle sparkline negative points
+     *      Markers     | Toggle sparkline markers
+     *      Axis        | Used to specify if show horizontal axis
+     *      Reverse     | Used to specify if enable plot data right-to-left
+     *      SeriesColor | An RGB Color is specified as RRGGBB
+     *
+     * @param sheet The worksheet name
+     * @param opts The sparkline options
+     */
+    AddSparkline(sheet: string, opts: SparklineOptions): { error: string | null }
 
     /**
      * AddTable provides the method to add table in a worksheet by given
@@ -2125,6 +2206,12 @@ declare module 'excelize-wasm' {
      * @param visible The worksheet visibility
      */
     SetSheetVisible(sheet: string, visible: boolean): { error: string | null }
+
+    /**
+     * SetWorkbookProps provides a function to sets workbook properties.
+     * @param opts The workbook property options
+     */
+    SetWorkbookProps(opts: WorkbookPropsOptions): { error: string | null }
 
     /**
      * UngroupSheets provides a function to ungroup worksheets.

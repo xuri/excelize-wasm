@@ -137,6 +137,7 @@ func regInteropFunc(f *excelize.File, fn map[string]interface{}) interface{} {
 		"AddPictureFromBytes":    AddPictureFromBytes(f),
 		"AddPivotTable":          AddPivotTable(f),
 		"AddShape":               AddShape(f),
+		"AddSparkline":           AddSparkline(f),
 		"AddTable":               AddTable(f),
 		"AutoFilter":             AutoFilter(f),
 		"CalcCellValue":          CalcCellValue(f),
@@ -217,6 +218,7 @@ func regInteropFunc(f *excelize.File, fn map[string]interface{}) interface{} {
 		"SetSheetProps":          SetSheetProps(f),
 		"SetSheetRow":            SetSheetRow(f),
 		"SetSheetVisible":        SetSheetVisible(f),
+		"SetWorkbookProps":       SetWorkbookProps(f),
 		"UngroupSheets":          UngroupSheets(f),
 		"UnmergeCell":            UnmergeCell(f),
 		"UnprotectSheet":         UnprotectSheet(f),
@@ -787,6 +789,35 @@ func AddShape(f *excelize.File) func(this js.Value, args []js.Value) interface{}
 		}
 		opts = goVal.Elem().Interface().(excelize.Shape)
 		if err := f.AddShape(args[0].String(), args[1].String(), &opts); err != nil {
+			ret["error"] = err.Error()
+		}
+		return js.ValueOf(ret)
+	}
+}
+
+// AddSparkline provides a function to add sparklines to the worksheet by
+// given formatting options. Sparklines are small charts that fit in a single
+// cell and are used to show trends in data. Sparklines are a feature of Excel
+// 2010 and later only. You can write them to an XLSX file that can be read by
+// Excel 2007, but they won't be displayed.
+func AddSparkline(f *excelize.File) func(this js.Value, args []js.Value) interface{} {
+	return func(this js.Value, args []js.Value) interface{} {
+		ret := map[string]interface{}{"error": nil}
+		if err := prepareArgs(args, []argsRule{
+			{types: []js.Type{js.TypeString}},
+			{types: []js.Type{js.TypeObject}},
+		}); err != nil {
+			ret["error"] = err.Error()
+			return js.ValueOf(ret)
+		}
+		var opts excelize.SparklineOptions
+		goVal, err := jsValueToGo(args[1], reflect.TypeOf(excelize.SparklineOptions{}))
+		if err != nil {
+			ret["error"] = err.Error()
+			return js.ValueOf(ret)
+		}
+		opts = goVal.Elem().Interface().(excelize.SparklineOptions)
+		if err := f.AddSparkline(args[0].String(), &opts); err != nil {
 			ret["error"] = err.Error()
 		}
 		return js.ValueOf(ret)
@@ -2739,6 +2770,32 @@ func SetSheetVisible(f *excelize.File) func(this js.Value, args []js.Value) inte
 		}
 		if err := f.SetSheetVisible(args[0].String(), args[1].Bool()); err != nil {
 			ret["error"] = err.Error()
+		}
+		return js.ValueOf(ret)
+	}
+}
+
+// SetWorkbookProps provides a function to sets workbook properties.
+func SetWorkbookProps(f *excelize.File) func(this js.Value, args []js.Value) interface{} {
+	return func(this js.Value, args []js.Value) interface{} {
+		ret := map[string]interface{}{"error": nil}
+		err := prepareArgs(args, []argsRule{
+			{types: []js.Type{js.TypeObject}},
+		})
+		if err != nil {
+			ret["error"] = err.Error()
+			return js.ValueOf(ret)
+		}
+		var props excelize.WorkbookPropsOptions
+		goVal, err := jsValueToGo(args[0], reflect.TypeOf(excelize.WorkbookPropsOptions{}))
+		if err != nil {
+			ret["error"] = err.Error()
+			return js.ValueOf(ret)
+		}
+		props = goVal.Elem().Interface().(excelize.WorkbookPropsOptions)
+		if err = f.SetWorkbookProps(&props); err != nil {
+			ret["error"] = err.Error()
+			return js.ValueOf(ret)
 		}
 		return js.ValueOf(ret)
 	}
