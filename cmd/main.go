@@ -137,6 +137,7 @@ func regInteropFunc(f *excelize.File, fn map[string]interface{}) interface{} {
 		"AddPictureFromBytes":    AddPictureFromBytes(f),
 		"AddPivotTable":          AddPivotTable(f),
 		"AddShape":               AddShape(f),
+		"AddSparkline":           AddSparkline(f),
 		"AddTable":               AddTable(f),
 		"AutoFilter":             AutoFilter(f),
 		"CalcCellValue":          CalcCellValue(f),
@@ -144,6 +145,7 @@ func regInteropFunc(f *excelize.File, fn map[string]interface{}) interface{} {
 		"DeleteChart":            DeleteChart(f),
 		"DeleteComment":          DeleteComment(f),
 		"DeleteDataValidation":   DeleteDataValidation(f),
+		"DeleteDefinedName":      DeleteDefinedName(f),
 		"DeletePicture":          DeletePicture(f),
 		"DeleteSheet":            DeleteSheet(f),
 		"DuplicateRow":           DuplicateRow(f),
@@ -159,6 +161,7 @@ func regInteropFunc(f *excelize.File, fn map[string]interface{}) interface{} {
 		"GetColVisible":          GetColVisible(f),
 		"GetColWidth":            GetColWidth(f),
 		"GetCols":                GetCols(f),
+		"GetDefaultFont":         GetDefaultFont(f),
 		"GetRowHeight":           GetRowHeight(f),
 		"GetRowOutlineLevel":     GetRowOutlineLevel(f),
 		"GetRowVisible":          GetRowVisible(f),
@@ -176,15 +179,21 @@ func regInteropFunc(f *excelize.File, fn map[string]interface{}) interface{} {
 		"NewConditionalStyle":    NewConditionalStyle(f),
 		"NewSheet":               NewSheet(f),
 		"NewStyle":               NewStyle(f),
+		"ProtectSheet":           ProtectSheet(f),
+		"ProtectWorkbook":        ProtectWorkbook(f),
 		"RemoveCol":              RemoveCol(f),
 		"RemovePageBreak":        RemovePageBreak(f),
 		"RemoveRow":              RemoveRow(f),
 		"SearchSheet":            SearchSheet(f),
 		"SetActiveSheet":         SetActiveSheet(f),
+		"SetAppProps":            SetAppProps(f),
 		"SetCellBool":            SetCellBool(f),
 		"SetCellDefault":         SetCellDefault(f),
 		"SetCellFloat":           SetCellFloat(f),
+		"SetCellFormula":         SetCellFormula(f),
+		"SetCellHyperLink":       SetCellHyperLink(f),
 		"SetCellInt":             SetCellInt(f),
+		"SetCellRichText":        SetCellRichText(f),
 		"SetCellStr":             SetCellStr(f),
 		"SetCellStyle":           SetCellStyle(f),
 		"SetCellValue":           SetCellValue(f),
@@ -194,6 +203,11 @@ func regInteropFunc(f *excelize.File, fn map[string]interface{}) interface{} {
 		"SetColWidth":            SetColWidth(f),
 		"SetConditionalFormat":   SetConditionalFormat(f),
 		"SetDefaultFont":         SetDefaultFont(f),
+		"SetDefinedName":         SetDefinedName(f),
+		"SetDocProps":            SetDocProps(f),
+		"SetHeaderFooter":        SetHeaderFooter(f),
+		"SetPageLayout":          SetPageLayout(f),
+		"SetPageMargins":         SetPageMargins(f),
 		"SetPanes":               SetPanes(f),
 		"SetRowHeight":           SetRowHeight(f),
 		"SetRowOutlineLevel":     SetRowOutlineLevel(f),
@@ -201,8 +215,10 @@ func regInteropFunc(f *excelize.File, fn map[string]interface{}) interface{} {
 		"SetRowVisible":          SetRowVisible(f),
 		"SetSheetCol":            SetSheetCol(f),
 		"SetSheetName":           SetSheetName(f),
+		"SetSheetProps":          SetSheetProps(f),
 		"SetSheetRow":            SetSheetRow(f),
 		"SetSheetVisible":        SetSheetVisible(f),
+		"SetWorkbookProps":       SetWorkbookProps(f),
 		"UngroupSheets":          UngroupSheets(f),
 		"UnmergeCell":            UnmergeCell(f),
 		"UnprotectSheet":         UnprotectSheet(f),
@@ -779,6 +795,35 @@ func AddShape(f *excelize.File) func(this js.Value, args []js.Value) interface{}
 	}
 }
 
+// AddSparkline provides a function to add sparklines to the worksheet by
+// given formatting options. Sparklines are small charts that fit in a single
+// cell and are used to show trends in data. Sparklines are a feature of Excel
+// 2010 and later only. You can write them to an XLSX file that can be read by
+// Excel 2007, but they won't be displayed.
+func AddSparkline(f *excelize.File) func(this js.Value, args []js.Value) interface{} {
+	return func(this js.Value, args []js.Value) interface{} {
+		ret := map[string]interface{}{"error": nil}
+		if err := prepareArgs(args, []argsRule{
+			{types: []js.Type{js.TypeString}},
+			{types: []js.Type{js.TypeObject}},
+		}); err != nil {
+			ret["error"] = err.Error()
+			return js.ValueOf(ret)
+		}
+		var opts excelize.SparklineOptions
+		goVal, err := jsValueToGo(args[1], reflect.TypeOf(excelize.SparklineOptions{}))
+		if err != nil {
+			ret["error"] = err.Error()
+			return js.ValueOf(ret)
+		}
+		opts = goVal.Elem().Interface().(excelize.SparklineOptions)
+		if err := f.AddSparkline(args[0].String(), &opts); err != nil {
+			ret["error"] = err.Error()
+		}
+		return js.ValueOf(ret)
+	}
+}
+
 // AddTable provides the method to add table in a worksheet by given worksheet
 // name, range reference and format set.
 func AddTable(f *excelize.File) func(this js.Value, args []js.Value) interface{} {
@@ -820,14 +865,16 @@ func AutoFilter(f *excelize.File) func(this js.Value, args []js.Value) interface
 			ret["error"] = err.Error()
 			return js.ValueOf(ret)
 		}
-		var opts excelize.AutoFilterOptions
-		goVal, err := jsValueToGo(args[2], reflect.TypeOf(excelize.AutoFilterOptions{}))
-		if err != nil {
-			ret["error"] = err.Error()
-			return js.ValueOf(ret)
+		var opts []excelize.AutoFilterOptions
+		for i := 0; i < args[2].Length(); i++ {
+			goVal, err := jsValueToGo(args[2].Index(i), reflect.TypeOf(excelize.AutoFilterOptions{}))
+			if err != nil {
+				ret["error"] = err.Error()
+				return js.ValueOf(ret)
+			}
+			opts = append(opts, goVal.Elem().Interface().(excelize.AutoFilterOptions))
 		}
-		opts = goVal.Elem().Interface().(excelize.AutoFilterOptions)
-		if err := f.AutoFilter(args[0].String(), args[1].String(), &opts); err != nil {
+		if err := f.AutoFilter(args[0].String(), args[1].String(), opts); err != nil {
 			ret["error"] = err.Error()
 		}
 		return js.ValueOf(ret)
@@ -940,6 +987,34 @@ func DeleteDataValidation(f *excelize.File) func(this js.Value, args []js.Value)
 	}
 }
 
+// DeleteDefinedName provides a function to delete the defined names of the
+// workbook or worksheet. If not specified scope, the default scope is
+// workbook.
+func DeleteDefinedName(f *excelize.File) func(this js.Value, args []js.Value) interface{} {
+	return func(this js.Value, args []js.Value) interface{} {
+		ret := map[string]interface{}{"error": nil}
+		err := prepareArgs(args, []argsRule{
+			{types: []js.Type{js.TypeObject}},
+		})
+		if err != nil {
+			ret["error"] = err.Error()
+			return js.ValueOf(ret)
+		}
+		var definedName excelize.DefinedName
+		goVal, err := jsValueToGo(args[0], reflect.TypeOf(excelize.DefinedName{}))
+		if err != nil {
+			ret["error"] = err.Error()
+			return js.ValueOf(ret)
+		}
+		definedName = goVal.Elem().Interface().(excelize.DefinedName)
+		if err = f.DeleteDefinedName(&definedName); err != nil {
+			ret["error"] = err.Error()
+			return js.ValueOf(ret)
+		}
+		return js.ValueOf(ret)
+	}
+}
+
 // DeletePicture provides a function to delete charts in spreadsheet by given
 // worksheet name and cell reference. Note that the image file won't be
 // deleted from the document currently.
@@ -1044,16 +1119,16 @@ func GetActiveSheetIndex(f *excelize.File) func(this js.Value, args []js.Value) 
 // GetAppProps provides a function to get document application properties.
 func GetAppProps(f *excelize.File) func(this js.Value, args []js.Value) interface{} {
 	return func(this js.Value, args []js.Value) interface{} {
-		ret := map[string]interface{}{
-			"Application":        "",
-			"scale_crop":         false,
-			"doc_security":       0,
-			"company":            "",
-			"links_up_to_date":   false,
-			"hyperlinks_changed": false,
-			"app_version":        "",
-			"error":              nil,
+		p := map[string]interface{}{
+			"Application":       "",
+			"ScaleCrop":         false,
+			"DocSecurity":       0,
+			"Company":           "",
+			"LinksUpToDate":     false,
+			"HyperlinksChanged": false,
+			"AppVersion":        "",
 		}
+		ret := map[string]interface{}{"error": nil}
 		if err := prepareArgs(args, []argsRule{}); err != nil {
 			ret["error"] = err.Error()
 			return js.ValueOf(ret)
@@ -1064,8 +1139,9 @@ func GetAppProps(f *excelize.File) func(this js.Value, args []js.Value) interfac
 		}
 		s := reflect.ValueOf(props).Elem()
 		for i := 0; i < s.NumField(); i++ {
-			ret[s.Type().Field(i).Name] = s.Field(i).Interface()
+			p[s.Type().Field(i).Name] = s.Field(i).Interface()
 		}
+		ret["props"] = p
 		return js.ValueOf(ret)
 	}
 }
@@ -1146,12 +1222,22 @@ func GetCellValue(f *excelize.File) func(this js.Value, args []js.Value) interfa
 		err := prepareArgs(args, []argsRule{
 			{types: []js.Type{js.TypeString}},
 			{types: []js.Type{js.TypeString}},
+			{types: []js.Type{js.TypeObject}, opts: true},
 		})
 		if err != nil {
 			ret["error"] = err.Error()
 			return js.ValueOf(ret)
 		}
-		if ret["value"], err = f.GetCellValue(args[0].String(), args[1].String()); err != nil {
+		var opts excelize.Options
+		if len(args) == 3 {
+			goVal, err := jsValueToGo(args[2], reflect.TypeOf(excelize.Options{}))
+			if err != nil {
+				ret["error"] = err.Error()
+				return js.ValueOf(ret)
+			}
+			opts = goVal.Elem().Interface().(excelize.Options)
+		}
+		if ret["value"], err = f.GetCellValue(args[0].String(), args[1].String(), opts); err != nil {
 			ret["error"] = err.Error()
 			return js.ValueOf(ret)
 		}
@@ -1278,6 +1364,23 @@ func GetCols(f *excelize.File) func(this js.Value, args []js.Value) interface{} 
 			result[c] = js.ValueOf(line)
 		}
 		ret["result"] = result
+		return js.ValueOf(ret)
+	}
+}
+
+// GetDefaultFont provides the default font name currently set in the
+// workbook. The spreadsheet generated by excelize default font is Calibri.
+func GetDefaultFont(f *excelize.File) func(this js.Value, args []js.Value) interface{} {
+	return func(this js.Value, args []js.Value) interface{} {
+		ret := map[string]interface{}{"fontName": "", "error": nil}
+		err := prepareArgs(args, []argsRule{})
+		if err != nil {
+			ret["error"] = err.Error()
+			return js.ValueOf(ret)
+		}
+		if ret["fontName"], err = f.GetDefaultFont(); err != nil {
+			ret["error"] = err.Error()
+		}
 		return js.ValueOf(ret)
 	}
 }
@@ -1694,6 +1797,65 @@ func NewStyle(f *excelize.File) func(this js.Value, args []js.Value) interface{}
 	}
 }
 
+// ProtectSheet provides a function to prevent other users from accidentally or
+// deliberately changing, moving, or deleting data in a worksheet. The
+// optional field AlgorithmName specified hash algorithm, support XOR, MD4,
+// MD5, SHA-1, SHA2-56, SHA-384, and SHA-512 currently, if no hash algorithm
+// specified, will be using the XOR algorithm as default.
+func ProtectSheet(f *excelize.File) func(this js.Value, args []js.Value) interface{} {
+	return func(this js.Value, args []js.Value) interface{} {
+		ret := map[string]interface{}{"error": nil}
+		if err := prepareArgs(args, []argsRule{
+			{types: []js.Type{js.TypeString}},
+			{types: []js.Type{js.TypeObject}},
+		}); err != nil {
+			ret["error"] = err.Error()
+			return js.ValueOf(ret)
+		}
+		var opts excelize.SheetProtectionOptions
+		goVal, err := jsValueToGo(args[1], reflect.TypeOf(excelize.SheetProtectionOptions{}))
+		if err != nil {
+			ret["error"] = err.Error()
+			return js.ValueOf(ret)
+		}
+		opts = goVal.Elem().Interface().(excelize.SheetProtectionOptions)
+		if err := f.ProtectSheet(args[0].String(), &opts); err != nil {
+			ret["error"] = err.Error()
+		}
+		return js.ValueOf(ret)
+	}
+}
+
+// ProtectWorkbook provides a function to prevent other users from viewing
+// hidden worksheets, adding, moving, deleting, or hiding worksheets, and
+// renaming worksheets in a workbook. The optional field AlgorithmName
+// specified hash algorithm, support XOR, MD4, MD5, SHA-1, SHA2-56, SHA-384,
+// and SHA-512 currently, if no hash algorithm specified, will be using the XOR
+// algorithm as default. The generated workbook only works on Microsoft Office
+// 2007 and later.
+func ProtectWorkbook(f *excelize.File) func(this js.Value, args []js.Value) interface{} {
+	return func(this js.Value, args []js.Value) interface{} {
+		ret := map[string]interface{}{"error": nil}
+		if err := prepareArgs(args, []argsRule{
+			{types: []js.Type{js.TypeObject}},
+		}); err != nil {
+			ret["error"] = err.Error()
+			return js.ValueOf(ret)
+		}
+		var opts excelize.WorkbookProtectionOptions
+		goVal, err := jsValueToGo(args[0], reflect.TypeOf(excelize.WorkbookProtectionOptions{}))
+		if err != nil {
+			ret["error"] = err.Error()
+			return js.ValueOf(ret)
+		}
+		opts = goVal.Elem().Interface().(excelize.WorkbookProtectionOptions)
+		if err := f.ProtectWorkbook(&opts); err != nil {
+			ret["error"] = err.Error()
+		}
+		return js.ValueOf(ret)
+	}
+}
+
 // RemoveCol provides a function to remove single column by given worksheet
 // name and column index.
 //
@@ -1812,6 +1974,30 @@ func SetActiveSheet(f *excelize.File) func(this js.Value, args []js.Value) inter
 	}
 }
 
+// SetAppProps provides a function to set document application properties.
+func SetAppProps(f *excelize.File) func(this js.Value, args []js.Value) interface{} {
+	return func(this js.Value, args []js.Value) interface{} {
+		ret := map[string]interface{}{"error": nil}
+		if err := prepareArgs(args, []argsRule{
+			{types: []js.Type{js.TypeObject}},
+		}); err != nil {
+			ret["error"] = err.Error()
+			return js.ValueOf(ret)
+		}
+		var props excelize.AppProperties
+		goVal, err := jsValueToGo(args[0], reflect.TypeOf(excelize.AppProperties{}))
+		if err != nil {
+			ret["error"] = err.Error()
+			return js.ValueOf(ret)
+		}
+		props = goVal.Elem().Interface().(excelize.AppProperties)
+		if err := f.SetAppProps(&props); err != nil {
+			ret["error"] = err.Error()
+		}
+		return js.ValueOf(ret)
+	}
+}
+
 // SetCellBool provides a function to set bool type value of a cell by given
 // worksheet name, cell reference and cell value.
 func SetCellBool(f *excelize.File) func(this js.Value, args []js.Value) interface{} {
@@ -1877,6 +2063,77 @@ func SetCellFloat(f *excelize.File) func(this js.Value, args []js.Value) interfa
 	}
 }
 
+// SetCellFormula provides a function to set formula on the cell is taken
+// according to the given worksheet name and cell formula settings. The result
+// of the formula cell can be calculated when the worksheet is opened by the
+// Office Excel application or can be using the "CalcCellValue" function also
+// can get the calculated cell value. If the Excel application doesn't
+// calculate the formula automatically when the workbook has been opened,
+// please call "UpdateLinkedValue" after setting the cell formula functions.
+func SetCellFormula(f *excelize.File) func(this js.Value, args []js.Value) interface{} {
+	return func(this js.Value, args []js.Value) interface{} {
+		ret := map[string]interface{}{"error": nil}
+		if err := prepareArgs(args, []argsRule{
+			{types: []js.Type{js.TypeString}},
+			{types: []js.Type{js.TypeString}},
+			{types: []js.Type{js.TypeString}},
+			{types: []js.Type{js.TypeObject}, opts: true},
+		}); err != nil {
+			ret["error"] = err.Error()
+			return js.ValueOf(ret)
+		}
+		var opts excelize.FormulaOpts
+		if len(args) == 4 {
+			goVal, err := jsValueToGo(args[3], reflect.TypeOf(excelize.FormulaOpts{}))
+			if err != nil {
+				ret["error"] = err.Error()
+				return js.ValueOf(ret)
+			}
+			opts = goVal.Elem().Interface().(excelize.FormulaOpts)
+		}
+		if err := f.SetCellFormula(args[0].String(), args[1].String(), args[2].String(), opts); err != nil {
+			ret["error"] = err.Error()
+		}
+		return js.ValueOf(ret)
+	}
+}
+
+// SetCellHyperLink provides a function to set cell hyperlink by given
+// worksheet name and link URL address. LinkType defines two types of
+// hyperlink "External" for website or "Location" for moving to one of cell in
+// this workbook. Maximum limit hyperlinks in a worksheet is 65530. This
+// function is only used to set the hyperlink of the cell and doesn't affect
+// the value of the cell. If you need to set the value of the cell, please use
+// the other functions such as `SetCellStyle` or `SetSheetRow`.
+func SetCellHyperLink(f *excelize.File) func(this js.Value, args []js.Value) interface{} {
+	return func(this js.Value, args []js.Value) interface{} {
+		ret := map[string]interface{}{"error": nil}
+		if err := prepareArgs(args, []argsRule{
+			{types: []js.Type{js.TypeString}},
+			{types: []js.Type{js.TypeString}},
+			{types: []js.Type{js.TypeString}},
+			{types: []js.Type{js.TypeString}},
+			{types: []js.Type{js.TypeObject}, opts: true},
+		}); err != nil {
+			ret["error"] = err.Error()
+			return js.ValueOf(ret)
+		}
+		var opts excelize.HyperlinkOpts
+		if len(args) == 5 {
+			goVal, err := jsValueToGo(args[4], reflect.TypeOf(excelize.HyperlinkOpts{}))
+			if err != nil {
+				ret["error"] = err.Error()
+				return js.ValueOf(ret)
+			}
+			opts = goVal.Elem().Interface().(excelize.HyperlinkOpts)
+		}
+		if err := f.SetCellHyperLink(args[0].String(), args[1].String(), args[2].String(), args[3].String(), opts); err != nil {
+			ret["error"] = err.Error()
+		}
+		return js.ValueOf(ret)
+	}
+}
+
 // SetCellInt provides a function to set int type value of a cell by given
 // worksheet name, cell reference and cell value.
 func SetCellInt(f *excelize.File) func(this js.Value, args []js.Value) interface{} {
@@ -1891,6 +2148,35 @@ func SetCellInt(f *excelize.File) func(this js.Value, args []js.Value) interface
 			return js.ValueOf(ret)
 		}
 		if err := f.SetCellInt(args[0].String(), args[1].String(), args[2].Int()); err != nil {
+			ret["error"] = err.Error()
+		}
+		return js.ValueOf(ret)
+	}
+}
+
+// SetCellRichText provides a function to set cell with rich text by given
+// worksheet.
+func SetCellRichText(f *excelize.File) func(this js.Value, args []js.Value) interface{} {
+	return func(this js.Value, args []js.Value) interface{} {
+		ret := map[string]interface{}{"error": nil}
+		if err := prepareArgs(args, []argsRule{
+			{types: []js.Type{js.TypeString}},
+			{types: []js.Type{js.TypeString}},
+			{types: []js.Type{js.TypeObject}},
+		}); err != nil {
+			ret["error"] = err.Error()
+			return js.ValueOf(ret)
+		}
+		var runs []excelize.RichTextRun
+		for i := 0; i < args[2].Length(); i++ {
+			goVal, err := jsValueToGo(args[2].Index(i), reflect.TypeOf(excelize.RichTextRun{}))
+			if err != nil {
+				ret["error"] = err.Error()
+				return js.ValueOf(ret)
+			}
+			runs = append(runs, goVal.Elem().Interface().(excelize.RichTextRun))
+		}
+		if err := f.SetCellRichText(args[0].String(), args[1].String(), runs); err != nil {
 			ret["error"] = err.Error()
 		}
 		return js.ValueOf(ret)
@@ -2108,6 +2394,141 @@ func SetDefaultFont(f *excelize.File) func(this js.Value, args []js.Value) inter
 	}
 }
 
+// SetDefinedName provides a function to set the defined names of the workbook
+// or worksheet. If not specified scope, the default scope is workbook.
+func SetDefinedName(f *excelize.File) func(this js.Value, args []js.Value) interface{} {
+	return func(this js.Value, args []js.Value) interface{} {
+		ret := map[string]interface{}{"error": nil}
+		err := prepareArgs(args, []argsRule{
+			{types: []js.Type{js.TypeObject}},
+		})
+		if err != nil {
+			ret["error"] = err.Error()
+			return js.ValueOf(ret)
+		}
+		var definedName excelize.DefinedName
+		goVal, err := jsValueToGo(args[0], reflect.TypeOf(excelize.DefinedName{}))
+		if err != nil {
+			ret["error"] = err.Error()
+			return js.ValueOf(ret)
+		}
+		definedName = goVal.Elem().Interface().(excelize.DefinedName)
+		if err = f.SetDefinedName(&definedName); err != nil {
+			ret["error"] = err.Error()
+			return js.ValueOf(ret)
+		}
+		return js.ValueOf(ret)
+	}
+}
+
+// SetDocProps provides a function to set document core properties.
+func SetDocProps(f *excelize.File) func(this js.Value, args []js.Value) interface{} {
+	return func(this js.Value, args []js.Value) interface{} {
+		ret := map[string]interface{}{"error": nil}
+		err := prepareArgs(args, []argsRule{
+			{types: []js.Type{js.TypeObject}},
+		})
+		if err != nil {
+			ret["error"] = err.Error()
+			return js.ValueOf(ret)
+		}
+		var props excelize.DocProperties
+		goVal, err := jsValueToGo(args[0], reflect.TypeOf(excelize.DocProperties{}))
+		if err != nil {
+			ret["error"] = err.Error()
+			return js.ValueOf(ret)
+		}
+		props = goVal.Elem().Interface().(excelize.DocProperties)
+		if err = f.SetDocProps(&props); err != nil {
+			ret["error"] = err.Error()
+			return js.ValueOf(ret)
+		}
+		return js.ValueOf(ret)
+	}
+}
+
+// SetHeaderFooter provides a function to set headers and footers by given
+// worksheet name and the control characters.
+func SetHeaderFooter(f *excelize.File) func(this js.Value, args []js.Value) interface{} {
+	return func(this js.Value, args []js.Value) interface{} {
+		ret := map[string]interface{}{"error": nil}
+		err := prepareArgs(args, []argsRule{
+			{types: []js.Type{js.TypeString}},
+			{types: []js.Type{js.TypeObject}},
+		})
+		if err != nil {
+			ret["error"] = err.Error()
+			return js.ValueOf(ret)
+		}
+		var opts excelize.HeaderFooterOptions
+		goVal, err := jsValueToGo(args[1], reflect.TypeOf(excelize.HeaderFooterOptions{}))
+		if err != nil {
+			ret["error"] = err.Error()
+			return js.ValueOf(ret)
+		}
+		opts = goVal.Elem().Interface().(excelize.HeaderFooterOptions)
+		if err = f.SetHeaderFooter(args[0].String(), &opts); err != nil {
+			ret["error"] = err.Error()
+			return js.ValueOf(ret)
+		}
+		return js.ValueOf(ret)
+	}
+}
+
+// SetPageLayout provides a function to sets worksheet page layout.
+func SetPageLayout(f *excelize.File) func(this js.Value, args []js.Value) interface{} {
+	return func(this js.Value, args []js.Value) interface{} {
+		ret := map[string]interface{}{"error": nil}
+		err := prepareArgs(args, []argsRule{
+			{types: []js.Type{js.TypeString}},
+			{types: []js.Type{js.TypeObject}},
+		})
+		if err != nil {
+			ret["error"] = err.Error()
+			return js.ValueOf(ret)
+		}
+		var opts excelize.PageLayoutOptions
+		goVal, err := jsValueToGo(args[1], reflect.TypeOf(excelize.PageLayoutOptions{}))
+		if err != nil {
+			ret["error"] = err.Error()
+			return js.ValueOf(ret)
+		}
+		opts = goVal.Elem().Interface().(excelize.PageLayoutOptions)
+		if err = f.SetPageLayout(args[0].String(), &opts); err != nil {
+			ret["error"] = err.Error()
+			return js.ValueOf(ret)
+		}
+		return js.ValueOf(ret)
+	}
+}
+
+// SetPageMargins provides a function to set worksheet page margins.
+func SetPageMargins(f *excelize.File) func(this js.Value, args []js.Value) interface{} {
+	return func(this js.Value, args []js.Value) interface{} {
+		ret := map[string]interface{}{"error": nil}
+		err := prepareArgs(args, []argsRule{
+			{types: []js.Type{js.TypeString}},
+			{types: []js.Type{js.TypeObject}},
+		})
+		if err != nil {
+			ret["error"] = err.Error()
+			return js.ValueOf(ret)
+		}
+		var opts excelize.PageLayoutMarginsOptions
+		goVal, err := jsValueToGo(args[1], reflect.TypeOf(excelize.PageLayoutMarginsOptions{}))
+		if err != nil {
+			ret["error"] = err.Error()
+			return js.ValueOf(ret)
+		}
+		opts = goVal.Elem().Interface().(excelize.PageLayoutMarginsOptions)
+		if err = f.SetPageMargins(args[0].String(), &opts); err != nil {
+			ret["error"] = err.Error()
+			return js.ValueOf(ret)
+		}
+		return js.ValueOf(ret)
+	}
+}
+
 // SetPanes provides a function to create and remove freeze panes and split
 // panes by given worksheet name and panes format set.
 func SetPanes(f *excelize.File) func(this js.Value, args []js.Value) interface{} {
@@ -2272,6 +2693,33 @@ func SetSheetName(f *excelize.File) func(this js.Value, args []js.Value) interfa
 	}
 }
 
+// SetSheetProps provides a function to set worksheet properties.
+func SetSheetProps(f *excelize.File) func(this js.Value, args []js.Value) interface{} {
+	return func(this js.Value, args []js.Value) interface{} {
+		ret := map[string]interface{}{"error": nil}
+		err := prepareArgs(args, []argsRule{
+			{types: []js.Type{js.TypeString}},
+			{types: []js.Type{js.TypeObject}},
+		})
+		if err != nil {
+			ret["error"] = err.Error()
+			return js.ValueOf(ret)
+		}
+		var opts excelize.SheetPropsOptions
+		goVal, err := jsValueToGo(args[1], reflect.TypeOf(excelize.SheetPropsOptions{}))
+		if err != nil {
+			ret["error"] = err.Error()
+			return js.ValueOf(ret)
+		}
+		opts = goVal.Elem().Interface().(excelize.SheetPropsOptions)
+		if err = f.SetSheetProps(args[0].String(), &opts); err != nil {
+			ret["error"] = err.Error()
+			return js.ValueOf(ret)
+		}
+		return js.ValueOf(ret)
+	}
+}
+
 // SetSheetRow writes an array to row by given worksheet name, starting cell
 // reference and a pointer to array type 'slice'.
 func SetSheetRow(f *excelize.File) func(this js.Value, args []js.Value) interface{} {
@@ -2322,6 +2770,32 @@ func SetSheetVisible(f *excelize.File) func(this js.Value, args []js.Value) inte
 		}
 		if err := f.SetSheetVisible(args[0].String(), args[1].Bool()); err != nil {
 			ret["error"] = err.Error()
+		}
+		return js.ValueOf(ret)
+	}
+}
+
+// SetWorkbookProps provides a function to sets workbook properties.
+func SetWorkbookProps(f *excelize.File) func(this js.Value, args []js.Value) interface{} {
+	return func(this js.Value, args []js.Value) interface{} {
+		ret := map[string]interface{}{"error": nil}
+		err := prepareArgs(args, []argsRule{
+			{types: []js.Type{js.TypeObject}},
+		})
+		if err != nil {
+			ret["error"] = err.Error()
+			return js.ValueOf(ret)
+		}
+		var props excelize.WorkbookPropsOptions
+		goVal, err := jsValueToGo(args[0], reflect.TypeOf(excelize.WorkbookPropsOptions{}))
+		if err != nil {
+			ret["error"] = err.Error()
+			return js.ValueOf(ret)
+		}
+		props = goVal.Elem().Interface().(excelize.WorkbookPropsOptions)
+		if err = f.SetWorkbookProps(&props); err != nil {
+			ret["error"] = err.Error()
+			return js.ValueOf(ret)
 		}
 		return js.ValueOf(ret)
 	}
