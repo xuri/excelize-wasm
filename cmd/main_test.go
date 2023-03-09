@@ -390,6 +390,27 @@ func TestAddComment(t *testing.T) {
 	assert.Equal(t, "sheet SheetN does not exist", ret.Get("error").String())
 }
 
+func TestAddDataValidation(t *testing.T) {
+	f := NewFile(js.Value{}, []js.Value{})
+	assert.True(t, f.(js.Value).Get("error").IsNull())
+	dv := js.ValueOf(map[string]interface{}{})
+
+	ret := f.(js.Value).Call("AddDataValidation", js.ValueOf("Sheet1"), dv)
+	assert.True(t, ret.Get("error").IsNull())
+
+	ret = f.(js.Value).Call("AddDataValidation")
+	assert.EqualError(t, errArgNum, ret.Get("error").String())
+
+	ret = f.(js.Value).Call("AddDataValidation", js.ValueOf("Sheet1"), js.ValueOf(nil))
+	assert.Equal(t, errArgType.Error(), ret.Get("error").String())
+
+	ret = f.(js.Value).Call("AddDataValidation", js.ValueOf("Sheet1"), map[string]interface{}{"Type": true})
+	assert.Equal(t, errArgType.Error(), ret.Get("error").String())
+
+	ret = f.(js.Value).Call("AddDataValidation", js.ValueOf("SheetN"), dv)
+	assert.Equal(t, "sheet SheetN does not exist", ret.Get("error").String())
+}
+
 func TestAddPictureFromBytes(t *testing.T) {
 	buf, err := os.ReadFile(filepath.Join("..", "chart.png"))
 	assert.NoError(t, err)

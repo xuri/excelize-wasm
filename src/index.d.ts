@@ -443,6 +443,27 @@ declare module 'excelize-wasm' {
   };
 
   /**
+   * DataValidation directly maps the a single item of data validation defined
+   * on a range of the worksheet.
+   */
+  export type DataValidation = {
+    AllowBlank?:       boolean;
+    Error?:            string;
+    ErrorStyle?:       string;
+    ErrorTitle?:       string;
+    Operator?:         string
+    Prompt?:           string;
+    PromptTitle?:      string;
+    ShowDropDown?:     boolean;
+    ShowErrorMessage?: boolean;
+    ShowInputMessage?: boolean;
+    Sqref?:            string;
+    Type?:             string;
+    Formula1?:         string;
+    Formula2?:         string;
+  };
+
+  /**
    * RichTextRun directly maps the settings of the rich text run.
    */
   export type RichTextRun = {
@@ -766,6 +787,14 @@ declare module 'excelize-wasm' {
      * @param comment The comment options
      */
     AddComment(sheet: string, comment: Comment): { error: string | null }
+
+    /**
+     * AddDataValidation provides set data validation on a range of the worksheet
+     * by given data validation object and worksheet name.
+     * @param sheet The worksheet name
+     * @param dv The data validation rules
+     */
+    AddDataValidation(sheet: string, dv: DataValidation): { error: string | null }
 
     /**
      * AddPictureFromBytes provides the method to add picture in a sheet by

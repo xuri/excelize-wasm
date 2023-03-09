@@ -134,6 +134,7 @@ func regInteropFunc(f *excelize.File, fn map[string]interface{}) interface{} {
 		"AddChart":               AddChart(f),
 		"AddChartSheet":          AddChartSheet(f),
 		"AddComment":             AddComment(f),
+		"AddDataValidation":      AddDataValidation(f),
 		"AddPictureFromBytes":    AddPictureFromBytes(f),
 		"AddPivotTable":          AddPivotTable(f),
 		"AddShape":               AddShape(f),
@@ -157,15 +158,15 @@ func regInteropFunc(f *excelize.File, fn map[string]interface{}) interface{} {
 		"GetCellStyle":           GetCellStyle(f),
 		"GetCellValue":           GetCellValue(f),
 		"GetColOutlineLevel":     GetColOutlineLevel(f),
+		"GetCols":                GetCols(f),
 		"GetColStyle":            GetColStyle(f),
 		"GetColVisible":          GetColVisible(f),
 		"GetColWidth":            GetColWidth(f),
-		"GetCols":                GetCols(f),
 		"GetDefaultFont":         GetDefaultFont(f),
 		"GetRowHeight":           GetRowHeight(f),
 		"GetRowOutlineLevel":     GetRowOutlineLevel(f),
-		"GetRowVisible":          GetRowVisible(f),
 		"GetRows":                GetRows(f),
+		"GetRowVisible":          GetRowVisible(f),
 		"GetSheetIndex":          GetSheetIndex(f),
 		"GetSheetList":           GetSheetList(f),
 		"GetSheetMap":            GetSheetMap(f),
@@ -702,6 +703,32 @@ func AddComment(f *excelize.File) func(this js.Value, args []js.Value) interface
 		}
 		opt = goVal.Elem().Interface().(excelize.Comment)
 		if err := f.AddComment(args[0].String(), opt); err != nil {
+			ret["error"] = err.Error()
+		}
+		return js.ValueOf(ret)
+	}
+}
+
+// AddDataValidation provides set data validation on a range of the worksheet
+// by given data validation object and worksheet name.
+func AddDataValidation(f *excelize.File) func(this js.Value, args []js.Value) interface{} {
+	return func(this js.Value, args []js.Value) interface{} {
+		ret := map[string]interface{}{"error": nil}
+		if err := prepareArgs(args, []argsRule{
+			{types: []js.Type{js.TypeString}},
+			{types: []js.Type{js.TypeObject}},
+		}); err != nil {
+			ret["error"] = err.Error()
+			return js.ValueOf(ret)
+		}
+		var dv excelize.DataValidation
+		goVal, err := jsValueToGo(args[1], reflect.TypeOf(excelize.DataValidation{}))
+		if err != nil {
+			ret["error"] = err.Error()
+			return js.ValueOf(ret)
+		}
+		dv = goVal.Elem().Interface().(excelize.DataValidation)
+		if err := f.AddDataValidation(args[0].String(), &dv); err != nil {
 			ret["error"] = err.Error()
 		}
 		return js.ValueOf(ret)
