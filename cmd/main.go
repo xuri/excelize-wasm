@@ -131,101 +131,103 @@ func regFuncs() {
 // regInteropFunc register all exported JavaScript functions.
 func regInteropFunc(f *excelize.File, fn map[string]interface{}) interface{} {
 	for name, impl := range map[string]func(this js.Value, args []js.Value) interface{}{
-		"AddChart":               AddChart(f),
-		"AddChartSheet":          AddChartSheet(f),
-		"AddComment":             AddComment(f),
-		"AddDataValidation":      AddDataValidation(f),
-		"AddPictureFromBytes":    AddPictureFromBytes(f),
-		"AddPivotTable":          AddPivotTable(f),
-		"AddShape":               AddShape(f),
-		"AddSparkline":           AddSparkline(f),
-		"AddTable":               AddTable(f),
-		"AutoFilter":             AutoFilter(f),
-		"CalcCellValue":          CalcCellValue(f),
-		"CopySheet":              CopySheet(f),
-		"DeleteChart":            DeleteChart(f),
-		"DeleteComment":          DeleteComment(f),
-		"DeleteDataValidation":   DeleteDataValidation(f),
-		"DeleteDefinedName":      DeleteDefinedName(f),
-		"DeletePicture":          DeletePicture(f),
-		"DeleteSheet":            DeleteSheet(f),
-		"DuplicateRow":           DuplicateRow(f),
-		"DuplicateRowTo":         DuplicateRowTo(f),
-		"GetActiveSheetIndex":    GetActiveSheetIndex(f),
-		"GetAppProps":            GetAppProps(f),
-		"GetCellFormula":         GetCellFormula(f),
-		"GetCellHyperLink":       GetCellHyperLink(f),
-		"GetCellStyle":           GetCellStyle(f),
-		"GetCellValue":           GetCellValue(f),
-		"GetColOutlineLevel":     GetColOutlineLevel(f),
-		"GetCols":                GetCols(f),
-		"GetColStyle":            GetColStyle(f),
-		"GetColVisible":          GetColVisible(f),
-		"GetColWidth":            GetColWidth(f),
-		"GetDefaultFont":         GetDefaultFont(f),
-		"GetRowHeight":           GetRowHeight(f),
-		"GetRowOutlineLevel":     GetRowOutlineLevel(f),
-		"GetRows":                GetRows(f),
-		"GetRowVisible":          GetRowVisible(f),
-		"GetSheetIndex":          GetSheetIndex(f),
-		"GetSheetList":           GetSheetList(f),
-		"GetSheetMap":            GetSheetMap(f),
-		"GetSheetName":           GetSheetName(f),
-		"GetSheetVisible":        GetSheetVisible(f),
-		"GroupSheets":            GroupSheets(f),
-		"InsertCols":             InsertCols(f),
-		"InsertPageBreak":        InsertPageBreak(f),
-		"InsertRows":             InsertRows(f),
-		"MergeCell":              MergeCell(f),
-		"NewConditionalStyle":    NewConditionalStyle(f),
-		"NewSheet":               NewSheet(f),
-		"NewStyle":               NewStyle(f),
-		"ProtectSheet":           ProtectSheet(f),
-		"ProtectWorkbook":        ProtectWorkbook(f),
-		"RemoveCol":              RemoveCol(f),
-		"RemovePageBreak":        RemovePageBreak(f),
-		"RemoveRow":              RemoveRow(f),
-		"SearchSheet":            SearchSheet(f),
-		"SetActiveSheet":         SetActiveSheet(f),
-		"SetAppProps":            SetAppProps(f),
-		"SetCellBool":            SetCellBool(f),
-		"SetCellDefault":         SetCellDefault(f),
-		"SetCellFloat":           SetCellFloat(f),
-		"SetCellFormula":         SetCellFormula(f),
-		"SetCellHyperLink":       SetCellHyperLink(f),
-		"SetCellInt":             SetCellInt(f),
-		"SetCellRichText":        SetCellRichText(f),
-		"SetCellStr":             SetCellStr(f),
-		"SetCellStyle":           SetCellStyle(f),
-		"SetCellValue":           SetCellValue(f),
-		"SetColOutlineLevel":     SetColOutlineLevel(f),
-		"SetColStyle":            SetColStyle(f),
-		"SetColVisible":          SetColVisible(f),
-		"SetColWidth":            SetColWidth(f),
-		"SetConditionalFormat":   SetConditionalFormat(f),
-		"SetDefaultFont":         SetDefaultFont(f),
-		"SetDefinedName":         SetDefinedName(f),
-		"SetDocProps":            SetDocProps(f),
-		"SetHeaderFooter":        SetHeaderFooter(f),
-		"SetPageLayout":          SetPageLayout(f),
-		"SetPageMargins":         SetPageMargins(f),
-		"SetPanes":               SetPanes(f),
-		"SetRowHeight":           SetRowHeight(f),
-		"SetRowOutlineLevel":     SetRowOutlineLevel(f),
-		"SetRowStyle":            SetRowStyle(f),
-		"SetRowVisible":          SetRowVisible(f),
-		"SetSheetCol":            SetSheetCol(f),
-		"SetSheetName":           SetSheetName(f),
-		"SetSheetProps":          SetSheetProps(f),
-		"SetSheetRow":            SetSheetRow(f),
-		"SetSheetVisible":        SetSheetVisible(f),
-		"SetWorkbookProps":       SetWorkbookProps(f),
-		"UngroupSheets":          UngroupSheets(f),
-		"UnmergeCell":            UnmergeCell(f),
-		"UnprotectSheet":         UnprotectSheet(f),
-		"UnsetConditionalFormat": UnsetConditionalFormat(f),
-		"UpdateLinkedValue":      UpdateLinkedValue(f),
-		"WriteToBuffer":          WriteToBuffer(f),
+		"AddChart":                    AddChart(f),
+		"AddChartSheet":               AddChartSheet(f),
+		"AddComment":                  AddComment(f),
+		"AddDataValidation":           AddDataValidation(f),
+		"AddPictureFromBytes":         AddPictureFromBytes(f),
+		"AddPivotTable":               AddPivotTable(f),
+		"AddShape":                    AddShape(f),
+		"AddSparkline":                AddSparkline(f),
+		"AddTable":                    AddTable(f),
+		"AutoFilter":                  AutoFilter(f),
+		"CalcCellValue":               CalcCellValue(f),
+		"CopySheet":                   CopySheet(f),
+		"DeleteChart":                 DeleteChart(f),
+		"DeleteComment":               DeleteComment(f),
+		"DeleteDataValidation":        DeleteDataValidation(f),
+		"DeleteDefinedName":           DeleteDefinedName(f),
+		"DeletePicture":               DeletePicture(f),
+		"DeleteSheet":                 DeleteSheet(f),
+		"DuplicateRow":                DuplicateRow(f),
+		"DuplicateRowTo":              DuplicateRowTo(f),
+		"GetActiveSheetIndex":         GetActiveSheetIndex(f),
+		"GetAppProps":                 GetAppProps(f),
+		"GetCellFormula":              GetCellFormula(f),
+		"GetCellHyperLink":            GetCellHyperLink(f),
+		"GetCellStyle":                GetCellStyle(f),
+		"GetCellValue":                GetCellValue(f),
+		"GetColOutlineLevel":          GetColOutlineLevel(f),
+		"GetCols":                     GetCols(f),
+		"GetColStyle":                 GetColStyle(f),
+		"GetColVisible":               GetColVisible(f),
+		"GetColWidth":                 GetColWidth(f),
+		"GetDefaultFont":              GetDefaultFont(f),
+		"GetRowHeight":                GetRowHeight(f),
+		"GetRowOutlineLevel":          GetRowOutlineLevel(f),
+		"GetRows":                     GetRows(f),
+		"GetRowVisible":               GetRowVisible(f),
+		"GetSheetIndex":               GetSheetIndex(f),
+		"GetSheetList":                GetSheetList(f),
+		"GetSheetMap":                 GetSheetMap(f),
+		"GetSheetName":                GetSheetName(f),
+		"GetSheetVisible":             GetSheetVisible(f),
+		"GroupSheets":                 GroupSheets(f),
+		"InsertCols":                  InsertCols(f),
+		"InsertPageBreak":             InsertPageBreak(f),
+		"InsertRows":                  InsertRows(f),
+		"MergeCell":                   MergeCell(f),
+		"NewConditionalStyle":         NewConditionalStyle(f),
+		"NewSheet":                    NewSheet(f),
+		"NewStyle":                    NewStyle(f),
+		"ProtectSheet":                ProtectSheet(f),
+		"ProtectWorkbook":             ProtectWorkbook(f),
+		"RemoveCol":                   RemoveCol(f),
+		"RemovePageBreak":             RemovePageBreak(f),
+		"RemoveRow":                   RemoveRow(f),
+		"SearchSheet":                 SearchSheet(f),
+		"SetActiveSheet":              SetActiveSheet(f),
+		"SetAppProps":                 SetAppProps(f),
+		"SetCellBool":                 SetCellBool(f),
+		"SetCellDefault":              SetCellDefault(f),
+		"SetCellFloat":                SetCellFloat(f),
+		"SetCellFormula":              SetCellFormula(f),
+		"SetCellHyperLink":            SetCellHyperLink(f),
+		"SetCellInt":                  SetCellInt(f),
+		"SetCellRichText":             SetCellRichText(f),
+		"SetCellStr":                  SetCellStr(f),
+		"SetCellStyle":                SetCellStyle(f),
+		"SetCellValue":                SetCellValue(f),
+		"SetColOutlineLevel":          SetColOutlineLevel(f),
+		"SetColStyle":                 SetColStyle(f),
+		"SetColVisible":               SetColVisible(f),
+		"SetColWidth":                 SetColWidth(f),
+		"SetConditionalFormat":        SetConditionalFormat(f),
+		"SetDefaultFont":              SetDefaultFont(f),
+		"SetDefinedName":              SetDefinedName(f),
+		"SetDocProps":                 SetDocProps(f),
+		"SetHeaderFooter":             SetHeaderFooter(f),
+		"SetPageLayout":               SetPageLayout(f),
+		"SetPageMargins":              SetPageMargins(f),
+		"SetPanes":                    SetPanes(f),
+		"SetRowHeight":                SetRowHeight(f),
+		"SetRowOutlineLevel":          SetRowOutlineLevel(f),
+		"SetRowStyle":                 SetRowStyle(f),
+		"SetRowVisible":               SetRowVisible(f),
+		"SetSheetBackgroundFromBytes": SetSheetBackgroundFromBytes(f),
+		"SetSheetCol":                 SetSheetCol(f),
+		"SetSheetName":                SetSheetName(f),
+		"SetSheetProps":               SetSheetProps(f),
+		"SetSheetRow":                 SetSheetRow(f),
+		"SetSheetVisible":             SetSheetVisible(f),
+		"SetWorkbookProps":            SetWorkbookProps(f),
+		"UngroupSheets":               UngroupSheets(f),
+		"UnmergeCell":                 UnmergeCell(f),
+		"UnprotectSheet":              UnprotectSheet(f),
+		"UnprotectWorkbook":           UnprotectWorkbook(f),
+		"UnsetConditionalFormat":      UnsetConditionalFormat(f),
+		"UpdateLinkedValue":           UpdateLinkedValue(f),
+		"WriteToBuffer":               WriteToBuffer(f),
 	} {
 		fn[name] = js.FuncOf(impl)
 	}
@@ -2664,6 +2666,29 @@ func SetRowVisible(f *excelize.File) func(this js.Value, args []js.Value) interf
 	}
 }
 
+// SetSheetBackgroundFromBytes provides a function to set background picture by
+// given worksheet name, extension name and image data. Supported image types:
+// BMP, EMF, EMZ, GIF, JPEG, JPG, PNG, SVG, TIF, TIFF, WMF, and WMZ.
+func SetSheetBackgroundFromBytes(f *excelize.File) func(this js.Value, args []js.Value) interface{} {
+	return func(this js.Value, args []js.Value) interface{} {
+		ret := map[string]interface{}{"error": nil}
+		if err := prepareArgs(args, []argsRule{
+			{types: []js.Type{js.TypeString}},
+			{types: []js.Type{js.TypeString}},
+			{types: []js.Type{js.TypeObject}},
+		}); err != nil {
+			ret["error"] = err.Error()
+			return js.ValueOf(ret)
+		}
+		buf := make([]byte, args[2].Get("length").Int())
+		js.CopyBytesToGo(buf, args[2])
+		if err := f.SetSheetBackgroundFromBytes(args[0].String(), args[1].String(), buf); err != nil {
+			ret["error"] = err.Error()
+		}
+		return js.ValueOf(ret)
+	}
+}
+
 // SetSheetCol writes an array to column by given worksheet name, starting cell
 // reference and a pointer to array type 'slice'.
 func SetSheetCol(f *excelize.File) func(this js.Value, args []js.Value) interface{} {
@@ -2880,6 +2905,31 @@ func UnprotectSheet(f *excelize.File) func(this js.Value, args []js.Value) inter
 			err = f.UnprotectSheet(args[0].String(), args[1].String())
 		} else {
 			err = f.UnprotectSheet(args[0].String())
+		}
+		if err != nil {
+			ret["error"] = err.Error()
+		}
+		return js.ValueOf(ret)
+	}
+}
+
+// UnprotectWorkbook provides a function to remove protection for workbook,
+// specified the optional password parameter to remove workbook protection with
+// password verification.
+func UnprotectWorkbook(f *excelize.File) func(this js.Value, args []js.Value) interface{} {
+	return func(this js.Value, args []js.Value) interface{} {
+		ret := map[string]interface{}{"error": nil}
+		err := prepareArgs(args, []argsRule{
+			{types: []js.Type{js.TypeString}, opts: true},
+		})
+		if err != nil {
+			ret["error"] = err.Error()
+			return js.ValueOf(ret)
+		}
+		if len(args) == 1 {
+			err = f.UnprotectWorkbook(args[0].String())
+		} else {
+			err = f.UnprotectWorkbook()
 		}
 		if err != nil {
 			ret["error"] = err.Error()

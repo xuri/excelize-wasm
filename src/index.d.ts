@@ -2199,6 +2199,16 @@ declare module 'excelize-wasm' {
     SetSheetCol(sheet: string, cell: string, slice: Array<boolean | number | string>): { error: string | null }
 
     /**
+     * SetSheetBackgroundFromBytes provides a function to set background picture
+     * by given worksheet name, extension name and image data. Supported image
+     * types: BMP, EMF, EMZ, GIF, JPEG, JPG, PNG, SVG, TIF, TIFF, WMF, and WMZ.
+     * @param sheet The worksheet name
+     * @param extension The extension name
+     * @param picture The contents buffer of the file
+     */
+    SetSheetBackgroundFromBytes(sheet: string, extension: string, picture: Uint8Array[]): { error: string | null }
+
+    /**
      * SetSheetName provides a function to set the worksheet name by given
      * source and target worksheet names. Maximum 31 characters are allowed in
      * sheet title and this function only changes the name of the sheet and
@@ -2263,6 +2273,14 @@ declare module 'excelize-wasm' {
      * @param password The password for sheet protection
      */
     UnprotectSheet(sheet: string, password?: string): { error: string | null }
+
+    /**
+     * UnprotectWorkbook provides a function to remove protection for workbook,
+     * specified the optional password parameter to remove workbook protection
+     * with password verification.
+     * @param password The password for workbook protection
+     */
+    UnprotectWorkbook(password?: string): { error: string | null }
 
     /**
      * UnsetConditionalFormat provides a function to unset the conditional

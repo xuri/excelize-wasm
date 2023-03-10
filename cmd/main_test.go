@@ -1977,6 +1977,28 @@ func TestSetRowVisible(t *testing.T) {
 	assert.Equal(t, "sheet SheetN does not exist", ret.Get("error").String())
 }
 
+func TestSetSheetBackgroundFromBytes(t *testing.T) {
+	buf, err := os.ReadFile(filepath.Join("..", "chart.png"))
+	assert.NoError(t, err)
+
+	uint8Array := js.Global().Get("Uint8Array").New(js.ValueOf(len(buf)))
+	for k, v := range buf {
+		uint8Array.SetIndex(k, v)
+	}
+
+	f := NewFile(js.Value{}, []js.Value{})
+	assert.True(t, f.(js.Value).Get("error").IsNull())
+
+	ret := f.(js.Value).Call("SetSheetBackgroundFromBytes", js.ValueOf("Sheet1"), js.ValueOf(".png"), js.ValueOf(uint8Array))
+	assert.True(t, ret.Get("error").IsNull())
+
+	ret = f.(js.Value).Call("SetSheetBackgroundFromBytes")
+	assert.EqualError(t, errArgNum, ret.Get("error").String())
+
+	ret = f.(js.Value).Call("SetSheetBackgroundFromBytes", js.ValueOf("Sheet1"), js.ValueOf(".images"), js.ValueOf(uint8Array))
+	assert.EqualError(t, excelize.ErrImgExt, ret.Get("error").String())
+}
+
 func TestSetSheetCol(t *testing.T) {
 	f := NewFile(js.Value{}, []js.Value{})
 	assert.True(t, f.(js.Value).Get("error").IsNull())
@@ -2122,6 +2144,20 @@ func TestUnprotectSheet(t *testing.T) {
 
 	ret = f.(js.Value).Call("UnprotectSheet", js.ValueOf("Sheet1"), js.ValueOf("password"))
 	assert.Equal(t, "worksheet has set no protect", ret.Get("error").String())
+}
+
+func TestUnprotectWorkbook(t *testing.T) {
+	f := NewFile(js.Value{}, []js.Value{})
+	assert.True(t, f.(js.Value).Get("error").IsNull())
+
+	ret := f.(js.Value).Call("UnprotectWorkbook")
+	assert.True(t, ret.Get("error").IsNull())
+
+	ret = f.(js.Value).Call("UnprotectWorkbook", js.ValueOf(true))
+	assert.EqualError(t, errArgType, ret.Get("error").String())
+
+	ret = f.(js.Value).Call("UnprotectWorkbook", js.ValueOf("password"))
+	assert.Equal(t, "workbook has set no protect", ret.Get("error").String())
 }
 
 func TestUnsetConditionalFormat(t *testing.T) {
