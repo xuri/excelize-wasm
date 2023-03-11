@@ -651,6 +651,43 @@ declare module 'excelize-wasm' {
     ThickBottom?: boolean;
   };
 
+  export type ViewOptions = {
+    // DefaultGridColor indicating that the consuming application should use
+    // the default grid lines color(system dependent). Overrides any color
+    // specified in colorId.
+    DefaultGridColor?: boolean;
+    // RightToLeft indicating whether the sheet is in 'right to left' display
+    // mode. When in this mode, Column A is on the far right, Column B; is one
+    // column left of Column A, and so on. Also, information in cells is
+    // displayed in the Right to Left format.
+    RightToLeft?: boolean;
+    // ShowFormulas indicating whether this sheet should display formulas.
+    ShowFormulas?: boolean;
+    // ShowGridLines indicating whether this sheet should display grid lines.
+    ShowGridLines?: boolean;
+    // ShowRowColHeaders indicating whether the sheet should display row and
+    // column headings.
+    ShowRowColHeaders?: boolean;
+    // ShowRuler indicating this sheet should display ruler.
+    ShowRuler?: boolean;
+    // ShowZeros indicating whether to "show a zero in cells that have zero
+    // value". When using a formula to reference another cell which is empty,
+    // the referenced value becomes 0 when the flag is true. (Default setting
+    // is true.)
+    ShowZeros?: boolean;
+    // TopLeftCell specifies a location of the top left visible cell Location
+    // of the top left visible cell in the bottom right pane (when in
+    // Left-to-Right mode).
+    TopLeftCell: string;
+    // View indicating how sheet is displayed, by default it uses empty string
+    // available options: normal, pageLayout, pageBreakPreview
+    View: string;
+    // ZoomScale specifies a window zoom magnification for current view
+    // representing percent values. This attribute is restricted to values
+    // ranging from 10 to 400. Horizontal & Vertical scale together.
+    ZoomScale?: number;
+  };
+
   /**
    * WorkbookPropsOptions directly maps the settings of workbook proprieties.
    */
@@ -2235,6 +2272,15 @@ declare module 'excelize-wasm' {
      * @param slice The array for writes
      */
     SetSheetRow(sheet: string, cell: string, slice: Array<boolean | number | string>): { error: string | null }
+
+    /**
+     * SetSheetView sets sheet view options. The viewIndex may be negative and
+     * if so is counted backward (-1 is the last view).
+     * @param sheet The worksheet name
+     * @param viewIndex The sheet view index
+     * @param opts The sheet view options
+     */
+    SetSheetView(sheet: string, viewIndex: number, opts: ViewOptions): { error: string | null }
 
     /**
      * SetSheetVisible provides a function to set worksheet visible by given

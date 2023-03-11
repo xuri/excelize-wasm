@@ -219,6 +219,7 @@ func regInteropFunc(f *excelize.File, fn map[string]interface{}) interface{} {
 		"SetSheetName":                SetSheetName(f),
 		"SetSheetProps":               SetSheetProps(f),
 		"SetSheetRow":                 SetSheetRow(f),
+		"SetSheetView":                SetSheetView(f),
 		"SetSheetVisible":             SetSheetVisible(f),
 		"SetWorkbookProps":            SetWorkbookProps(f),
 		"UngroupSheets":               UngroupSheets(f),
@@ -2802,6 +2803,35 @@ func SetSheetRow(f *excelize.File) func(this js.Value, args []js.Value) interfac
 		}
 		if err := f.SetSheetRow(args[0].String(), args[1].String(), &slice); err != nil {
 			ret["error"] = err.Error()
+		}
+		return js.ValueOf(ret)
+	}
+}
+
+// SetSheetView sets sheet view options. The viewIndex may be negative and if
+// so is counted backward (-1 is the last view).
+func SetSheetView(f *excelize.File) func(this js.Value, args []js.Value) interface{} {
+	return func(this js.Value, args []js.Value) interface{} {
+		ret := map[string]interface{}{"error": nil}
+		err := prepareArgs(args, []argsRule{
+			{types: []js.Type{js.TypeString}},
+			{types: []js.Type{js.TypeNumber}},
+			{types: []js.Type{js.TypeObject}},
+		})
+		if err != nil {
+			ret["error"] = err.Error()
+			return js.ValueOf(ret)
+		}
+		var opts excelize.ViewOptions
+		goVal, err := jsValueToGo(args[2], reflect.TypeOf(excelize.ViewOptions{}))
+		if err != nil {
+			ret["error"] = err.Error()
+			return js.ValueOf(ret)
+		}
+		opts = goVal.Elem().Interface().(excelize.ViewOptions)
+		if err = f.SetSheetView(args[0].String(), args[1].Int(), &opts); err != nil {
+			ret["error"] = err.Error()
+			return js.ValueOf(ret)
 		}
 		return js.ValueOf(ret)
 	}
