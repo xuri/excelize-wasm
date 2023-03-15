@@ -2289,3 +2289,113 @@ func TestJsToGoBaseType(t *testing.T) {
 	_, err = jsToGoBaseType(js.ValueOf(true), reflect.Int64)
 	assert.EqualError(t, err, errArgType.Error())
 }
+
+func TestGoValueToJS(t *testing.T) {
+	enable, exp := true, "exp"
+	result, err := goValueToJS(reflect.ValueOf(excelize.Chart{
+		Format: excelize.GraphicOptions{PrintObject: &enable},
+	}), reflect.TypeOf(excelize.Chart{}))
+	assert.NoError(t, err)
+	assert.True(t, result.Get("Format").Get("PrintObject").Bool())
+
+	type T1 struct {
+		F1 []*excelize.DataValidation
+		F2 []*int64
+		F3 []uint
+	}
+	var num int64 = 1
+	result, err = goValueToJS(reflect.ValueOf(T1{
+		F1: []*excelize.DataValidation{{AllowBlank: true}, {}},
+		F2: []*int64{&num},
+		F3: []uint{1},
+	}), reflect.TypeOf(T1{}))
+	assert.NoError(t, err)
+	assert.True(t, result.Get("F1").Index(0).Get("AllowBlank").Bool())
+	assert.Equal(t, 1, result.Get("F2").Index(0).Int())
+	assert.Equal(t, 1, result.Get("F3").Index(0).Int())
+
+	result, err = goValueToJS(reflect.ValueOf(excelize.Style{
+		NumFmt:       1,
+		CustomNumFmt: &exp,
+		Lang:         "en",
+		Alignment:    &excelize.Alignment{Indent: 1},
+		Border:       []excelize.Border{{Type: "left"}, {Type: "top"}},
+	}), reflect.TypeOf(excelize.Style{}))
+	assert.NoError(t, err)
+	assert.Equal(t, 1, result.Get("NumFmt").Int())
+	assert.Equal(t, exp, result.Get("CustomNumFmt").String())
+	assert.Equal(t, 1, result.Get("Alignment").Get("Indent").Int())
+	assert.Equal(t, "en", result.Get("Lang").String())
+	assert.Equal(t, "left", result.Get("Border").Index(0).Get("Type").String())
+	assert.Equal(t, "top", result.Get("Border").Index(1).Get("Type").String())
+
+	type T2 struct{ F1 string }
+	type T3 struct{ F1 bool }
+	_, err = goValueToJS(reflect.ValueOf(T2{
+		F1: "foo",
+	}), reflect.TypeOf(T3{}))
+	assert.EqualError(t, err, errArgType.Error())
+
+	type T4 struct{ F1 *T2 }
+	type T5 struct{ F1 *T3 }
+	_, err = goValueToJS(reflect.ValueOf(T4{
+		F1: &T2{F1: "foo"},
+	}), reflect.TypeOf(T5{}))
+	assert.EqualError(t, err, errArgType.Error())
+
+	type T6 struct{ F1 *bool }
+	type T7 struct{ F1 *string }
+	_, err = goValueToJS(reflect.ValueOf(T6{
+		F1: &enable,
+	}), reflect.TypeOf(T7{}))
+	assert.EqualError(t, err, errArgType.Error())
+
+	type T8 struct{ F1 T6 }
+	type T9 struct{ F1 T7 }
+	_, err = goValueToJS(reflect.ValueOf(T8{
+		F1: T6{F1: &enable},
+	}), reflect.TypeOf(T9{}))
+	assert.EqualError(t, err, errArgType.Error())
+
+	type T10 struct{ F1 []*T2 }
+	type T11 struct{ F1 []*T3 }
+	_, err = goValueToJS(reflect.ValueOf(T10{
+		F1: []*T2{{F1: "foo"}},
+	}), reflect.TypeOf(T11{}))
+	assert.EqualError(t, err, errArgType.Error())
+
+	type T12 struct{ F1 []*string }
+	type T13 struct{ F1 []*bool }
+	_, err = goValueToJS(reflect.ValueOf(T12{
+		F1: []*string{&exp},
+	}), reflect.TypeOf(T13{}))
+	assert.EqualError(t, err, errArgType.Error())
+
+	type T14 struct{ F1 []T2 }
+	type T15 struct{ F1 []T3 }
+	_, err = goValueToJS(reflect.ValueOf(T14{
+		F1: []T2{{F1: "foo"}},
+	}), reflect.TypeOf(T15{}))
+	assert.EqualError(t, err, errArgType.Error())
+
+	type T16 struct{ F1 []string }
+	type T17 struct{ F1 []bool }
+	_, err = goValueToJS(reflect.ValueOf(T16{
+		F1: []string{exp},
+	}), reflect.TypeOf(T17{}))
+	assert.EqualError(t, err, errArgType.Error())
+}
+
+func TestGoBaseTypeToJS(t *testing.T) {
+	for _, typ := range []reflect.Kind{reflect.Bool, reflect.Bool, reflect.Int64} {
+		_, err := goBaseTypeToJS(reflect.ValueOf(0), typ)
+		assert.EqualError(t, err, errArgType.Error())
+	}
+	for _, typ := range []reflect.Kind{
+		reflect.Uint, reflect.Uint64, reflect.Int, reflect.Int64,
+		reflect.Float64, reflect.String, reflect.Complex128,
+	} {
+		_, err := goBaseTypeToJS(reflect.ValueOf(true), typ)
+		assert.EqualError(t, err, errArgType.Error())
+	}
+}

@@ -99,6 +99,52 @@ var (
 			return reflect.ValueOf(jsVal.String()), nil
 		},
 	}
+	// goBaseValueToJSFuncs defined functions mapping for Go basic data types
+	// value to JavaScript convention.
+	goBaseValueToJSFuncs = map[reflect.Kind]func(goVal reflect.Value, kind reflect.Kind) (js.Value, error){
+		reflect.Bool: func(goVal reflect.Value, kind reflect.Kind) (js.Value, error) {
+			if kind != goVal.Kind() {
+				return js.ValueOf(nil), errArgType
+			}
+			return js.ValueOf(goVal.Bool()), nil
+		},
+		reflect.Uint: func(goVal reflect.Value, kind reflect.Kind) (js.Value, error) {
+			if kind != goVal.Kind() {
+				return js.ValueOf(nil), errArgType
+			}
+			return js.ValueOf(int(goVal.Uint())), nil
+		},
+		reflect.Uint64: func(goVal reflect.Value, kind reflect.Kind) (js.Value, error) {
+			if kind != goVal.Kind() {
+				return js.ValueOf(nil), errArgType
+			}
+			return js.ValueOf(int(goVal.Uint())), nil
+		},
+		reflect.Int: func(goVal reflect.Value, kind reflect.Kind) (js.Value, error) {
+			if kind != goVal.Kind() {
+				return js.ValueOf(nil), errArgType
+			}
+			return js.ValueOf(int(goVal.Int())), nil
+		},
+		reflect.Int64: func(goVal reflect.Value, kind reflect.Kind) (js.Value, error) {
+			if kind != goVal.Kind() {
+				return js.ValueOf(nil), errArgType
+			}
+			return js.ValueOf(goVal.Int()), nil
+		},
+		reflect.Float64: func(goVal reflect.Value, kind reflect.Kind) (js.Value, error) {
+			if kind != goVal.Kind() {
+				return js.ValueOf(nil), errArgType
+			}
+			return js.ValueOf(goVal.Float()), nil
+		},
+		reflect.String: func(goVal reflect.Value, kind reflect.Kind) (js.Value, error) {
+			if kind != goVal.Kind() {
+				return js.ValueOf(nil), errArgType
+			}
+			return js.ValueOf(goVal.String()), nil
+		},
+	}
 	errArgNum  = errors.New("invalid arguments in call")
 	errArgType = errors.New("invalid argument data type")
 )
@@ -379,6 +425,151 @@ func jsValueToGo(jsVal js.Value, goType reflect.Type) (reflect.Value, error) {
 		}
 	}
 	return result, nil
+}
+
+// goBaseTypeToJS convert Go basic data type value to JavaScript variable.
+func goBaseTypeToJS(goVal reflect.Value, kind reflect.Kind) (js.Value, error) {
+	fn, ok := goBaseValueToJSFuncs[kind]
+	if !ok {
+		return js.ValueOf(nil), errArgType
+	}
+	return fn(goVal, kind)
+}
+
+// goValueToJS convert Go variable to JavaScript object base on the given Go
+// structure types, this function extract each fields of the structure from
+// structure variable recursively.
+func goValueToJS(goVal reflect.Value, goType reflect.Type) (js.Value, error) {
+	result := map[string]interface{}{}
+	s := reflect.New(goType).Elem()
+	for i := 0; i < s.NumField(); i++ {
+		field := s.Type().Field(i)
+		if goBaseTypes[s.Field(i).Kind()] {
+			v, err := goBaseTypeToJS(goVal.Field(i), s.Field(i).Kind())
+			if err != nil {
+				return js.ValueOf(nil), err
+			}
+			result[field.Name] = v
+			continue
+		}
+		switch s.Field(i).Kind() {
+		case reflect.Ptr:
+			// Pointer of the Go data type, for example: *excelize.Options or *string
+			ptrType := field.Type.Elem()
+			if !goBaseTypes[ptrType.Kind()] {
+				// Pointer of the Go struct, for example: *excelize.Options
+				goStructVal := goVal.Field(i)
+				if !goStructVal.IsNil() {
+					v, err := goValueToJS(goStructVal.Elem(), ptrType)
+					if err != nil {
+						return js.ValueOf(nil), err
+					}
+					result[field.Name] = v
+				}
+			}
+			if goBaseTypes[ptrType.Kind()] {
+				// Pointer of the Go basic data type, for example: *string
+				goBaseVal := goVal.Field(i)
+				if !goBaseVal.IsNil() {
+					v, err := goBaseTypeToJS(goBaseVal.Elem(), ptrType.Kind())
+					if err != nil {
+						return js.ValueOf(nil), err
+					}
+					result[field.Name] = v
+				}
+			}
+		case reflect.Struct:
+			// The Go struct, for example: excelize.Options, convert sub fields recursively
+			structType := field.Type
+			goStructVal := goVal.Field(i)
+			if !goStructVal.IsZero() {
+				v, err := goValueToJS(goStructVal, structType)
+				if err != nil {
+					return js.ValueOf(nil), err
+				}
+				result[field.Name] = v
+			}
+		case reflect.Slice:
+			// The Go data type array, for example:
+			// []*excelize.Options, []excelize.Options, []string, []*string
+			ele := field.Type.Elem()
+			goSlice := goVal.Field(i)
+			for s := 0; s < goSlice.Len(); s++ {
+				if ele.Kind() == reflect.Ptr {
+					// Pointer array of the Go data type, for example: []*excelize.Options or []*string
+					subEle := ele.Elem()
+					if !goBaseTypes[subEle.Kind()] {
+						// Pointer of the Go struct, for example: *excelize.Options
+						goStructVal := goSlice.Index(s)
+						if !goStructVal.IsNil() {
+							v, err := goValueToJS(goStructVal.Elem(), subEle)
+							if err != nil {
+								return js.ValueOf(nil), err
+							}
+							if _, ok := result[field.Name]; !ok {
+								result[field.Name] = []interface{}{}
+							}
+							x := result[field.Name].([]interface{})
+							x = append(x, v)
+							result[field.Name] = x
+						}
+					}
+					if goBaseTypes[subEle.Kind()] {
+						// Pointer of the Go basic data type, for example: *string
+						goBaseVal := goSlice.Index(s)
+						if !goBaseVal.IsNil() {
+							v, err := goBaseTypeToJS(goBaseVal.Elem(), subEle.Kind())
+							if err != nil {
+								return js.ValueOf(nil), err
+							}
+							if _, ok := result[field.Name]; !ok {
+								result[field.Name] = []interface{}{}
+							}
+							x := result[field.Name].([]interface{})
+							x = append(x, v)
+							result[field.Name] = x
+						}
+					}
+				} else {
+					// The Go data type array, for example: []excelize.Options or []string
+					subEle := ele
+					if !goBaseTypes[subEle.Kind()] {
+						// Pointer of the Go struct, for example: *excelize.Options
+						goStructVal := goSlice.Index(s)
+						if !goStructVal.IsZero() {
+							v, err := goValueToJS(goStructVal, subEle)
+							if err != nil {
+								return js.ValueOf(nil), err
+							}
+							if _, ok := result[field.Name]; !ok {
+								result[field.Name] = []interface{}{}
+							}
+							x := result[field.Name].([]interface{})
+							x = append(x, v)
+							result[field.Name] = x
+						}
+					}
+					if goBaseTypes[subEle.Kind()] {
+						// Pointer of the Go basic data type, for example: *string
+						goBaseVal := goSlice.Index(s)
+						if !goBaseVal.IsZero() {
+							v, err := goBaseTypeToJS(goBaseVal, subEle.Kind())
+							if err != nil {
+								return js.ValueOf(nil), err
+							}
+							if _, ok := result[field.Name]; !ok {
+								result[field.Name] = []interface{}{}
+							}
+							x := result[field.Name].([]interface{})
+							x = append(x, v)
+							result[field.Name] = x
+						}
+					}
+				}
+			}
+		}
+	}
+	return js.ValueOf(result), nil
 }
 
 // prepareArgs provides a method to check the excelize wrapper function
