@@ -1596,7 +1596,7 @@ func TestSetCellInt(t *testing.T) {
 	assert.Equal(t, "sheet SheetN does not exist", ret.Get("error").String())
 }
 
-func TestSetCellRichText(t *testing.T) {
+func TestCellRichText(t *testing.T) {
 	f := NewFile(js.Value{}, []js.Value{})
 	assert.True(t, f.(js.Value).Get("error").IsNull())
 
@@ -1613,6 +1613,11 @@ func TestSetCellRichText(t *testing.T) {
 	ret := f.(js.Value).Call("SetCellRichText", js.ValueOf("Sheet1"), js.ValueOf("A1"), runs)
 	assert.True(t, ret.Get("error").IsNull())
 
+	ret = f.(js.Value).Call("GetCellRichText", js.ValueOf("Sheet1"), js.ValueOf("A1"))
+	assert.True(t, ret.Get("error").IsNull())
+	assert.Equal(t, runs.Length(), ret.Get("runs").Length())
+	assert.True(t, ret.Get("runs").Index(0).Get("Font").Get("Bold").Bool())
+
 	ret = f.(js.Value).Call("SetCellRichText")
 	assert.EqualError(t, errArgNum, ret.Get("error").String())
 
@@ -1620,6 +1625,15 @@ func TestSetCellRichText(t *testing.T) {
 	assert.EqualError(t, errArgType, ret.Get("error").String())
 
 	ret = f.(js.Value).Call("SetCellRichText", js.ValueOf("SheetN"), js.ValueOf("A1"), runs)
+	assert.Equal(t, "sheet SheetN does not exist", ret.Get("error").String())
+
+	ret = f.(js.Value).Call("GetCellRichText")
+	assert.EqualError(t, errArgNum, ret.Get("error").String())
+
+	ret = f.(js.Value).Call("GetCellRichText", js.ValueOf("Sheet1"), js.ValueOf(true))
+	assert.EqualError(t, errArgType, ret.Get("error").String())
+
+	ret = f.(js.Value).Call("GetCellRichText", js.ValueOf("SheetN"), js.ValueOf("A1"))
 	assert.Equal(t, "sheet SheetN does not exist", ret.Get("error").String())
 }
 
@@ -2296,7 +2310,7 @@ func TestGoValueToJS(t *testing.T) {
 		Format: excelize.GraphicOptions{PrintObject: &enable},
 	}), reflect.TypeOf(excelize.Chart{}))
 	assert.NoError(t, err)
-	assert.True(t, result.Get("Format").Get("PrintObject").Bool())
+	assert.True(t, js.ValueOf(result).Get("Format").Get("PrintObject").Bool())
 
 	type T1 struct {
 		F1 []*excelize.DataValidation
@@ -2310,9 +2324,9 @@ func TestGoValueToJS(t *testing.T) {
 		F3: []uint{1},
 	}), reflect.TypeOf(T1{}))
 	assert.NoError(t, err)
-	assert.True(t, result.Get("F1").Index(0).Get("AllowBlank").Bool())
-	assert.Equal(t, 1, result.Get("F2").Index(0).Int())
-	assert.Equal(t, 1, result.Get("F3").Index(0).Int())
+	assert.True(t, js.ValueOf(result).Get("F1").Index(0).Get("AllowBlank").Bool())
+	assert.Equal(t, 1, js.ValueOf(result).Get("F2").Index(0).Int())
+	assert.Equal(t, 1, js.ValueOf(result).Get("F3").Index(0).Int())
 
 	result, err = goValueToJS(reflect.ValueOf(excelize.Style{
 		NumFmt:       1,
@@ -2322,12 +2336,12 @@ func TestGoValueToJS(t *testing.T) {
 		Border:       []excelize.Border{{Type: "left"}, {Type: "top"}},
 	}), reflect.TypeOf(excelize.Style{}))
 	assert.NoError(t, err)
-	assert.Equal(t, 1, result.Get("NumFmt").Int())
-	assert.Equal(t, exp, result.Get("CustomNumFmt").String())
-	assert.Equal(t, 1, result.Get("Alignment").Get("Indent").Int())
-	assert.Equal(t, "en", result.Get("Lang").String())
-	assert.Equal(t, "left", result.Get("Border").Index(0).Get("Type").String())
-	assert.Equal(t, "top", result.Get("Border").Index(1).Get("Type").String())
+	assert.Equal(t, 1, js.ValueOf(result).Get("NumFmt").Int())
+	assert.Equal(t, exp, js.ValueOf(result).Get("CustomNumFmt").String())
+	assert.Equal(t, 1, js.ValueOf(result).Get("Alignment").Get("Indent").Int())
+	assert.Equal(t, "en", js.ValueOf(result).Get("Lang").String())
+	assert.Equal(t, "left", js.ValueOf(result).Get("Border").Index(0).Get("Type").String())
+	assert.Equal(t, "top", js.ValueOf(result).Get("Border").Index(1).Get("Type").String())
 
 	type T2 struct{ F1 string }
 	type T3 struct{ F1 bool }

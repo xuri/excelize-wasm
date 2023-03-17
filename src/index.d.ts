@@ -1051,6 +1051,14 @@ declare module 'excelize-wasm' {
     GetCellHyperLink(sheet: string, cell: string): { ok: boolean, location: string, error: string | null }
 
     /**
+     * GetCellRichText provides a function to get rich text of cell by given
+     * worksheet.
+     * @param sheet The worksheet name
+     * @param cell The cell reference
+     */
+    GetCellRichText(sheet: string, cell: string): { runs: RichTextRun[], error: string | null }
+
+    /**
      * GetCellStyle provides a function to get cell style index by given
      * worksheet name and cell reference.
      * @param sheet The worksheet name

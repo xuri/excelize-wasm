@@ -101,48 +101,48 @@ var (
 	}
 	// goBaseValueToJSFuncs defined functions mapping for Go basic data types
 	// value to JavaScript convention.
-	goBaseValueToJSFuncs = map[reflect.Kind]func(goVal reflect.Value, kind reflect.Kind) (js.Value, error){
-		reflect.Bool: func(goVal reflect.Value, kind reflect.Kind) (js.Value, error) {
+	goBaseValueToJSFuncs = map[reflect.Kind]func(goVal reflect.Value, kind reflect.Kind) (interface{}, error){
+		reflect.Bool: func(goVal reflect.Value, kind reflect.Kind) (interface{}, error) {
 			if kind != goVal.Kind() {
-				return js.ValueOf(nil), errArgType
+				return nil, errArgType
 			}
-			return js.ValueOf(goVal.Bool()), nil
+			return goVal.Bool(), nil
 		},
-		reflect.Uint: func(goVal reflect.Value, kind reflect.Kind) (js.Value, error) {
+		reflect.Uint: func(goVal reflect.Value, kind reflect.Kind) (interface{}, error) {
 			if kind != goVal.Kind() {
-				return js.ValueOf(nil), errArgType
+				return nil, errArgType
 			}
-			return js.ValueOf(int(goVal.Uint())), nil
+			return int(goVal.Uint()), nil
 		},
-		reflect.Uint64: func(goVal reflect.Value, kind reflect.Kind) (js.Value, error) {
+		reflect.Uint64: func(goVal reflect.Value, kind reflect.Kind) (interface{}, error) {
 			if kind != goVal.Kind() {
-				return js.ValueOf(nil), errArgType
+				return nil, errArgType
 			}
-			return js.ValueOf(int(goVal.Uint())), nil
+			return int(goVal.Uint()), nil
 		},
-		reflect.Int: func(goVal reflect.Value, kind reflect.Kind) (js.Value, error) {
+		reflect.Int: func(goVal reflect.Value, kind reflect.Kind) (interface{}, error) {
 			if kind != goVal.Kind() {
-				return js.ValueOf(nil), errArgType
+				return nil, errArgType
 			}
-			return js.ValueOf(int(goVal.Int())), nil
+			return int(goVal.Int()), nil
 		},
-		reflect.Int64: func(goVal reflect.Value, kind reflect.Kind) (js.Value, error) {
+		reflect.Int64: func(goVal reflect.Value, kind reflect.Kind) (interface{}, error) {
 			if kind != goVal.Kind() {
-				return js.ValueOf(nil), errArgType
+				return nil, errArgType
 			}
-			return js.ValueOf(goVal.Int()), nil
+			return goVal.Int(), nil
 		},
-		reflect.Float64: func(goVal reflect.Value, kind reflect.Kind) (js.Value, error) {
+		reflect.Float64: func(goVal reflect.Value, kind reflect.Kind) (interface{}, error) {
 			if kind != goVal.Kind() {
-				return js.ValueOf(nil), errArgType
+				return nil, errArgType
 			}
-			return js.ValueOf(goVal.Float()), nil
+			return goVal.Float(), nil
 		},
-		reflect.String: func(goVal reflect.Value, kind reflect.Kind) (js.Value, error) {
+		reflect.String: func(goVal reflect.Value, kind reflect.Kind) (interface{}, error) {
 			if kind != goVal.Kind() {
-				return js.ValueOf(nil), errArgType
+				return nil, errArgType
 			}
-			return js.ValueOf(goVal.String()), nil
+			return goVal.String(), nil
 		},
 	}
 	errArgNum  = errors.New("invalid arguments in call")
@@ -201,6 +201,7 @@ func regInteropFunc(f *excelize.File, fn map[string]interface{}) interface{} {
 		"GetAppProps":                 GetAppProps(f),
 		"GetCellFormula":              GetCellFormula(f),
 		"GetCellHyperLink":            GetCellHyperLink(f),
+		"GetCellRichText":             GetCellRichText(f),
 		"GetCellStyle":                GetCellStyle(f),
 		"GetCellValue":                GetCellValue(f),
 		"GetColOutlineLevel":          GetColOutlineLevel(f),
@@ -428,10 +429,10 @@ func jsValueToGo(jsVal js.Value, goType reflect.Type) (reflect.Value, error) {
 }
 
 // goBaseTypeToJS convert Go basic data type value to JavaScript variable.
-func goBaseTypeToJS(goVal reflect.Value, kind reflect.Kind) (js.Value, error) {
+func goBaseTypeToJS(goVal reflect.Value, kind reflect.Kind) (interface{}, error) {
 	fn, ok := goBaseValueToJSFuncs[kind]
 	if !ok {
-		return js.ValueOf(nil), errArgType
+		return nil, errArgType
 	}
 	return fn(goVal, kind)
 }
@@ -439,7 +440,7 @@ func goBaseTypeToJS(goVal reflect.Value, kind reflect.Kind) (js.Value, error) {
 // goValueToJS convert Go variable to JavaScript object base on the given Go
 // structure types, this function extract each fields of the structure from
 // structure variable recursively.
-func goValueToJS(goVal reflect.Value, goType reflect.Type) (js.Value, error) {
+func goValueToJS(goVal reflect.Value, goType reflect.Type) (map[string]interface{}, error) {
 	result := map[string]interface{}{}
 	s := reflect.New(goType).Elem()
 	for i := 0; i < s.NumField(); i++ {
@@ -447,7 +448,7 @@ func goValueToJS(goVal reflect.Value, goType reflect.Type) (js.Value, error) {
 		if goBaseTypes[s.Field(i).Kind()] {
 			v, err := goBaseTypeToJS(goVal.Field(i), s.Field(i).Kind())
 			if err != nil {
-				return js.ValueOf(nil), err
+				return nil, err
 			}
 			result[field.Name] = v
 			continue
@@ -462,7 +463,7 @@ func goValueToJS(goVal reflect.Value, goType reflect.Type) (js.Value, error) {
 				if !goStructVal.IsNil() {
 					v, err := goValueToJS(goStructVal.Elem(), ptrType)
 					if err != nil {
-						return js.ValueOf(nil), err
+						return nil, err
 					}
 					result[field.Name] = v
 				}
@@ -473,7 +474,7 @@ func goValueToJS(goVal reflect.Value, goType reflect.Type) (js.Value, error) {
 				if !goBaseVal.IsNil() {
 					v, err := goBaseTypeToJS(goBaseVal.Elem(), ptrType.Kind())
 					if err != nil {
-						return js.ValueOf(nil), err
+						return nil, err
 					}
 					result[field.Name] = v
 				}
@@ -485,7 +486,7 @@ func goValueToJS(goVal reflect.Value, goType reflect.Type) (js.Value, error) {
 			if !goStructVal.IsZero() {
 				v, err := goValueToJS(goStructVal, structType)
 				if err != nil {
-					return js.ValueOf(nil), err
+					return nil, err
 				}
 				result[field.Name] = v
 			}
@@ -504,7 +505,7 @@ func goValueToJS(goVal reflect.Value, goType reflect.Type) (js.Value, error) {
 						if !goStructVal.IsNil() {
 							v, err := goValueToJS(goStructVal.Elem(), subEle)
 							if err != nil {
-								return js.ValueOf(nil), err
+								return nil, err
 							}
 							if _, ok := result[field.Name]; !ok {
 								result[field.Name] = []interface{}{}
@@ -520,7 +521,7 @@ func goValueToJS(goVal reflect.Value, goType reflect.Type) (js.Value, error) {
 						if !goBaseVal.IsNil() {
 							v, err := goBaseTypeToJS(goBaseVal.Elem(), subEle.Kind())
 							if err != nil {
-								return js.ValueOf(nil), err
+								return nil, err
 							}
 							if _, ok := result[field.Name]; !ok {
 								result[field.Name] = []interface{}{}
@@ -539,7 +540,7 @@ func goValueToJS(goVal reflect.Value, goType reflect.Type) (js.Value, error) {
 						if !goStructVal.IsZero() {
 							v, err := goValueToJS(goStructVal, subEle)
 							if err != nil {
-								return js.ValueOf(nil), err
+								return nil, err
 							}
 							if _, ok := result[field.Name]; !ok {
 								result[field.Name] = []interface{}{}
@@ -555,7 +556,7 @@ func goValueToJS(goVal reflect.Value, goType reflect.Type) (js.Value, error) {
 						if !goBaseVal.IsZero() {
 							v, err := goBaseTypeToJS(goBaseVal, subEle.Kind())
 							if err != nil {
-								return js.ValueOf(nil), err
+								return nil, err
 							}
 							if _, ok := result[field.Name]; !ok {
 								result[field.Name] = []interface{}{}
@@ -569,7 +570,7 @@ func goValueToJS(goVal reflect.Value, goType reflect.Type) (js.Value, error) {
 			}
 		}
 	}
-	return js.ValueOf(result), nil
+	return result, nil
 }
 
 // prepareArgs provides a method to check the excelize wrapper function
@@ -1405,6 +1406,35 @@ func GetCellHyperLink(f *excelize.File) func(this js.Value, args []js.Value) int
 		ret["ok"], ret["location"], err = f.GetCellHyperLink(args[0].String(), args[1].String())
 		if err != nil {
 			ret["error"] = err.Error()
+		}
+		return js.ValueOf(ret)
+	}
+}
+
+// GetCellRichText provides a function to get rich text of cell by given
+// worksheet.
+func GetCellRichText(f *excelize.File) func(this js.Value, args []js.Value) interface{} {
+	return func(this js.Value, args []js.Value) interface{} {
+		ret := map[string]interface{}{"error": nil}
+		if err := prepareArgs(args, []argsRule{
+			{types: []js.Type{js.TypeString}},
+			{types: []js.Type{js.TypeString}},
+		}); err != nil {
+			ret["error"] = err.Error()
+			return js.ValueOf(ret)
+		}
+		runs, err := f.GetCellRichText(args[0].String(), args[1].String())
+		if err != nil {
+			ret["error"] = err.Error()
+		}
+		ret["runs"] = []interface{}{}
+		for i := 0; i < len(runs); i++ {
+			if jsVal, err := goValueToJS(reflect.ValueOf(runs[i]),
+				reflect.TypeOf(excelize.RichTextRun{})); err == nil {
+				x := ret["runs"].([]interface{})
+				x = append(x, jsVal)
+				ret["runs"] = x
+			}
 		}
 		return js.ValueOf(ret)
 	}
