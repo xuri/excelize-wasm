@@ -1129,6 +1129,12 @@ declare module 'excelize-wasm' {
     GetDefaultFont(): { fontName: string, error: string | null }
 
     /**
+     * GetDefinedName provides a function to get the defined names of the
+     * workbook or worksheet.
+     */
+    GetDefinedName(): { definedNames: DefinedName[], error: string | null }
+
+    /**
      * GetRowHeight provides a function to get row height by given worksheet
      * name and row number.
      * @param sheet The worksheet name

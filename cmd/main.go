@@ -210,6 +210,7 @@ func regInteropFunc(f *excelize.File, fn map[string]interface{}) interface{} {
 		"GetColVisible":               GetColVisible(f),
 		"GetColWidth":                 GetColWidth(f),
 		"GetDefaultFont":              GetDefaultFont(f),
+		"GetDefinedName":              GetDefinedName(f),
 		"GetRowHeight":                GetRowHeight(f),
 		"GetRowOutlineLevel":          GetRowOutlineLevel(f),
 		"GetRows":                     GetRows(f),
@@ -1631,6 +1632,28 @@ func GetDefaultFont(f *excelize.File) func(this js.Value, args []js.Value) inter
 		}
 		if ret["fontName"], err = f.GetDefaultFont(); err != nil {
 			ret["error"] = err.Error()
+		}
+		return js.ValueOf(ret)
+	}
+}
+
+// GetDefinedName provides a function to get the defined names of the workbook
+// or worksheet.
+func GetDefinedName(f *excelize.File) func(this js.Value, args []js.Value) interface{} {
+	return func(this js.Value, args []js.Value) interface{} {
+		ret := map[string]interface{}{"error": nil}
+		if err := prepareArgs(args, []argsRule{}); err != nil {
+			ret["error"] = err.Error()
+			return js.ValueOf(ret)
+		}
+		ret["definedNames"] = []interface{}{}
+		for _, dn := range f.GetDefinedName() {
+			if jsVal, err := goValueToJS(reflect.ValueOf(dn),
+				reflect.TypeOf(excelize.DefinedName{})); err == nil {
+				x := ret["definedNames"].([]interface{})
+				x = append(x, jsVal)
+				ret["definedNames"] = x
+			}
 		}
 		return js.ValueOf(ret)
 	}

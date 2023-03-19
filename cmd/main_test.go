@@ -1773,7 +1773,7 @@ func TestSetDefaultFont(t *testing.T) {
 	assert.EqualError(t, errArgNum, ret.Get("error").String())
 }
 
-func TestSetDefinedName(t *testing.T) {
+func TestDefinedName(t *testing.T) {
 	f := NewFile(js.Value{}, []js.Value{})
 	assert.True(t, f.(js.Value).Get("error").IsNull())
 
@@ -1783,6 +1783,10 @@ func TestSetDefinedName(t *testing.T) {
 		"Comment":  "defined name comment",
 	}))
 	assert.True(t, ret.Get("error").IsNull())
+
+	ret = f.(js.Value).Call("GetDefinedName")
+	assert.True(t, ret.Get("error").IsNull())
+	assert.Equal(t, "Amount", ret.Get("definedNames").Index(0).Get("Name").String())
 
 	ret = f.(js.Value).Call("SetDefinedName")
 	assert.EqualError(t, errArgNum, ret.Get("error").String())
@@ -1798,6 +1802,9 @@ func TestSetDefinedName(t *testing.T) {
 		"RefersTo": "Sheet1!$A$2:$D$5",
 	}))
 	assert.EqualError(t, excelize.ErrParameterInvalid, ret.Get("error").String())
+
+	ret = f.(js.Value).Call("GetDefinedName", js.ValueOf(true))
+	assert.EqualError(t, errArgNum, ret.Get("error").String())
 }
 
 func TestSetDocProps(t *testing.T) {
