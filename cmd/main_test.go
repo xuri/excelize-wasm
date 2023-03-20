@@ -423,16 +423,31 @@ func TestAddPictureFromBytes(t *testing.T) {
 	f := NewFile(js.Value{}, []js.Value{})
 	assert.True(t, f.(js.Value).Get("error").IsNull())
 
-	ret := f.(js.Value).Call("AddPictureFromBytes", js.ValueOf("Sheet1"), js.ValueOf("A1"), js.ValueOf("Picture 1"), js.ValueOf(".png"), js.ValueOf(uint8Array), js.ValueOf(map[string]interface{}{}))
-	assert.True(t, ret.Get("error").IsNull())
+	pic := js.ValueOf(map[string]interface{}{
+		"Extension": ".png",
+		"File":      js.ValueOf(uint8Array),
+		"Format": map[string]interface{}{
+			"AltText": "Picture 1",
+		},
+	})
+	ret := f.(js.Value).Call("AddPictureFromBytes", js.ValueOf("Sheet1"), js.ValueOf("A1"), pic)
+	assert.True(t, ret.Get("error").IsNull(), ret.Get("error").String())
 
 	ret = f.(js.Value).Call("AddPictureFromBytes")
 	assert.EqualError(t, errArgNum, ret.Get("error").String())
 
-	ret = f.(js.Value).Call("AddPictureFromBytes", js.ValueOf("Sheet1"), js.ValueOf("A1"), js.ValueOf("Picture 1"), js.ValueOf(".png"), js.ValueOf(uint8Array), js.ValueOf(map[string]interface{}{"Locked": 1}))
+	ret = f.(js.Value).Call("AddPictureFromBytes", js.ValueOf("Sheet1"), js.ValueOf("A1"),
+		js.ValueOf(map[string]interface{}{
+			"Extension": ".png",
+			"File":      uint8Array,
+			"Format": map[string]interface{}{
+				"Locked": 1,
+			},
+		}),
+	)
 	assert.EqualError(t, errArgType, ret.Get("error").String())
 
-	ret = f.(js.Value).Call("AddPictureFromBytes", js.ValueOf("Sheet1"), js.ValueOf("A1"), js.ValueOf("Picture 1"), js.ValueOf("png"), js.ValueOf(uint8Array), js.ValueOf(map[string]interface{}{}))
+	ret = f.(js.Value).Call("AddPictureFromBytes", js.ValueOf("Sheet1"), js.ValueOf("A1"), js.ValueOf(map[string]interface{}{"Extension": "png", "File": uint8Array, "Format": map[string]interface{}{}}))
 	assert.EqualError(t, excelize.ErrImgExt, ret.Get("error").String())
 }
 

@@ -239,6 +239,7 @@ declare module 'excelize-wasm' {
    * GraphicOptions directly maps the format settings of the picture.
    */
   export type GraphicOptions = {
+    AltText?:         string;
     PrintObject?:     boolean;
     Locked?:          boolean;
     LockAspectRatio?: boolean;
@@ -440,6 +441,15 @@ declare module 'excelize-wasm' {
     Cell?:     string;
     Text?:     string;
     Runs?:     RichTextRun[];
+  };
+
+  /**
+   * Picture maps the format settings of the picture.
+   */
+  export type Picture = {
+    Extension: string;
+    File: Uint8Array[];
+    Format: GraphicOptions;
   };
 
   /**
@@ -844,7 +854,7 @@ declare module 'excelize-wasm' {
      * @param file The contents buffer of the file
      * @param opts The graphic options
      */
-    AddPictureFromBytes(sheet: string, cell: string, name: string, extension: string, file: Uint8Array[], opts: GraphicOptions): { error: string | null }
+    AddPictureFromBytes(sheet: string, cell: string, pic: Picture): { error: string | null }
 
     /**
      * AddPivotTable provides the method to add pivot table by given pivot

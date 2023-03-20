@@ -406,6 +406,12 @@ func jsValueToGo(jsVal js.Value, goType reflect.Type) (reflect.Value, error) {
 					// The Go data type array, for example: []excelize.Options or []string
 					subEle := ele
 					for i := 0; i < jsArray.Length(); i++ {
+						if subEle.Kind() == reflect.Uint8 { // []byte
+							buf := make([]byte, jsArray.Length())
+							js.CopyBytesToGo(buf, jsArray)
+							s.Field(resultFieldIdx).Set(reflect.ValueOf(buf))
+							break
+						}
 						if goBaseTypes[subEle.Kind()] {
 							// The Go basic data type array, for example: []string
 							v, err := jsToGoBaseType(jsArray.Index(i), subEle.Kind())
@@ -536,7 +542,7 @@ func goValueToJS(goVal reflect.Value, goType reflect.Type) (map[string]interface
 					// The Go data type array, for example: []excelize.Options or []string
 					subEle := ele
 					if !goBaseTypes[subEle.Kind()] {
-						// Pointer of the Go struct, for example: *excelize.Options
+						// Value of the Go struct, for example: excelize.Options
 						goStructVal := goSlice.Index(s)
 						if !goStructVal.IsZero() {
 							v, err := goValueToJS(goStructVal, subEle)
@@ -552,7 +558,7 @@ func goValueToJS(goVal reflect.Value, goType reflect.Type) (map[string]interface
 						}
 					}
 					if goBaseTypes[subEle.Kind()] {
-						// Pointer of the Go basic data type, for example: *string
+						// Value of the Go basic data type, for example: string
 						goBaseVal := goSlice.Index(s)
 						if !goBaseVal.IsZero() {
 							v, err := goBaseTypeToJS(goBaseVal, subEle.Kind())
@@ -940,24 +946,19 @@ func AddPictureFromBytes(f *excelize.File) func(this js.Value, args []js.Value) 
 		if err := prepareArgs(args, []argsRule{
 			{types: []js.Type{js.TypeString}},
 			{types: []js.Type{js.TypeString}},
-			{types: []js.Type{js.TypeString}},
-			{types: []js.Type{js.TypeString}},
-			{types: []js.Type{js.TypeObject}},
 			{types: []js.Type{js.TypeObject}},
 		}); err != nil {
 			ret["error"] = err.Error()
 			return js.ValueOf(ret)
 		}
-		buf := make([]byte, args[4].Get("length").Int())
-		js.CopyBytesToGo(buf, args[4])
-		var opt excelize.GraphicOptions
-		goVal, err := jsValueToGo(args[5], reflect.TypeOf(excelize.GraphicOptions{}))
+		var pic excelize.Picture
+		goVal, err := jsValueToGo(args[2], reflect.TypeOf(excelize.Picture{}))
 		if err != nil {
 			ret["error"] = err.Error()
 			return js.ValueOf(ret)
 		}
-		opt = goVal.Elem().Interface().(excelize.GraphicOptions)
-		if err := f.AddPictureFromBytes(args[0].String(), args[1].String(), args[2].String(), args[3].String(), buf, &opt); err != nil {
+		pic = goVal.Elem().Interface().(excelize.Picture)
+		if err := f.AddPictureFromBytes(args[0].String(), args[1].String(), &pic); err != nil {
 			ret["error"] = err.Error()
 		}
 		return js.ValueOf(ret)

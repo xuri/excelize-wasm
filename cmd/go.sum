@@ -21,6 +21,8 @@ github.com/xuri/efp v0.0.0-20220603152613-6918739fd470 h1:6932x8ltq1w4utjmfMPVj0
 github.com/xuri/efp v0.0.0-20220603152613-6918739fd470/go.mod h1:ybY/Jr0T0GTCnYjKqmdwxyxn2BQf2RcQIIvex5QldPI=
 github.com/xuri/excelize/v2 v2.7.1-0.20230303160704-dc3bf331d541 h1:NvXhApXnRTmtvZt+zbDqZsuNjBHRi/YBmXyDZEKfZQE=
 github.com/xuri/excelize/v2 v2.7.1-0.20230303160704-dc3bf331d541/go.mod h1:XmaL6fOPSfP8NR9EEAqJQ6OJo+al3SjvXvVvtVzgAhM=
+github.com/xuri/excelize/v2 v2.7.1-0.20230320011728-a34c81e1ccbf h1:4/Phxa3OSIop1tWgEXgX8t2zVvsGtdeFVSfBvlAhCao=
+github.com/xuri/excelize/v2 v2.7.1-0.20230320011728-a34c81e1ccbf/go.mod h1:XmaL6fOPSfP8NR9EEAqJQ6OJo+al3SjvXvVvtVzgAhM=
 github.com/xuri/nfp v0.0.0-20220409054826-5e722a1d9e22 h1:OAmKAfT06//esDdpi/DZ8Qsdt4+M5+ltca05dA5bG2M=
 github.com/xuri/nfp v0.0.0-20220409054826-5e722a1d9e22/go.mod h1:WwHg+CVyzlv/TX9xqBFXEZAuxOPxn2k1GNHwG41IIUQ=
 github.com/yuin/goldmark v1.4.13/go.mod h1:6yULJ656Px+3vBD8DxQVa3kxgyrAnzto9xy5taEt/CY=
