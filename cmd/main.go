@@ -211,6 +211,7 @@ func regInteropFunc(f *excelize.File, fn map[string]interface{}) interface{} {
 		"GetColWidth":                 GetColWidth(f),
 		"GetDefaultFont":              GetDefaultFont(f),
 		"GetDefinedName":              GetDefinedName(f),
+		"GetPictures":                 GetPictures(f),
 		"GetRowHeight":                GetRowHeight(f),
 		"GetRowOutlineLevel":          GetRowOutlineLevel(f),
 		"GetRows":                     GetRows(f),
@@ -561,6 +562,12 @@ func goValueToJS(goVal reflect.Value, goType reflect.Type) (map[string]interface
 						// Value of the Go basic data type, for example: string
 						goBaseVal := goSlice.Index(s)
 						if !goBaseVal.IsZero() {
+							if subEle.Kind() == reflect.Uint8 { // []byte
+								dst := js.Global().Get("Uint8Array").New(goSlice.Len())
+								js.CopyBytesToJS(dst, goSlice.Bytes())
+								result[field.Name] = dst
+								break
+							}
 							v, err := goBaseTypeToJS(goBaseVal, subEle.Kind())
 							if err != nil {
 								return nil, err
@@ -1642,18 +1649,47 @@ func GetDefaultFont(f *excelize.File) func(this js.Value, args []js.Value) inter
 // or worksheet.
 func GetDefinedName(f *excelize.File) func(this js.Value, args []js.Value) interface{} {
 	return func(this js.Value, args []js.Value) interface{} {
-		ret := map[string]interface{}{"error": nil}
+		ret := map[string]interface{}{"definedNames": []interface{}{}, "error": nil}
 		if err := prepareArgs(args, []argsRule{}); err != nil {
 			ret["error"] = err.Error()
 			return js.ValueOf(ret)
 		}
-		ret["definedNames"] = []interface{}{}
 		for _, dn := range f.GetDefinedName() {
 			if jsVal, err := goValueToJS(reflect.ValueOf(dn),
 				reflect.TypeOf(excelize.DefinedName{})); err == nil {
 				x := ret["definedNames"].([]interface{})
 				x = append(x, jsVal)
 				ret["definedNames"] = x
+			}
+		}
+		return js.ValueOf(ret)
+	}
+}
+
+// GetPictures provides a function to get picture meta info and raw content
+// embed in spreadsheet by given worksheet and cell name. This function
+// returns the image contents as []byte data types.
+func GetPictures(f *excelize.File) func(this js.Value, args []js.Value) interface{} {
+	return func(this js.Value, args []js.Value) interface{} {
+		ret := map[string]interface{}{"pictures": []interface{}{}, "error": nil}
+		if err := prepareArgs(args, []argsRule{
+			{types: []js.Type{js.TypeString}},
+			{types: []js.Type{js.TypeString}},
+		}); err != nil {
+			ret["error"] = err.Error()
+			return js.ValueOf(ret)
+		}
+		pics, err := f.GetPictures(args[0].String(), args[1].String())
+		if err != nil {
+			ret["error"] = err.Error()
+			return js.ValueOf(ret)
+		}
+		for _, pic := range pics {
+			if jsVal, err := goValueToJS(reflect.ValueOf(pic),
+				reflect.TypeOf(excelize.Picture{})); err == nil {
+				x := ret["pictures"].([]interface{})
+				x = append(x, jsVal)
+				ret["pictures"] = x
 			}
 		}
 		return js.ValueOf(ret)

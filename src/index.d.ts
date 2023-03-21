@@ -1145,6 +1145,14 @@ declare module 'excelize-wasm' {
     GetDefinedName(): { definedNames: DefinedName[], error: string | null }
 
     /**
+     * GetPictures provides a function to get picture meta info and raw content
+     * embed in spreadsheet by given worksheet and cell name.
+     * @param sheet The worksheet name
+     * @param cell The cell reference
+     */
+    GetPictures(sheet: string, cell: string): { pictures: Picture[], error: string | null }
+
+    /**
      * GetRowHeight provides a function to get row height by given worksheet
      * name and row number.
      * @param sheet The worksheet name
