@@ -53,25 +53,25 @@ npm install --save excelize-wasm
 Here is a minimal example usage that will create spreadsheet file.
 
 ```javascript
-const { init } = require("excelize-wasm");
-const fs = require("fs");
+const { init } = require('excelize-wasm');
+const fs = require('fs');
 
-init("./node_modules/excelize-wasm/excelize.wasm.gz").then((excelize) => {
+init('./node_modules/excelize-wasm/excelize.wasm.gz').then((excelize) => {
   const f = excelize.NewFile();
   // Create a new sheet.
-  const { index } = f.NewSheet("Sheet2")
+  const { index } = f.NewSheet('Sheet2');
   // Set value of a cell.
-  f.SetCellValue("Sheet2", "A2", "Hello world.")
-  f.SetCellValue("Sheet1", "B2", 100)
+  f.SetCellValue('Sheet2', 'A2', 'Hello world.');
+  f.SetCellValue('Sheet1', 'B2', 100);
   // Set active sheet of the workbook.
-  f.SetActiveSheet(index)
+  f.SetActiveSheet(index);
   // Save spreadsheet by the given path.
   const { buffer, error } = f.WriteToBuffer();
   if (error) {
     console.log(error);
-    return
+    return;
   }
-  fs.writeFile("Book1.xlsx", buffer, "binary", (error) => {
+  fs.writeFile('Book1.xlsx', buffer, 'binary', (error) => {
     if (error) {
       console.log(error);
     }
@@ -96,30 +96,33 @@ Create spreadsheet in browser:
   </div>
   <script>
   function download() {
-    excelizeWASM.init("https://<your_hostname>/excelize-wasm/excelize.wasm.gz").then((excelize) => {
-      const f = excelize.NewFile();
-      // Create a new sheet.
-      const { index } = f.NewSheet("Sheet2")
-      // Set value of a cell.
-      f.SetCellValue("Sheet2", "A2", "Hello world.")
-      f.SetCellValue("Sheet1", "B2", 100)
-      // Set active sheet of the workbook.
-      f.SetActiveSheet(index)
-      // Save spreadsheet by the given path.
-      const { buffer, error } = f.WriteToBuffer();
-      if (error) {
-        console.log(error);
-        return
-      }
-      const link = document.createElement("a");
-      link.download = "Book1.xlsx";
-      link.href = URL.createObjectURL(
-        new Blob([buffer],
-        { type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" })
-      );
-      link.click();
-    });
-  }
+    excelizeWASM
+      .init('https://<your_hostname>/excelize-wasm/excelize.wasm.gz')
+      .then((excelize) => {
+        const f = excelize.NewFile();
+        // Create a new sheet.
+        const { index } = f.NewSheet('Sheet2');
+        // Set value of a cell.
+        f.SetCellValue('Sheet2', 'A2', 'Hello world.');
+        f.SetCellValue('Sheet1', 'B2', 100);
+        // Set active sheet of the workbook.
+        f.SetActiveSheet(index);
+        // Save spreadsheet by the given path.
+        const { buffer, error } = f.WriteToBuffer();
+        if (error) {
+          console.log(error);
+          return;
+        }
+        const link = document.createElement('a');
+        link.download = 'Book1.xlsx';
+        link.href = URL.createObjectURL(
+          new Blob([buffer], {
+            type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+          })
+        );
+        link.click();
+      });
+    }
   </script>
 </body>
 ```
@@ -131,28 +134,28 @@ Create spreadsheet in browser:
 The following constitutes the bare to read a spreadsheet document.
 
 ```javascript
-const { init } = require("excelize-wasm");
-const fs = require("fs");
+const { init } = require('excelize-wasm');
+const fs = require('fs');
 
-init("./node_modules/excelize-wasm/excelize.wasm.gz").then((excelize) => {
-  const f = excelize.OpenReader(fs.readFileSync("Book1.xlsx"));
+init('./node_modules/excelize-wasm/excelize.wasm.gz').then((excelize) => {
+  const f = excelize.OpenReader(fs.readFileSync('Book1.xlsx'));
   // Set value of a cell.
-  var { value, error } = f.GetCellValue("Sheet1", "B2")
-  if (error) {
-    console.log(error);
+  const ret1 = f.GetCellValue('Sheet1', 'B2');
+  if (ret1.error) {
+    console.log(ret1.error);
     return;
   }
-  console.log(value)
+  console.log(ret1.value);
   // Get all the rows in the Sheet1.
-  var { result, error } = f.GetRows("Sheet1");
-  if (error) {
-    console.log(error);
+  const ret2 = f.GetRows('Sheet1');
+  if (ret2.error) {
+    console.log(ret2.error);
     return;
   }
-  result.forEach(row => {
-    row.forEach(colCell => {
-      process.stdout.write(`${colCell}\t`)
-    })
+  ret2.result.forEach((row) => {
+    row.forEach((colCell) => {
+      process.stdout.write(`${colCell}\t`);
+    });
     console.log();
   });
 });
@@ -165,62 +168,62 @@ With excelize-wasm chart generation and management is as easy as a few lines of 
 <p align="center"><img width="650" src="https://raw.githubusercontent.com/xuri/excelize-wasm/main/chart.png" alt="Create chart by excelize-wasm"></p>
 
 ```javascript
-const { init } = require("excelize-wasm");
-const fs = require("fs");
+const { init } = require('excelize-wasm');
+const fs = require('fs');
 
-init("./node_modules/excelize-wasm/excelize.wasm.gz").then((excelize) => {
+init('./node_modules/excelize-wasm/excelize.wasm.gz').then((excelize) => {
   const f = excelize.NewFile();
   [
-    [null, "Apple", "Orange", "Pear"],
-    ["Small", 2, 3, 3],
-    ["Normal", 5, 2, 4],
-    ["Large", 6, 7, 8],
+    [null, 'Apple', 'Orange', 'Pear'],
+    ['Small', 2, 3, 3],
+    ['Normal', 5, 2, 4],
+    ['Large', 6, 7, 8],
   ].forEach((row, idx) => {
-    var { cell, error } = excelize.CoordinatesToCellName(1, idx + 1);
-    if (error) {
-      console.log(error);
+    const ret1 = excelize.CoordinatesToCellName(1, idx + 1);
+    if (ret1.error) {
+      console.log(ret1.error);
       return;
     }
-    var { error } = f.SetSheetRow("Sheet1", cell, row);
-    if (error) {
-      console.log(error);
+    const res2 = f.SetSheetRow('Sheet1', ret1.cell, row);
+    if (res2.error) {
+      console.log(res2.error);
       return;
     }
   });
-  var { error } = f.AddChart("Sheet1", "E1", {
-    Type: "col3DClustered",
+  const ret3 = f.AddChart('Sheet1', 'E1', {
+    Type: excelize.Col3DClustered,
     Series: [
       {
-        Name: "Sheet1!$A$2",
-        Categories: "Sheet1!$B$1:$D$1",
-        Values: "Sheet1!$B$2:$D$2",
+        Name: 'Sheet1!$A$2',
+        Categories: 'Sheet1!$B$1:$D$1',
+        Values: 'Sheet1!$B$2:$D$2',
       },
       {
-        Name: "Sheet1!$A$3",
-        Categories: "Sheet1!$B$1:$D$1",
-        Values: "Sheet1!$B$3:$D$3",
+        Name: 'Sheet1!$A$3',
+        Categories: 'Sheet1!$B$1:$D$1',
+        Values: 'Sheet1!$B$3:$D$3',
       },
       {
-        Name: "Sheet1!$A$4",
-        Categories: "Sheet1!$B$1:$D$1",
-        Values: "Sheet1!$B$4:$D$4",
+        Name: 'Sheet1!$A$4',
+        Categories: 'Sheet1!$B$1:$D$1',
+        Values: 'Sheet1!$B$4:$D$4',
       },
     ],
     Title: {
-      Name: "Fruit 3D Clustered Column Chart",
+      Name: 'Fruit 3D Clustered Column Chart',
     },
   });
-  if (error) {
-    console.log(error);
+  if (ret3.error) {
+    console.log(ret3.error);
     return;
   }
   // Save spreadsheet by the given path.
-  var { buffer, error } = f.WriteToBuffer();
+  const { buffer, error } = f.WriteToBuffer();
   if (error) {
     console.log(error);
     return;
   }
-  fs.writeFile("Book1.xlsx", buffer, "binary", (error) => {
+  fs.writeFile('Book1.xlsx', buffer, 'binary', (error) => {
     if (error) {
       console.log(error);
     }
@@ -231,49 +234,59 @@ init("./node_modules/excelize-wasm/excelize.wasm.gz").then((excelize) => {
 ### Add picture to spreadsheet file
 
 ```javascript
-const { init } = require("excelize-wasm");
-const fs = require("fs");
+const { init } = require('excelize-wasm');
+const fs = require('fs');
 
-init("./node_modules/excelize-wasm/excelize.wasm.gz").then((excelize) => {
-  const f = excelize.OpenReader(fs.readFileSync("Book1.xlsx"));
+init('./node_modules/excelize-wasm/excelize.wasm.gz').then((excelize) => {
+  const f = excelize.OpenReader(fs.readFileSync('Book1.xlsx'));
   if (f.error) {
     console.log(f.error);
-    return
+    return;
   }
   // Insert a picture.
-  var { error } = f.AddPictureFromBytes("Sheet1", "A2",
-    "Picture 1", ".png", fs.readFileSync("image.png"), {})
-  if (error) {
-    console.log(error);
-    return
+  const ret1 = f.AddPictureFromBytes('Sheet1', 'A2', {
+    Extension: '.png',
+    File: fs.readFileSync('image.png'),
+    Format: { AltText: 'Picture 1' },
+  });
+  if (ret1.error) {
+    console.log(ret1.error);
+    return;
   }
   // Insert a picture to worksheet with scaling.
-  var { error } = f.AddPictureFromBytes("Sheet1", "D2", "Picture 2", ".png",
-    fs.readFileSync("image.jpg"), {ScaleX: 0.5, ScaleY: 0.5});
-  if (error) {
-    console.log(error);
-    return
+  const ret2 = f.AddPictureFromBytes('Sheet1', 'D2', {
+    Extension: '.jpg',
+    File: fs.readFileSync('image.jpg'),
+    Format: { AltText: 'Picture 2', ScaleX: 0.5, ScaleY: 0.5 },
+  });
+  if (ret2.error) {
+    console.log(ret2.error);
+    return;
   }
   // Insert a picture offset in the cell with printing support.
-  var { error } = f.AddPictureFromBytes("Sheet1", "H2", "Picture 3", ".png",
-    fs.readFileSync("image.gif"), {
+  const ret3 = f.AddPictureFromBytes('Sheet1', 'H2', {
+    Extension: '.gif',
+    File: fs.readFileSync('image.gif'),
+    Format: {
+      AltText: 'Picture 3',
       OffsetX: 15,
       OffsetY: 10,
       PrintObject: true,
       LockAspectRatio: false,
-      Locked: false
+      Locked: false,
+    },
   });
-  if (error) {
-    console.log(error);
-    return
+  if (ret3.error) {
+    console.log(ret3.error);
+    return;
   }
   // Save spreadsheet by the given path.
-  var { buffer, error } = f.WriteToBuffer();
+  const { buffer, error } = f.WriteToBuffer();
   if (error) {
     console.log(error);
-    return
+    return;
   }
-  fs.writeFile("Book1.xlsx", buffer, "binary", (error) => {
+  fs.writeFile('Book1.xlsx', buffer, 'binary', (error) => {
     if (error) {
       console.log(error);
     }

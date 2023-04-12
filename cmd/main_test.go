@@ -214,7 +214,7 @@ func TestAddChart(t *testing.T) {
 	f := NewFile(js.Value{}, []js.Value{})
 	assert.True(t, f.(js.Value).Get("error").IsNull())
 	lineChart := js.ValueOf(map[string]interface{}{
-		"Type": "line",
+		"Type": int(excelize.Line),
 		"Series": []interface{}{
 			map[string]interface{}{
 				"Name":       "Sheet1!$A$2",
@@ -237,7 +237,7 @@ func TestAddChart(t *testing.T) {
 		},
 	})
 	colChart := js.ValueOf(map[string]interface{}{
-		"Type": "col3DClustered",
+		"Type": int(excelize.Col3DClustered),
 		"Series": []interface{}{
 			map[string]interface{}{
 				"Name":       "Sheet1!$A$2",
@@ -271,17 +271,23 @@ func TestAddChart(t *testing.T) {
 	ret = f.(js.Value).Call("AddChart", js.ValueOf("Sheet1"), js.ValueOf("A1"), js.ValueOf(map[string]interface{}{"Type": true}))
 	assert.EqualError(t, errArgType, ret.Get("error").String())
 
-	ret = f.(js.Value).Call("AddChart", js.ValueOf("Sheet1"), js.ValueOf("A1"), js.ValueOf(map[string]interface{}{"Type": "col"}), js.ValueOf(map[string]interface{}{"Type": true}))
+	ret = f.(js.Value).Call("AddChart", js.ValueOf("Sheet1"), js.ValueOf("A1"), js.ValueOf(map[string]interface{}{}))
 	assert.EqualError(t, errArgType, ret.Get("error").String())
 
-	ret = f.(js.Value).Call("AddChart", js.ValueOf("Sheet1"), js.ValueOf("A1"), js.ValueOf(map[string]interface{}{"Type": ""}))
-	assert.Equal(t, "unsupported chart type ", ret.Get("error").String())
+	ret = f.(js.Value).Call("AddChart", js.ValueOf("Sheet1"), js.ValueOf("A1"), js.ValueOf(map[string]interface{}{"Type": int(excelize.Col)}), js.ValueOf(map[string]interface{}{"Type": true}))
+	assert.EqualError(t, errArgType, ret.Get("error").String())
 
-	ret = f.(js.Value).Call("AddChart", js.ValueOf("Sheet1"), js.ValueOf("A1"), js.ValueOf(map[string]interface{}{"Type": "col"}), js.ValueOf(map[string]interface{}{"Type": ""}))
-	assert.Equal(t, "unsupported chart type ", ret.Get("error").String())
+	ret = f.(js.Value).Call("AddChart", js.ValueOf("Sheet1"), js.ValueOf("A1"), js.ValueOf(map[string]interface{}{"Type": int(excelize.Col)}), js.ValueOf(map[string]interface{}{}))
+	assert.EqualError(t, errArgType, ret.Get("error").String())
+
+	ret = f.(js.Value).Call("AddChart", js.ValueOf("Sheet1"), js.ValueOf("A1"), js.ValueOf(map[string]interface{}{"Type": 65}))
+	assert.Equal(t, "unsupported chart type 65", ret.Get("error").String())
+
+	ret = f.(js.Value).Call("AddChart", js.ValueOf("Sheet1"), js.ValueOf("A1"), js.ValueOf(map[string]interface{}{"Type": int(excelize.Col)}), js.ValueOf(map[string]interface{}{"Type": 65}))
+	assert.Equal(t, "unsupported chart type 65", ret.Get("error").String())
 
 	ret = f.(js.Value).Call("AddChart", js.ValueOf("SheetN"), js.ValueOf("A1"),
-		js.ValueOf(map[string]interface{}{}))
+		js.ValueOf(map[string]interface{}{"Type": int(excelize.Col3DClustered)}))
 	assert.Equal(t, "sheet SheetN does not exist", ret.Get("error").String())
 }
 
@@ -289,7 +295,7 @@ func TestAddChartSheet(t *testing.T) {
 	f := NewFile(js.Value{}, []js.Value{})
 	assert.True(t, f.(js.Value).Get("error").IsNull())
 	lineChart := js.ValueOf(map[string]interface{}{
-		"Type": "line",
+		"Type": int(excelize.Line),
 		"Series": []interface{}{
 			map[string]interface{}{
 				"Name":       "Sheet1!$A$2",
@@ -312,7 +318,7 @@ func TestAddChartSheet(t *testing.T) {
 		},
 	})
 	colChart := js.ValueOf(map[string]interface{}{
-		"Type": "col3DClustered",
+		"Type": int(excelize.Col3DClustered),
 		"Series": []interface{}{
 			map[string]interface{}{
 				"Name":       "Sheet1!$A$2",
@@ -346,14 +352,14 @@ func TestAddChartSheet(t *testing.T) {
 	ret = f.(js.Value).Call("AddChartSheet", js.ValueOf("Sheet4"), js.ValueOf(map[string]interface{}{"Type": true}))
 	assert.EqualError(t, errArgType, ret.Get("error").String())
 
-	ret = f.(js.Value).Call("AddChartSheet", js.ValueOf("Sheet2"), js.ValueOf(map[string]interface{}{"Type": "col"}), js.ValueOf(map[string]interface{}{"Type": true}))
+	ret = f.(js.Value).Call("AddChartSheet", js.ValueOf("Sheet2"), js.ValueOf(map[string]interface{}{"Type": int(excelize.Col)}), js.ValueOf(map[string]interface{}{"Type": true}))
 	assert.EqualError(t, errArgType, ret.Get("error").String())
 
-	ret = f.(js.Value).Call("AddChartSheet", js.ValueOf("Sheet4"), js.ValueOf(map[string]interface{}{"Type": ""}))
-	assert.Equal(t, "unsupported chart type ", ret.Get("error").String())
+	ret = f.(js.Value).Call("AddChartSheet", js.ValueOf("Sheet4"), js.ValueOf(map[string]interface{}{"Type": 65}))
+	assert.Equal(t, "unsupported chart type 65", ret.Get("error").String())
 
-	ret = f.(js.Value).Call("AddChartSheet", js.ValueOf("Sheet5"), js.ValueOf(map[string]interface{}{"Type": "col"}), js.ValueOf(map[string]interface{}{"Type": ""}))
-	assert.Equal(t, "unsupported chart type ", ret.Get("error").String())
+	ret = f.(js.Value).Call("AddChartSheet", js.ValueOf("Sheet5"), js.ValueOf(map[string]interface{}{"Type": int(excelize.Col)}), js.ValueOf(map[string]interface{}{"Type": 65}))
+	assert.Equal(t, "unsupported chart type 65", ret.Get("error").String())
 
 	ret = f.(js.Value).Call("AddChartSheet", js.ValueOf("Sheet1"), js.ValueOf(map[string]interface{}{}))
 	assert.EqualError(t, excelize.ErrExistsSheet, ret.Get("error").String())
@@ -591,16 +597,16 @@ func TestAddTable(t *testing.T) {
 	f := NewFile(js.Value{}, []js.Value{})
 	assert.True(t, f.(js.Value).Get("error").IsNull())
 
-	ret := f.(js.Value).Call("AddTable", js.ValueOf("Sheet1"), js.ValueOf("B26:A21"), js.ValueOf(map[string]interface{}{}))
+	ret := f.(js.Value).Call("AddTable", js.ValueOf("Sheet1"), js.ValueOf(map[string]interface{}{"Range": "B26:A21"}))
 	assert.True(t, ret.Get("error").IsNull())
 
 	ret = f.(js.Value).Call("AddTable")
 	assert.EqualError(t, errArgNum, ret.Get("error").String())
 
-	ret = f.(js.Value).Call("AddTable", js.ValueOf("Sheet1"), js.ValueOf("B26:A21"), js.ValueOf(map[string]interface{}{"Name": true}))
+	ret = f.(js.Value).Call("AddTable", js.ValueOf("Sheet1"), js.ValueOf(map[string]interface{}{"Name": true, "Range": "B26:A21"}))
 	assert.EqualError(t, errArgType, ret.Get("error").String())
 
-	ret = f.(js.Value).Call("AddTable", js.ValueOf("SheetN"), js.ValueOf("B26:A21"), js.ValueOf(map[string]interface{}{}))
+	ret = f.(js.Value).Call("AddTable", js.ValueOf("SheetN"), js.ValueOf(map[string]interface{}{"Range": "B26:A21"}))
 	assert.Equal(t, "sheet SheetN does not exist", ret.Get("error").String())
 }
 
@@ -1833,7 +1839,7 @@ func TestDefinedName(t *testing.T) {
 	assert.EqualError(t, errArgNum, ret.Get("error").String())
 }
 
-func TestSetDocProps(t *testing.T) {
+func TestDocProps(t *testing.T) {
 	f := NewFile(js.Value{}, []js.Value{})
 	assert.True(t, f.(js.Value).Get("error").IsNull())
 
@@ -1842,6 +1848,10 @@ func TestSetDocProps(t *testing.T) {
 	}))
 	assert.True(t, ret.Get("error").IsNull())
 
+	ret = f.(js.Value).Call("GetDocProps")
+	assert.True(t, ret.Get("error").IsNull())
+	assert.Equal(t, "category", ret.Get("props").Get("Category").String())
+
 	ret = f.(js.Value).Call("SetDocProps")
 	assert.EqualError(t, errArgNum, ret.Get("error").String())
 
@@ -1849,6 +1859,9 @@ func TestSetDocProps(t *testing.T) {
 		"Category": true,
 	}))
 	assert.EqualError(t, errArgType, ret.Get("error").String())
+
+	ret = f.(js.Value).Call("GetDocProps", js.ValueOf(nil))
+	assert.EqualError(t, errArgNum, ret.Get("error").String())
 }
 
 func TestSetHeaderFooter(t *testing.T) {
@@ -2293,7 +2306,7 @@ func TestJsValueToGo(t *testing.T) {
 		F2 []*string
 	}
 	type T3 struct {
-		F1 []*uint8
+		F1 []*uint32
 	}
 	type T4 struct {
 		F1 []*T3
@@ -2430,6 +2443,12 @@ func TestGoValueToJS(t *testing.T) {
 	_, err = goValueToJS(reflect.ValueOf(T16{
 		F1: []string{exp},
 	}), reflect.TypeOf(T17{}))
+	assert.EqualError(t, err, errArgType.Error())
+
+	type T18 struct{ F1 uint8 }
+	_, err = goValueToJS(reflect.ValueOf(T16{
+		F1: []string{exp},
+	}), reflect.TypeOf(T18{}))
 	assert.EqualError(t, err, errArgType.Error())
 }
 

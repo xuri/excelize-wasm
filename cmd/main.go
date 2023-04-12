@@ -68,6 +68,12 @@ var (
 			}
 			return reflect.ValueOf(uint(jsVal.Float())), nil
 		},
+		reflect.Uint8: func(jsVal js.Value, kind reflect.Kind) (reflect.Value, error) {
+			if jsVal.Type() != js.TypeNumber {
+				return reflect.ValueOf(nil), errArgType
+			}
+			return reflect.ValueOf(uint8(jsVal.Float())), nil
+		},
 		reflect.Uint64: func(jsVal js.Value, kind reflect.Kind) (reflect.Value, error) {
 			if jsVal.Type() != js.TypeNumber {
 				return reflect.ValueOf(nil), errArgType
@@ -113,6 +119,12 @@ var (
 				return nil, errArgType
 			}
 			return int(goVal.Uint()), nil
+		},
+		reflect.Uint8: func(goVal reflect.Value, kind reflect.Kind) (interface{}, error) {
+			if kind != goVal.Kind() {
+				return nil, errArgType
+			}
+			return uint8(goVal.Uint()), nil
 		},
 		reflect.Uint64: func(goVal reflect.Value, kind reflect.Kind) (interface{}, error) {
 			if kind != goVal.Kind() {
@@ -172,6 +184,70 @@ func regFuncs() {
 	} {
 		js.Global().Get("excelize").Set(name, js.FuncOf(impl))
 	}
+	regConstants()
+}
+
+// regConstants register all exported JavaScript functions on the Window ot Global.
+func regConstants() {
+	for name, constant := range map[string]int{
+		"Area":                        int(excelize.Area),
+		"AreaStacked":                 int(excelize.AreaStacked),
+		"AreaPercentStacked":          int(excelize.AreaPercentStacked),
+		"Area3D":                      int(excelize.Area3D),
+		"Area3DStacked":               int(excelize.Area3DStacked),
+		"Area3DPercentStacked":        int(excelize.Area3DPercentStacked),
+		"Bar":                         int(excelize.Bar),
+		"BarStacked":                  int(excelize.BarStacked),
+		"BarPercentStacked":           int(excelize.BarPercentStacked),
+		"Bar3DClustered":              int(excelize.Bar3DClustered),
+		"Bar3DStacked":                int(excelize.Bar3DStacked),
+		"Bar3DPercentStacked":         int(excelize.Bar3DPercentStacked),
+		"Bar3DConeClustered":          int(excelize.Bar3DConeClustered),
+		"Bar3DConeStacked":            int(excelize.Bar3DConeStacked),
+		"Bar3DConePercentStacked":     int(excelize.Bar3DConePercentStacked),
+		"Bar3DPyramidClustered":       int(excelize.Bar3DPyramidClustered),
+		"Bar3DPyramidStacked":         int(excelize.Bar3DPyramidStacked),
+		"Bar3DPyramidPercentStacked":  int(excelize.Bar3DPyramidPercentStacked),
+		"Bar3DCylinderClustered":      int(excelize.Bar3DCylinderClustered),
+		"Bar3DCylinderStacked":        int(excelize.Bar3DCylinderStacked),
+		"Bar3DCylinderPercentStacked": int(excelize.Bar3DCylinderPercentStacked),
+		"Col":                         int(excelize.Col),
+		"ColStacked":                  int(excelize.ColStacked),
+		"ColPercentStacked":           int(excelize.ColPercentStacked),
+		"Col3D":                       int(excelize.Col3D),
+		"Col3DClustered":              int(excelize.Col3DClustered),
+		"Col3DStacked":                int(excelize.Col3DStacked),
+		"Col3DPercentStacked":         int(excelize.Col3DPercentStacked),
+		"Col3DCone":                   int(excelize.Col3DCone),
+		"Col3DConeClustered":          int(excelize.Col3DConeClustered),
+		"Col3DConeStacked":            int(excelize.Col3DConeStacked),
+		"Col3DConePercentStacked":     int(excelize.Col3DConePercentStacked),
+		"Col3DPyramid":                int(excelize.Col3DPyramid),
+		"Col3DPyramidClustered":       int(excelize.Col3DPyramidClustered),
+		"Col3DPyramidStacked":         int(excelize.Col3DPyramidStacked),
+		"Col3DPyramidPercentStacked":  int(excelize.Col3DPyramidPercentStacked),
+		"Col3DCylinder":               int(excelize.Col3DCylinder),
+		"Col3DCylinderClustered":      int(excelize.Col3DCylinderClustered),
+		"Col3DCylinderStacked":        int(excelize.Col3DCylinderStacked),
+		"Col3DCylinderPercentStacked": int(excelize.Col3DCylinderPercentStacked),
+		"Doughnut":                    int(excelize.Doughnut),
+		"Line":                        int(excelize.Line),
+		"Line3D":                      int(excelize.Line3D),
+		"Pie":                         int(excelize.Pie),
+		"Pie3D":                       int(excelize.Pie3D),
+		"PieOfPie":                    int(excelize.PieOfPie),
+		"BarOfPie":                    int(excelize.BarOfPie),
+		"Radar":                       int(excelize.Radar),
+		"Scatter":                     int(excelize.Scatter),
+		"Surface3D":                   int(excelize.Surface3D),
+		"WireframeSurface3D":          int(excelize.WireframeSurface3D),
+		"Contour":                     int(excelize.Contour),
+		"WireframeContour":            int(excelize.WireframeContour),
+		"Bubble":                      int(excelize.Bubble),
+		"Bubble3D":                    int(excelize.Bubble3D),
+	} {
+		js.Global().Get("excelize").Set(name, constant)
+	}
 }
 
 // regInteropFunc register all exported JavaScript functions.
@@ -211,6 +287,7 @@ func regInteropFunc(f *excelize.File, fn map[string]interface{}) interface{} {
 		"GetColWidth":                 GetColWidth(f),
 		"GetDefaultFont":              GetDefaultFont(f),
 		"GetDefinedName":              GetDefinedName(f),
+		"GetDocProps":                 GetDocProps(f),
 		"GetPictures":                 GetPictures(f),
 		"GetRowHeight":                GetRowHeight(f),
 		"GetRowOutlineLevel":          GetRowOutlineLevel(f),
@@ -321,7 +398,7 @@ func jsValueToGo(jsVal js.Value, goType reflect.Type) (reflect.Value, error) {
 				if err != nil {
 					return result, err
 				}
-				s.Field(resultFieldIdx).Set(goBaseVal)
+				s.Field(resultFieldIdx).Set(goBaseVal.Convert(s.Field(resultFieldIdx).Type()))
 			}
 			continue
 		}
@@ -829,11 +906,19 @@ func AddChart(f *excelize.File) func(this js.Value, args []js.Value) interface{}
 			ret["error"] = err.Error()
 			return js.ValueOf(ret)
 		}
+		if args[2].Get("Type").IsUndefined() {
+			ret["error"] = errArgType.Error()
+			return js.ValueOf(ret)
+		}
 		chart = chartVal.Elem().Interface().(excelize.Chart)
 		if len(args) == 4 {
 			comboVal, err := jsValueToGo(args[3], reflect.TypeOf(excelize.Chart{}))
 			if err != nil {
 				ret["error"] = err.Error()
+				return js.ValueOf(ret)
+			}
+			if args[3].Get("Type").IsUndefined() {
+				ret["error"] = errArgType.Error()
 				return js.ValueOf(ret)
 			}
 			combo = comboVal.Elem().Interface().(excelize.Chart)
@@ -1062,20 +1147,19 @@ func AddTable(f *excelize.File) func(this js.Value, args []js.Value) interface{}
 		ret := map[string]interface{}{"error": nil}
 		if err := prepareArgs(args, []argsRule{
 			{types: []js.Type{js.TypeString}},
-			{types: []js.Type{js.TypeString}},
 			{types: []js.Type{js.TypeObject}},
 		}); err != nil {
 			ret["error"] = err.Error()
 			return js.ValueOf(ret)
 		}
-		var opts excelize.TableOptions
-		goVal, err := jsValueToGo(args[2], reflect.TypeOf(excelize.TableOptions{}))
+		var opts excelize.Table
+		goVal, err := jsValueToGo(args[1], reflect.TypeOf(excelize.Table{}))
 		if err != nil {
 			ret["error"] = err.Error()
 			return js.ValueOf(ret)
 		}
-		opts = goVal.Elem().Interface().(excelize.TableOptions)
-		if err := f.AddTable(args[0].String(), args[1].String(), &opts); err != nil {
+		opts = goVal.Elem().Interface().(excelize.Table)
+		if err := f.AddTable(args[0].String(), &opts); err != nil {
 			ret["error"] = err.Error()
 		}
 		return js.ValueOf(ret)
@@ -1661,6 +1745,27 @@ func GetDefinedName(f *excelize.File) func(this js.Value, args []js.Value) inter
 				x = append(x, jsVal)
 				ret["definedNames"] = x
 			}
+		}
+		return js.ValueOf(ret)
+	}
+}
+
+// GetDocProps provides a function to get document core properties.
+func GetDocProps(f *excelize.File) func(this js.Value, args []js.Value) interface{} {
+	return func(this js.Value, args []js.Value) interface{} {
+		ret := map[string]interface{}{"props": nil, "error": nil}
+		if err := prepareArgs(args, []argsRule{}); err != nil {
+			ret["error"] = err.Error()
+			return js.ValueOf(ret)
+		}
+		props, err := f.GetDocProps()
+		if err != nil {
+			ret["error"] = err.Error()
+			return js.ValueOf(ret)
+		}
+		if jsVal, err := goValueToJS(reflect.ValueOf(*props),
+			reflect.TypeOf(excelize.DocProperties{})); err == nil {
+			ret["props"] = jsVal
 		}
 		return js.ValueOf(ret)
 	}

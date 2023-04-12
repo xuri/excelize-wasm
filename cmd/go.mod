@@ -4,7 +4,6 @@ go 1.16
 
 require (
 	github.com/stretchr/testify v1.8.1
-	github.com/xuri/excelize/v2 v2.7.1-0.20230320011728-a34c81e1ccbf
-	golang.org/x/crypto v0.7.0 // indirect
+	github.com/xuri/excelize/v2 v2.7.1
 	golang.org/x/image v0.5.0
 )

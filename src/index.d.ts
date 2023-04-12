@@ -310,10 +310,71 @@ declare module 'excelize-wasm' {
   };
 
   /**
+   * ChartType defines the currently supported chart types enumeration.
+   */
+  export enum ChartType {
+    Area,
+    AreaStacked,
+    AreaPercentStacked,
+    Area3D,
+    Area3DStacked,
+    Area3DPercentStacked,
+    Bar,
+    BarStacked,
+    BarPercentStacked,
+    Bar3DClustered,
+    Bar3DStacked,
+    Bar3DPercentStacked,
+    Bar3DConeClustered,
+    Bar3DConeStacked,
+    Bar3DConePercentStacked,
+    Bar3DPyramidClustered,
+    Bar3DPyramidStacked,
+    Bar3DPyramidPercentStacked,
+    Bar3DCylinderClustered,
+    Bar3DCylinderStacked,
+    Bar3DCylinderPercentStacked,
+    Col,
+    ColStacked,
+    ColPercentStacked,
+    Col3D,
+    Col3DClustered,
+    Col3DStacked,
+    Col3DPercentStacked,
+    Col3DCone,
+    Col3DConeClustered,
+    Col3DConeStacked,
+    Col3DConePercentStacked,
+    Col3DPyramid,
+    Col3DPyramidClustered,
+    Col3DPyramidStacked,
+    Col3DPyramidPercentStacked,
+    Col3DCylinder,
+    Col3DCylinderClustered,
+    Col3DCylinderStacked,
+    Col3DCylinderPercentStacked,
+    Doughnut,
+    Line,
+    Line3D,
+    Pie,
+    Pie3D,
+    PieOfPie,
+    BarOfPie,
+    Radar,
+    Scatter,
+    Surface3D,
+    WireframeSurface3D,
+    Contour,
+    WireframeContour,
+    Bubble,
+    Bubble3D,
+  }
+
+  /**
    * Chart directly maps the format settings of the chart.
    */
   export type Chart = {
-    Type?:         string;
+    Type:          ChartType;
     Series?:       ChartSeries[];
     Format?:       GraphicOptions;
     Dimension?:    ChartDimension;
@@ -1143,6 +1204,11 @@ declare module 'excelize-wasm' {
      * workbook or worksheet.
      */
     GetDefinedName(): { definedNames: DefinedName[], error: string | null }
+
+    /**
+     * GetDocProps provides a function to get document core properties.
+     */
+    GetDocProps(): { props: DocProperties, error: string | null }
 
     /**
      * GetPictures provides a function to get picture meta info and raw content
@@ -2303,7 +2369,7 @@ declare module 'excelize-wasm' {
      * @param cell The starting cell reference
      * @param slice The array for writes
      */
-    SetSheetRow(sheet: string, cell: string, slice: Array<boolean | number | string>): { error: string | null }
+    SetSheetRow(sheet: string, cell: string, slice: Array<boolean | number | string | null>): { error: string | null }
 
     /**
      * SetSheetView sets sheet view options. The viewIndex may be negative and
@@ -2395,16 +2461,71 @@ declare module 'excelize-wasm' {
    * @param path The compressed wasm archive path
    */
   export function init(path: string): Promise<{
-    CellNameToCoordinates: typeof CellNameToCoordinates,
-    ColumnNameToNumber:    typeof ColumnNameToNumber,
-    ColumnNumberToName:    typeof ColumnNumberToName,
-    CoordinatesToCellName: typeof CoordinatesToCellName,
-    HSLToRGB:              typeof HSLToRGB,
-    JoinCellName:          typeof JoinCellName,
-    RGBToHSL:              typeof RGBToHSL,
-    SplitCellName:         typeof SplitCellName,
-    ThemeColor:            typeof ThemeColor,
-    NewFile:               typeof NewFile;
-    OpenReader:            typeof OpenReader;
+    CellNameToCoordinates:       typeof CellNameToCoordinates,
+    ColumnNameToNumber:          typeof ColumnNameToNumber,
+    ColumnNumberToName:          typeof ColumnNumberToName,
+    CoordinatesToCellName:       typeof CoordinatesToCellName,
+    HSLToRGB:                    typeof HSLToRGB,
+    JoinCellName:                typeof JoinCellName,
+    RGBToHSL:                    typeof RGBToHSL,
+    SplitCellName:               typeof SplitCellName,
+    ThemeColor:                  typeof ThemeColor,
+    NewFile:                     typeof NewFile;
+    OpenReader:                  typeof OpenReader;
+    Area:                        typeof ChartType.Area;
+    AreaStacked:                 typeof ChartType.AreaStacked;
+    AreaPercentStacked:          typeof ChartType.AreaPercentStacked;
+    Area3D:                      typeof ChartType.Area3D;
+    Area3DStacked:               typeof ChartType.Area3DStacked;
+    Area3DPercentStacked:        typeof ChartType.Area3DPercentStacked;
+    Bar:                         typeof ChartType.Bar;
+    BarStacked:                  typeof ChartType.BarStacked;
+    BarPercentStacked:           typeof ChartType.BarPercentStacked;
+    Bar3DClustered:              typeof ChartType.Bar3DClustered;
+    Bar3DStacked:                typeof ChartType.Bar3DStacked;
+    Bar3DPercentStacked:         typeof ChartType.Bar3DPercentStacked;
+    Bar3DConeClustered:          typeof ChartType.Bar3DConeClustered;
+    Bar3DConeStacked:            typeof ChartType.Bar3DConeStacked;
+    Bar3DConePercentStacked:     typeof ChartType.Bar3DConePercentStacked;
+    Bar3DPyramidClustered:       typeof ChartType.Bar3DPyramidClustered;
+    Bar3DPyramidStacked:         typeof ChartType.Bar3DPyramidStacked;
+    Bar3DPyramidPercentStacked:  typeof ChartType.Bar3DPyramidPercentStacked;
+    Bar3DCylinderClustered:      typeof ChartType.Bar3DCylinderClustered;
+    Bar3DCylinderStacked:        typeof ChartType.Bar3DCylinderStacked;
+    Bar3DCylinderPercentStacked: typeof ChartType.Bar3DCylinderPercentStacked;
+    Col:                         typeof ChartType.Col;
+    ColStacked:                  typeof ChartType.ColStacked;
+    ColPercentStacked:           typeof ChartType.ColPercentStacked;
+    Col3D:                       typeof ChartType.Col3D;
+    Col3DClustered:              typeof ChartType.Col3DClustered;
+    Col3DStacked:                typeof ChartType.Col3DStacked;
+    Col3DPercentStacked:         typeof ChartType.Col3DPercentStacked;
+    Col3DCone:                   typeof ChartType.Col3DCone;
+    Col3DConeClustered:          typeof ChartType.Col3DConeClustered;
+    Col3DConeStacked:            typeof ChartType.Col3DConeStacked;
+    Col3DConePercentStacked:     typeof ChartType.Col3DConePercentStacked;
+    Col3DPyramid:                typeof ChartType.Col3DPyramid;
+    Col3DPyramidClustered:       typeof ChartType.Col3DPyramidClustered;
+    Col3DPyramidStacked:         typeof ChartType.Col3DPyramidStacked;
+    Col3DPyramidPercentStacked:  typeof ChartType.Col3DPyramidPercentStacked;
+    Col3DCylinder:               typeof ChartType.Col3DCylinder;
+    Col3DCylinderClustered:      typeof ChartType.Col3DCylinderClustered;
+    Col3DCylinderStacked:        typeof ChartType.Col3DCylinderStacked;
+    Col3DCylinderPercentStacked: typeof ChartType.Col3DCylinderPercentStacked;
+    Doughnut:                    typeof ChartType.Doughnut;
+    Line:                        typeof ChartType.Line;
+    Line3D:                      typeof ChartType.Line3D;
+    Pie:                         typeof ChartType.Pie;
+    Pie3D:                       typeof ChartType.Pie3D;
+    PieOfPie:                    typeof ChartType.PieOfPie;
+    BarOfPie:                    typeof ChartType.BarOfPie;
+    Radar:                       typeof ChartType.Radar;
+    Scatter:                     typeof ChartType.Scatter;
+    Surface3D:                   typeof ChartType.Surface3D;
+    WireframeSurface3D:          typeof ChartType.WireframeSurface3D;
+    Contour:                     typeof ChartType.Contour;
+    WireframeContour:            typeof ChartType.WireframeContour;
+    Bubble:                      typeof ChartType.Bubble;
+    Bubble3D:                    typeof ChartType.Bubble3D;
   }>;
 }
