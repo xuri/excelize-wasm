@@ -285,6 +285,7 @@ func regInteropFunc(f *excelize.File, fn map[string]interface{}) interface{} {
 		"GetColStyle":                 GetColStyle(f),
 		"GetColVisible":               GetColVisible(f),
 		"GetColWidth":                 GetColWidth(f),
+		"GetComments":                 GetComments(f),
 		"GetDefaultFont":              GetDefaultFont(f),
 		"GetDefinedName":              GetDefinedName(f),
 		"GetDocProps":                 GetDocProps(f),
@@ -1708,6 +1709,33 @@ func GetCols(f *excelize.File) func(this js.Value, args []js.Value) interface{} 
 			result[c] = js.ValueOf(line)
 		}
 		ret["result"] = result
+		return js.ValueOf(ret)
+	}
+}
+
+// GetComments retrieves all comments in a worksheet by given worksheet name.
+func GetComments(f *excelize.File) func(this js.Value, args []js.Value) interface{} {
+	return func(this js.Value, args []js.Value) interface{} {
+		ret := map[string]interface{}{"comments": []interface{}{}, "error": nil}
+		if err := prepareArgs(args, []argsRule{
+			{types: []js.Type{js.TypeString}},
+		}); err != nil {
+			ret["error"] = err.Error()
+			return js.ValueOf(ret)
+		}
+		cmts, err := f.GetComments(args[0].String())
+		if err != nil {
+			ret["error"] = err.Error()
+			return js.ValueOf(ret)
+		}
+		for _, cmt := range cmts {
+			if jsVal, err := goValueToJS(reflect.ValueOf(cmt),
+				reflect.TypeOf(excelize.Comment{})); err == nil {
+				x := ret["comments"].([]interface{})
+				x = append(x, jsVal)
+				ret["comments"] = x
+			}
+		}
 		return js.ValueOf(ret)
 	}
 }

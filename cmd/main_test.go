@@ -365,7 +365,7 @@ func TestAddChartSheet(t *testing.T) {
 	assert.EqualError(t, excelize.ErrExistsSheet, ret.Get("error").String())
 }
 
-func TestAddComment(t *testing.T) {
+func TestComments(t *testing.T) {
 	f := NewFile(js.Value{}, []js.Value{})
 	assert.True(t, f.(js.Value).Get("error").IsNull())
 	comment := js.ValueOf(map[string]interface{}{
@@ -393,6 +393,19 @@ func TestAddComment(t *testing.T) {
 	assert.Equal(t, errArgType.Error(), ret.Get("error").String())
 
 	ret = f.(js.Value).Call("AddComment", js.ValueOf("SheetN"), comment)
+	assert.Equal(t, "sheet SheetN does not exist", ret.Get("error").String())
+
+	ret = f.(js.Value).Call("GetComments")
+	assert.EqualError(t, errArgNum, ret.Get("error").String())
+
+	ret = f.(js.Value).Call("GetComments", js.ValueOf(nil))
+	assert.Equal(t, errArgType.Error(), ret.Get("error").String())
+
+	ret = f.(js.Value).Call("GetComments", js.ValueOf("Sheet1"))
+	assert.True(t, ret.Get("error").IsNull())
+	assert.Equal(t, comment.Get("Author").String(), ret.Get("comments").Index(0).Get("Author").String())
+
+	ret = f.(js.Value).Call("GetComments", js.ValueOf("SheetN"))
 	assert.Equal(t, "sheet SheetN does not exist", ret.Get("error").String())
 }
 
