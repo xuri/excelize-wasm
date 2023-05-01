@@ -289,6 +289,7 @@ func regInteropFunc(f *excelize.File, fn map[string]interface{}) interface{} {
 		"GetDefaultFont":              GetDefaultFont(f),
 		"GetDefinedName":              GetDefinedName(f),
 		"GetDocProps":                 GetDocProps(f),
+		"GetPageLayout":               GetPageLayout(f),
 		"GetPictures":                 GetPictures(f),
 		"GetRowHeight":                GetRowHeight(f),
 		"GetRowOutlineLevel":          GetRowOutlineLevel(f),
@@ -1781,7 +1782,7 @@ func GetDefinedName(f *excelize.File) func(this js.Value, args []js.Value) inter
 // GetDocProps provides a function to get document core properties.
 func GetDocProps(f *excelize.File) func(this js.Value, args []js.Value) interface{} {
 	return func(this js.Value, args []js.Value) interface{} {
-		ret := map[string]interface{}{"props": nil, "error": nil}
+		ret := map[string]interface{}{"props": map[string]interface{}{}, "error": nil}
 		if err := prepareArgs(args, []argsRule{}); err != nil {
 			ret["error"] = err.Error()
 			return js.ValueOf(ret)
@@ -1794,6 +1795,29 @@ func GetDocProps(f *excelize.File) func(this js.Value, args []js.Value) interfac
 		if jsVal, err := goValueToJS(reflect.ValueOf(*props),
 			reflect.TypeOf(excelize.DocProperties{})); err == nil {
 			ret["props"] = jsVal
+		}
+		return js.ValueOf(ret)
+	}
+}
+
+// GetPageLayout provides a function to gets worksheet page layout.
+func GetPageLayout(f *excelize.File) func(this js.Value, args []js.Value) interface{} {
+	return func(this js.Value, args []js.Value) interface{} {
+		ret := map[string]interface{}{"opts": map[string]interface{}{}, "error": nil}
+		if err := prepareArgs(args, []argsRule{
+			{types: []js.Type{js.TypeString}},
+		}); err != nil {
+			ret["error"] = err.Error()
+			return js.ValueOf(ret)
+		}
+		opts, err := f.GetPageLayout(args[0].String())
+		if err != nil {
+			ret["error"] = err.Error()
+			return js.ValueOf(ret)
+		}
+		if jsVal, err := goValueToJS(reflect.ValueOf(opts),
+			reflect.TypeOf(excelize.PageLayoutOptions{})); err == nil {
+			ret["opts"] = jsVal
 		}
 		return js.ValueOf(ret)
 	}

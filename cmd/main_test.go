@@ -1902,7 +1902,7 @@ func TestSetHeaderFooter(t *testing.T) {
 	assert.Equal(t, "field OddHeader must be less than or equal to 255 characters", ret.Get("error").String())
 }
 
-func TestSetPageLayout(t *testing.T) {
+func TestPageLayout(t *testing.T) {
 	f := NewFile(js.Value{}, []js.Value{})
 	assert.True(t, f.(js.Value).Get("error").IsNull())
 
@@ -1929,6 +1929,19 @@ func TestSetPageLayout(t *testing.T) {
 	ret = f.(js.Value).Call("SetPageLayout", js.ValueOf("SheetN"),
 		js.ValueOf(map[string]interface{}{"Size": 1}),
 	)
+	assert.Equal(t, "sheet SheetN does not exist", ret.Get("error").String())
+
+	ret = f.(js.Value).Call("GetPageLayout", js.ValueOf("Sheet1"))
+	assert.True(t, ret.Get("error").IsNull())
+
+	assert.Equal(t, "landscape", ret.Get("opts").Get("Orientation").String())
+	assert.Equal(t, 120, ret.Get("opts").Get("AdjustTo").Int())
+	assert.True(t, ret.Get("opts").Get("BlackAndWhite").Bool())
+
+	ret = f.(js.Value).Call("GetPageLayout")
+	assert.EqualError(t, errArgNum, ret.Get("error").String())
+
+	ret = f.(js.Value).Call("GetPageLayout", js.ValueOf("SheetN"))
 	assert.Equal(t, "sheet SheetN does not exist", ret.Get("error").String())
 }
 

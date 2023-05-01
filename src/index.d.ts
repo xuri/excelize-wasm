@@ -1218,6 +1218,12 @@ declare module 'excelize-wasm' {
     GetDocProps(): { props: DocProperties, error: string | null }
 
     /**
+     * GetPageLayout provides a function to gets worksheet page layout.
+     * @param sheet The worksheet name
+     */
+    GetPageLayout(sheet: string): { opts: PageLayoutOptions, error: string | null }
+
+    /**
      * GetPictures provides a function to get picture meta info and raw content
      * embed in spreadsheet by given worksheet and cell name.
      * @param sheet The worksheet name
