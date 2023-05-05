@@ -290,6 +290,7 @@ func regInteropFunc(f *excelize.File, fn map[string]interface{}) interface{} {
 		"GetDefinedName":              GetDefinedName(f),
 		"GetDocProps":                 GetDocProps(f),
 		"GetPageLayout":               GetPageLayout(f),
+		"GetPageMargins":              GetPageMargins(f),
 		"GetPictures":                 GetPictures(f),
 		"GetRowHeight":                GetRowHeight(f),
 		"GetRowOutlineLevel":          GetRowOutlineLevel(f),
@@ -1817,6 +1818,29 @@ func GetPageLayout(f *excelize.File) func(this js.Value, args []js.Value) interf
 		}
 		if jsVal, err := goValueToJS(reflect.ValueOf(opts),
 			reflect.TypeOf(excelize.PageLayoutOptions{})); err == nil {
+			ret["opts"] = jsVal
+		}
+		return js.ValueOf(ret)
+	}
+}
+
+// GetPageMargins provides a function to get worksheet page margins.
+func GetPageMargins(f *excelize.File) func(this js.Value, args []js.Value) interface{} {
+	return func(this js.Value, args []js.Value) interface{} {
+		ret := map[string]interface{}{"opts": map[string]interface{}{}, "error": nil}
+		if err := prepareArgs(args, []argsRule{
+			{types: []js.Type{js.TypeString}},
+		}); err != nil {
+			ret["error"] = err.Error()
+			return js.ValueOf(ret)
+		}
+		opts, err := f.GetPageMargins(args[0].String())
+		if err != nil {
+			ret["error"] = err.Error()
+			return js.ValueOf(ret)
+		}
+		if jsVal, err := goValueToJS(reflect.ValueOf(opts),
+			reflect.TypeOf(excelize.PageLayoutMarginsOptions{})); err == nil {
 			ret["opts"] = jsVal
 		}
 		return js.ValueOf(ret)

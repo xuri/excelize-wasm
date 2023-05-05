@@ -1945,7 +1945,7 @@ func TestPageLayout(t *testing.T) {
 	assert.Equal(t, "sheet SheetN does not exist", ret.Get("error").String())
 }
 
-func TestSetPageMargins(t *testing.T) {
+func TestPageMargins(t *testing.T) {
 	f := NewFile(js.Value{}, []js.Value{})
 	assert.True(t, f.(js.Value).Get("error").IsNull())
 
@@ -1973,6 +1973,18 @@ func TestSetPageMargins(t *testing.T) {
 	ret = f.(js.Value).Call("SetPageMargins", js.ValueOf("SheetN"),
 		js.ValueOf(map[string]interface{}{"Bottom": 1}),
 	)
+	assert.Equal(t, "sheet SheetN does not exist", ret.Get("error").String())
+
+	ret = f.(js.Value).Call("GetPageMargins", js.ValueOf("Sheet1"))
+	assert.True(t, ret.Get("error").IsNull())
+
+	assert.Equal(t, 1, ret.Get("opts").Get("Top").Int())
+	assert.True(t, ret.Get("opts").Get("Vertically").Bool())
+
+	ret = f.(js.Value).Call("GetPageMargins")
+	assert.EqualError(t, errArgNum, ret.Get("error").String())
+
+	ret = f.(js.Value).Call("GetPageMargins", js.ValueOf("SheetN"))
 	assert.Equal(t, "sheet SheetN does not exist", ret.Get("error").String())
 }
 
