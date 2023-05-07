@@ -2128,7 +2128,7 @@ func TestSetSheetName(t *testing.T) {
 	assert.True(t, ret.Get("error").IsNull())
 }
 
-func TestSetSheetProps(t *testing.T) {
+func TestSheetProps(t *testing.T) {
 	f := NewFile(js.Value{}, []js.Value{})
 	assert.True(t, f.(js.Value).Get("error").IsNull())
 
@@ -2140,7 +2140,15 @@ func TestSetSheetProps(t *testing.T) {
 	)
 	assert.True(t, ret.Get("error").IsNull())
 
+	ret = f.(js.Value).Call("GetSheetProps", js.ValueOf("Sheet1"))
+	assert.True(t, ret.Get("error").IsNull())
+	assert.True(t, ret.Get("props").Get("EnableFormatConditionsCalculation").Bool())
+	assert.Equal(t, "code", ret.Get("props").Get("CodeName").String())
+
 	ret = f.(js.Value).Call("SetSheetProps")
+	assert.EqualError(t, errArgNum, ret.Get("error").String())
+
+	ret = f.(js.Value).Call("GetSheetProps")
 	assert.EqualError(t, errArgNum, ret.Get("error").String())
 
 	ret = f.(js.Value).Call("SetSheetProps", js.ValueOf("Sheet1"),
@@ -2150,6 +2158,9 @@ func TestSetSheetProps(t *testing.T) {
 	ret = f.(js.Value).Call("SetSheetProps", js.ValueOf("SheetN"),
 		js.ValueOf(map[string]interface{}{"CodeName": "code"}),
 	)
+	assert.Equal(t, "sheet SheetN does not exist", ret.Get("error").String())
+
+	ret = f.(js.Value).Call("GetSheetProps", js.ValueOf("SheetN"))
 	assert.Equal(t, "sheet SheetN does not exist", ret.Get("error").String())
 }
 

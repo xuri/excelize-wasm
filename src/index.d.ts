@@ -1297,6 +1297,12 @@ declare module 'excelize-wasm' {
     GetSheetName(index: number): { name: string, error: string | null }
 
     /**
+     * GetSheetProps provides a function to get worksheet properties.
+     * @param sheet The worksheet name
+     */
+    GetSheetProps(sheet: string): { props: SheetPropsOptions, error: string | null }
+
+    /**
      * GetSheetVisible provides a function to get worksheet visible by given
      * worksheet name.
      * @param sheet The worksheet name

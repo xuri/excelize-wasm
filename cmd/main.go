@@ -1,4 +1,4 @@
-// Copyright 2022 - 2023 The excelize Authors. All rights reserved. Use of
+// Copyright 2022 - 2023 The excelize-wasm Authors. All rights reserved. Use of
 // this source code is governed by a BSD-style license that can be found in
 // the LICENSE file.
 //
@@ -300,6 +300,7 @@ func regInteropFunc(f *excelize.File, fn map[string]interface{}) interface{} {
 		"GetSheetList":                GetSheetList(f),
 		"GetSheetMap":                 GetSheetMap(f),
 		"GetSheetName":                GetSheetName(f),
+		"GetSheetProps":               GetSheetProps(f),
 		"GetSheetVisible":             GetSheetVisible(f),
 		"GroupSheets":                 GroupSheets(f),
 		"InsertCols":                  InsertCols(f),
@@ -2053,6 +2054,29 @@ func GetSheetName(f *excelize.File) func(this js.Value, args []js.Value) interfa
 			return js.ValueOf(ret)
 		}
 		ret["name"] = f.GetSheetName(args[0].Int())
+		return js.ValueOf(ret)
+	}
+}
+
+// GetSheetProps provides a function to get worksheet properties.
+func GetSheetProps(f *excelize.File) func(this js.Value, args []js.Value) interface{} {
+	return func(this js.Value, args []js.Value) interface{} {
+		ret := map[string]interface{}{"props": map[string]interface{}{}, "error": nil}
+		if err := prepareArgs(args, []argsRule{
+			{types: []js.Type{js.TypeString}},
+		}); err != nil {
+			ret["error"] = err.Error()
+			return js.ValueOf(ret)
+		}
+		props, err := f.GetSheetProps(args[0].String())
+		if err != nil {
+			ret["error"] = err.Error()
+			return js.ValueOf(ret)
+		}
+		if jsVal, err := goValueToJS(reflect.ValueOf(props),
+			reflect.TypeOf(excelize.SheetPropsOptions{})); err == nil {
+			ret["props"] = jsVal
+		}
 		return js.ValueOf(ret)
 	}
 }
