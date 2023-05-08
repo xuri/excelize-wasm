@@ -302,6 +302,7 @@ func regInteropFunc(f *excelize.File, fn map[string]interface{}) interface{} {
 		"GetSheetName":                GetSheetName(f),
 		"GetSheetProps":               GetSheetProps(f),
 		"GetSheetVisible":             GetSheetVisible(f),
+		"GetWorkbookProps":            GetWorkbookProps(f),
 		"GroupSheets":                 GroupSheets(f),
 		"InsertCols":                  InsertCols(f),
 		"InsertPageBreak":             InsertPageBreak(f),
@@ -2095,6 +2096,27 @@ func GetSheetVisible(f *excelize.File) func(this js.Value, args []js.Value) inte
 		}
 		if ret["visible"], err = f.GetSheetVisible(args[0].String()); err != nil {
 			ret["error"] = err.Error()
+		}
+		return js.ValueOf(ret)
+	}
+}
+
+// GetWorkbookProps provides a function to gets workbook properties.
+func GetWorkbookProps(f *excelize.File) func(this js.Value, args []js.Value) interface{} {
+	return func(this js.Value, args []js.Value) interface{} {
+		ret := map[string]interface{}{"props": map[string]interface{}{}, "error": nil}
+		if err := prepareArgs(args, []argsRule{}); err != nil {
+			ret["error"] = err.Error()
+			return js.ValueOf(ret)
+		}
+		props, err := f.GetWorkbookProps()
+		if err != nil {
+			ret["error"] = err.Error()
+			return js.ValueOf(ret)
+		}
+		if jsVal, err := goValueToJS(reflect.ValueOf(props),
+			reflect.TypeOf(excelize.WorkbookPropsOptions{})); err == nil {
+			ret["props"] = jsVal
 		}
 		return js.ValueOf(ret)
 	}

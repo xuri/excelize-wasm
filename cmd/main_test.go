@@ -2228,7 +2228,7 @@ func TestSetSheetVisible(t *testing.T) {
 	assert.True(t, ret.Get("error").IsNull())
 }
 
-func TestSetWorkbookProps(t *testing.T) {
+func TestWorkbookProps(t *testing.T) {
 	f := NewFile(js.Value{}, []js.Value{})
 	assert.True(t, f.(js.Value).Get("error").IsNull())
 
@@ -2241,7 +2241,15 @@ func TestSetWorkbookProps(t *testing.T) {
 	)
 	assert.True(t, ret.Get("error").IsNull())
 
+	ret = f.(js.Value).Call("GetWorkbookProps")
+	assert.True(t, ret.Get("error").IsNull())
+	assert.True(t, ret.Get("props").Get("Date1904").Bool())
+	assert.Equal(t, "code", ret.Get("props").Get("CodeName").String())
+
 	ret = f.(js.Value).Call("SetWorkbookProps")
+	assert.EqualError(t, errArgNum, ret.Get("error").String())
+
+	ret = f.(js.Value).Call("GetWorkbookProps", js.ValueOf(true))
 	assert.EqualError(t, errArgNum, ret.Get("error").String())
 
 	ret = f.(js.Value).Call("SetWorkbookProps",

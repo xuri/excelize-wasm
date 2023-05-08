@@ -1310,6 +1310,11 @@ declare module 'excelize-wasm' {
     GetSheetVisible(sheet: string): { visible: boolean, error: string | null }
 
     /**
+     * GetWorkbookProps provides a function to gets workbook properties.
+     */
+    GetWorkbookProps(): { props: WorkbookPropsOptions, error: string | null }
+
+    /**
      * GroupSheets provides a function to group worksheets by given worksheets
      * name. Group worksheets must contain an active worksheet.
      * @param sheets The worksheet names
