@@ -1303,6 +1303,14 @@ declare module 'excelize-wasm' {
     GetSheetProps(sheet: string): { props: SheetPropsOptions, error: string | null }
 
     /**
+     * GetSheetView gets the value of sheet view options. The viewIndex may be
+     * negative and if so is counted backward (-1 is the last view).
+     * @param sheet The worksheet name
+     * @param viewIndex The sheet view index
+     */
+    GetSheetView(sheet: string, viewIndex: number): { opts: ViewOptions, error: string | null }
+
+    /**
      * GetSheetVisible provides a function to get worksheet visible by given
      * worksheet name.
      * @param sheet The worksheet name

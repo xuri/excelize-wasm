@@ -2178,7 +2178,7 @@ func TestSetSheetRow(t *testing.T) {
 	assert.Equal(t, "sheet SheetN does not exist", ret.Get("error").String())
 }
 
-func TestSetSheetView(t *testing.T) {
+func TestSheetView(t *testing.T) {
 	f := NewFile(js.Value{}, []js.Value{})
 	assert.True(t, f.(js.Value).Get("error").IsNull())
 
@@ -2198,7 +2198,14 @@ func TestSetSheetView(t *testing.T) {
 	)
 	assert.True(t, ret.Get("error").IsNull())
 
+	ret = f.(js.Value).Call("GetSheetView", js.ValueOf("Sheet1"), js.ValueOf(-1))
+	assert.True(t, ret.Get("error").IsNull())
+	assert.Equal(t, 120, ret.Get("opts").Get("ZoomScale").Int())
+
 	ret = f.(js.Value).Call("SetSheetView")
+	assert.EqualError(t, errArgNum, ret.Get("error").String())
+
+	ret = f.(js.Value).Call("GetSheetView", js.ValueOf("Sheet1"))
 	assert.EqualError(t, errArgNum, ret.Get("error").String())
 
 	ret = f.(js.Value).Call("SetSheetView", js.ValueOf("Sheet1"), js.ValueOf(-1),
@@ -2208,6 +2215,9 @@ func TestSetSheetView(t *testing.T) {
 	ret = f.(js.Value).Call("SetSheetView", js.ValueOf("SheetN"), js.ValueOf(-1),
 		js.ValueOf(map[string]interface{}{"View": "normal"}),
 	)
+	assert.Equal(t, "sheet SheetN does not exist", ret.Get("error").String())
+
+	ret = f.(js.Value).Call("GetSheetView", js.ValueOf("SheetN"), js.ValueOf(-1))
 	assert.Equal(t, "sheet SheetN does not exist", ret.Get("error").String())
 }
 

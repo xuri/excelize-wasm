@@ -301,6 +301,7 @@ func regInteropFunc(f *excelize.File, fn map[string]interface{}) interface{} {
 		"GetSheetMap":                 GetSheetMap(f),
 		"GetSheetName":                GetSheetName(f),
 		"GetSheetProps":               GetSheetProps(f),
+		"GetSheetView":                GetSheetView(f),
 		"GetSheetVisible":             GetSheetVisible(f),
 		"GetWorkbookProps":            GetWorkbookProps(f),
 		"GroupSheets":                 GroupSheets(f),
@@ -2077,6 +2078,31 @@ func GetSheetProps(f *excelize.File) func(this js.Value, args []js.Value) interf
 		if jsVal, err := goValueToJS(reflect.ValueOf(props),
 			reflect.TypeOf(excelize.SheetPropsOptions{})); err == nil {
 			ret["props"] = jsVal
+		}
+		return js.ValueOf(ret)
+	}
+}
+
+// GetSheetView gets the value of sheet view options. The viewIndex may be
+// negative and if so is counted backward (-1 is the last view).
+func GetSheetView(f *excelize.File) func(this js.Value, args []js.Value) interface{} {
+	return func(this js.Value, args []js.Value) interface{} {
+		ret := map[string]interface{}{"opts": map[string]interface{}{}, "error": nil}
+		if err := prepareArgs(args, []argsRule{
+			{types: []js.Type{js.TypeString}},
+			{types: []js.Type{js.TypeNumber}},
+		}); err != nil {
+			ret["error"] = err.Error()
+			return js.ValueOf(ret)
+		}
+		opts, err := f.GetSheetView(args[0].String(), args[1].Int())
+		if err != nil {
+			ret["error"] = err.Error()
+			return js.ValueOf(ret)
+		}
+		if jsVal, err := goValueToJS(reflect.ValueOf(opts),
+			reflect.TypeOf(excelize.ViewOptions{})); err == nil {
+			ret["opts"] = jsVal
 		}
 		return js.ValueOf(ret)
 	}
