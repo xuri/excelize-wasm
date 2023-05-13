@@ -257,6 +257,7 @@ declare module 'excelize-wasm' {
    * TableOptions directly maps the format settings of the table.
    */
   export type TableOptions = {
+    Range:              string;
     Name?:              string;
     StyleName?:         string;
     ShowFirstColumn?:   boolean;
@@ -981,7 +982,7 @@ declare module 'excelize-wasm' {
      * @param rangeRef The top-left and right-bottom cell range reference
      * @param opts The table options
      */
-    AddTable(sheet: string, rangeRef: string, opts: TableOptions): { error: string | null }
+    AddTable(sheet: string, opts: TableOptions): { error: string | null }
 
     /**
      * AutoFilter provides the method to add auto filter in a worksheet by
