@@ -25,7 +25,50 @@ declare module 'excelize-wasm' {
   };
 
   /**
-   * Options define the options for open and reading spreadsheet.
+   * This section defines the currently supported country code types
+   * enumeration for apply number format.
+   */
+  export enum CultureName {
+    CultureNameUnknown,
+    CultureNameEnUS,
+    CultureNameZhCN,
+  }
+
+  /**
+   * Options define the options for o`pen and reading spreadsheet.
+   *
+   * MaxCalcIterations specifies the maximum iterations for iterative
+   * calculation, the default value is 0.
+   *
+   * Password specifies the password of the spreadsheet in plain text.
+   *
+   * RawCellValue specifies if apply the number format for the cell value or get
+   * the raw value.
+   *
+   * UnzipSizeLimit specifies the unzip size limit in bytes on open the
+   * spreadsheet, this value should be greater than or equal to
+   * UnzipXMLSizeLimit, the default size limit is 16GB.
+   *
+   * UnzipXMLSizeLimit specifies the memory limit on unzipping worksheet and
+   * shared string table in bytes, worksheet XML will be extracted to system
+   * temporary directory when the file size is over this value, this value
+   * should be less than or equal to UnzipSizeLimit, the default value is
+   * 16MB.
+   *
+   * ShortDatePattern specifies the short date number format code. In the
+   * spreadsheet applications, date formats display date and time serial numbers
+   * as date values. Date formats that begin with an asterisk (*) respond to
+   * changes in regional date and time settings that are specified for the
+   * operating system. Formats without an asterisk are not affected by operating
+   * system settings. The ShortDatePattern used for specifies apply date formats
+   * that begin with an asterisk.
+   *
+   * LongDatePattern specifies the long date number format code.
+   *
+   * LongTimePattern specifies the long time number format code.
+   *
+   * CultureInfo specifies the country code for applying built-in language number
+   * format code these effect by the system's local language settings.
    */
   export type Options = {
     MaxCalcIterations?: number;
@@ -33,6 +76,10 @@ declare module 'excelize-wasm' {
     RawCellValue?:      boolean;
     UnzipSizeLimit?:    number;
     UnzipXMLSizeLimit?: number;
+    ShortDatePattern?:  string;
+    LongDatePattern?:   string;
+    LongTimePattern?:   string;
+    CultureInfo?:       CultureName;
   };
 
   /**
@@ -106,7 +153,6 @@ declare module 'excelize-wasm' {
     NumFmt?:        number;
     DecimalPlaces?: number;
     CustomNumFmt?:  string;
-    Lang?:          string;
     NegRed?:        boolean;
   };
 
@@ -849,8 +895,9 @@ declare module 'excelize-wasm' {
 
   /**
    * NewFile provides a function to create new file by default template.
+   * @param opts The options for open and reading spreadsheet
    */
-  export function NewFile(): NewFile;
+  export function NewFile(opts?: Options): NewFile;
 
   /**
    * OpenReader read data stream from buffer and return a populated spreadsheet
@@ -2505,6 +2552,9 @@ declare module 'excelize-wasm' {
     ThemeColor:                  typeof ThemeColor,
     NewFile:                     typeof NewFile;
     OpenReader:                  typeof OpenReader;
+    CultureNameUnknown:          typeof CultureName.CultureNameUnknown;
+    CultureNameEnUS:             typeof CultureName.CultureNameEnUS;
+    CultureNameZhCN:             typeof CultureName.CultureNameZhCN;
     Area:                        typeof ChartType.Area;
     AreaStacked:                 typeof ChartType.AreaStacked;
     AreaPercentStacked:          typeof ChartType.AreaPercentStacked;

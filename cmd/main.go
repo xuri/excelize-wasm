@@ -190,6 +190,13 @@ func regFuncs() {
 // regConstants register all exported JavaScript functions on the Window ot Global.
 func regConstants() {
 	for name, constant := range map[string]int{
+		"CultureNameUnknown": int(excelize.CultureNameUnknown),
+		"CultureNameEnUS":    int(excelize.CultureNameEnUS),
+		"CultureNameZhCN":    int(excelize.CultureNameZhCN),
+	} {
+		js.Global().Get("excelize").Set(name, constant)
+	}
+	for name, constant := range map[string]int{
 		"Area":                        int(excelize.Area),
 		"AreaStacked":                 int(excelize.AreaStacked),
 		"AreaPercentStacked":          int(excelize.AreaPercentStacked),
@@ -847,9 +854,19 @@ func ThemeColor(this js.Value, args []js.Value) interface{} {
 func NewFile(this js.Value, args []js.Value) interface{} {
 	fn := map[string]interface{}{"error": nil}
 	fn["error"] = nil
-	if err := prepareArgs(args, []argsRule{}); err != nil {
+	if err := prepareArgs(args, []argsRule{
+		{types: []js.Type{js.TypeObject}, opts: true},
+	}); err != nil {
 		fn["error"] = err.Error()
 		return js.ValueOf(fn)
+	}
+	if len(args) == 1 {
+		goVal, err := jsValueToGo(args[0], reflect.TypeOf(excelize.Options{}))
+		if err != nil {
+			fn["error"] = err.Error()
+			return js.ValueOf(fn)
+		}
+		return regInteropFunc(excelize.NewFile(goVal.Elem().Interface().(excelize.Options)), fn)
 	}
 	return regInteropFunc(excelize.NewFile(), fn)
 }

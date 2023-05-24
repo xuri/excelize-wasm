@@ -161,8 +161,20 @@ func TestNewFile(t *testing.T) {
 	f := NewFile(js.Value{}, []js.Value{})
 	assert.True(t, f.(js.Value).Get("error").IsNull())
 
-	f = NewFile(js.Value{}, []js.Value{js.ValueOf(true)})
+	f = NewFile(js.Value{}, []js.Value{js.ValueOf(map[string]interface{}{
+		"ShortDatePattern": "yyyy/m/d",
+	})})
+	assert.True(t, f.(js.Value).Get("error").IsNull())
+
+	f = NewFile(js.Value{}, []js.Value{js.ValueOf(map[string]interface{}{
+		"ShortDatePattern": "yyyy/m/d",
+	}), js.ValueOf(true)})
 	assert.EqualError(t, errArgNum, f.(js.Value).Get("error").String())
+
+	f = NewFile(js.Value{}, []js.Value{js.ValueOf(map[string]interface{}{
+		"ShortDatePattern": true,
+	})})
+	assert.EqualError(t, errArgType, f.(js.Value).Get("error").String())
 }
 
 func TestOpenReader(t *testing.T) {
@@ -1296,7 +1308,6 @@ func TestNewStyle(t *testing.T) {
 		"NumFmt":        1,
 		"DecimalPlaces": 2,
 		"CustomNumFmt":  "0.00",
-		"Lang":          "language",
 		"NegRed":        true,
 		"Border": []interface{}{
 			map[string]interface{}{"Type": "left", "Color": "000000", "Style": 1},
@@ -1339,7 +1350,6 @@ func TestNewStyle(t *testing.T) {
 		{"NumFmt": "1"},
 		{"DecimalPlaces": "2"},
 		{"CustomNumFmt": true},
-		{"Lang": true},
 		{"NegRed": "true"},
 		{"Border": true},
 		{"Border": []interface{}{map[string]interface{}{"Type": true}}},
@@ -2444,7 +2454,6 @@ func TestGoValueToJS(t *testing.T) {
 	result, err = goValueToJS(reflect.ValueOf(excelize.Style{
 		NumFmt:       1,
 		CustomNumFmt: &exp,
-		Lang:         "en",
 		Alignment:    &excelize.Alignment{Indent: 1},
 		Border:       []excelize.Border{{Type: "left"}, {Type: "top"}},
 	}), reflect.TypeOf(excelize.Style{}))
@@ -2452,7 +2461,6 @@ func TestGoValueToJS(t *testing.T) {
 	assert.Equal(t, 1, js.ValueOf(result).Get("NumFmt").Int())
 	assert.Equal(t, exp, js.ValueOf(result).Get("CustomNumFmt").String())
 	assert.Equal(t, 1, js.ValueOf(result).Get("Alignment").Get("Indent").Int())
-	assert.Equal(t, "en", js.ValueOf(result).Get("Lang").String())
 	assert.Equal(t, "left", js.ValueOf(result).Get("Border").Index(0).Get("Type").String())
 	assert.Equal(t, "top", js.ValueOf(result).Get("Border").Index(1).Get("Type").String())
 
