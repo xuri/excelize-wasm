@@ -1998,7 +1998,7 @@ func TestPageMargins(t *testing.T) {
 	assert.Equal(t, "sheet SheetN does not exist", ret.Get("error").String())
 }
 
-func TestSetPanes(t *testing.T) {
+func TestPanes(t *testing.T) {
 	f := NewFile(js.Value{}, []js.Value{})
 	assert.True(t, f.(js.Value).Get("error").IsNull())
 
@@ -2010,6 +2010,11 @@ func TestSetPanes(t *testing.T) {
 	)
 	assert.True(t, ret.Get("error").IsNull())
 
+	ret = f.(js.Value).Call("GetPanes", js.ValueOf("Sheet1"))
+	assert.True(t, ret.Get("error").IsNull())
+	assert.False(t, ret.Get("panes").Get("Freeze").Bool())
+	assert.False(t, ret.Get("panes").Get("Split").Bool())
+
 	ret = f.(js.Value).Call("SetPanes")
 	assert.EqualError(t, errArgNum, ret.Get("error").String())
 
@@ -2020,12 +2025,18 @@ func TestSetPanes(t *testing.T) {
 	)
 	assert.EqualError(t, errArgType, ret.Get("error").String())
 
+	ret = f.(js.Value).Call("GetPanes")
+	assert.EqualError(t, errArgNum, ret.Get("error").String())
+
 	ret = f.(js.Value).Call("SetPanes", js.ValueOf("SheetN"),
 		js.ValueOf(map[string]interface{}{
 			"Freeze": false,
 			"Split":  false,
 		}),
 	)
+	assert.Equal(t, "sheet SheetN does not exist", ret.Get("error").String())
+
+	ret = f.(js.Value).Call("GetPanes", js.ValueOf("SheetN"))
 	assert.Equal(t, "sheet SheetN does not exist", ret.Get("error").String())
 }
 

@@ -298,6 +298,7 @@ func regInteropFunc(f *excelize.File, fn map[string]interface{}) interface{} {
 		"GetDocProps":                 GetDocProps(f),
 		"GetPageLayout":               GetPageLayout(f),
 		"GetPageMargins":              GetPageMargins(f),
+		"GetPanes":                    GetPanes(f),
 		"GetPictures":                 GetPictures(f),
 		"GetRowHeight":                GetRowHeight(f),
 		"GetRowOutlineLevel":          GetRowOutlineLevel(f),
@@ -1862,6 +1863,30 @@ func GetPageMargins(f *excelize.File) func(this js.Value, args []js.Value) inter
 		if jsVal, err := goValueToJS(reflect.ValueOf(opts),
 			reflect.TypeOf(excelize.PageLayoutMarginsOptions{})); err == nil {
 			ret["opts"] = jsVal
+		}
+		return js.ValueOf(ret)
+	}
+}
+
+// GetPanes provides a function to get freeze panes, split panes, and worksheet
+// views by given worksheet name.
+func GetPanes(f *excelize.File) func(this js.Value, args []js.Value) interface{} {
+	return func(this js.Value, args []js.Value) interface{} {
+		ret := map[string]interface{}{"panes": map[string]interface{}{}, "error": nil}
+		if err := prepareArgs(args, []argsRule{
+			{types: []js.Type{js.TypeString}},
+		}); err != nil {
+			ret["error"] = err.Error()
+			return js.ValueOf(ret)
+		}
+		opts, err := f.GetPanes(args[0].String())
+		if err != nil {
+			ret["error"] = err.Error()
+			return js.ValueOf(ret)
+		}
+		if jsVal, err := goValueToJS(reflect.ValueOf(opts),
+			reflect.TypeOf(excelize.Panes{})); err == nil {
+			ret["panes"] = jsVal
 		}
 		return js.ValueOf(ret)
 	}

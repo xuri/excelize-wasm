@@ -157,9 +157,9 @@ declare module 'excelize-wasm' {
   };
 
   /**
-   * PaneOptions directly maps the settings of the pane.
+   * Selection directly maps the settings of the worksheet selection.
    */
-  export type PaneOptions = {
+  export type Selection = {
     SQRef?:      string;
     ActiveCell?: string;
     Pane?:       string;
@@ -175,7 +175,7 @@ declare module 'excelize-wasm' {
     YSplit?:      number;
     TopLeftCell?: string;
     ActivePane?:  string;
-    Panes?:       PaneOptions[];
+    Selection?:   Selection[];
   };
 
   /**
@@ -1270,6 +1270,13 @@ declare module 'excelize-wasm' {
      * @param sheet The worksheet name
      */
     GetPageLayout(sheet: string): { opts: PageLayoutOptions, error: string | null }
+
+    /**
+     * GetPanes provides a function to get freeze panes, split panes, and
+     * worksheet views by given worksheet name.
+     * @param sheet The worksheet name
+     */
+    GetPanes(sheet: string): { panes: Panes, error: string | null }
 
     /**
      * GetPictures provides a function to get picture meta info and raw content
