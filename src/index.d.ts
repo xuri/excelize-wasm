@@ -556,7 +556,7 @@ declare module 'excelize-wasm' {
    */
   export type Picture = {
     Extension: string;
-    File: Uint8Array[];
+    File: Uint8Array;
     Format: GraphicOptions;
   };
 
@@ -905,7 +905,7 @@ declare module 'excelize-wasm' {
    * @param r The contents buffer of the file
    * @param opts The options for open and reading spreadsheet
    */
-  export function OpenReader(r: Uint8Array[], opts?: Options): NewFile;
+  export function OpenReader(r: Uint8Array, opts?: Options): NewFile;
 
   /**
    * @constructor
@@ -2428,7 +2428,7 @@ declare module 'excelize-wasm' {
      * @param extension The extension name
      * @param picture The contents buffer of the file
      */
-    SetSheetBackgroundFromBytes(sheet: string, extension: string, picture: Uint8Array[]): { error: string | null }
+    SetSheetBackgroundFromBytes(sheet: string, extension: string, picture: Uint8Array): { error: string | null }
 
     /**
      * SetSheetName provides a function to set the worksheet name by given

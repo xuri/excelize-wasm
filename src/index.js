@@ -570,13 +570,10 @@ export async function init(wasmPath) {
   var buffer;
   if (typeof window === 'undefined') {
     global.excelize = {};
-  } else {
-    window.excelize = {};
-  }
-  if (typeof window === 'undefined') {
     const fs = require('fs');
     buffer = pako.ungzip(fs.readFileSync(wasmPath));
   } else {
+    window.excelize = {};
     buffer = pako.ungzip(await (await fetch(wasmPath)).arrayBuffer());
   }
   if (buffer[0] === 0x1f && buffer[1] === 0x8b) {
