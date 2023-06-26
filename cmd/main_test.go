@@ -660,8 +660,15 @@ func TestCalcCellValue(t *testing.T) {
 	assert.True(t, ret.Get("error").IsNull())
 	assert.Equal(t, "", ret.Get("value").String())
 
+	ret = f.(js.Value).Call("CalcCellValue", js.ValueOf("Sheet1"), js.ValueOf("A1"), js.ValueOf(map[string]interface{}{"RawCellValue": true}))
+	assert.True(t, ret.Get("error").IsNull(), ret.Get("error").String())
+	assert.Equal(t, "", ret.Get("value").String())
+
 	ret = f.(js.Value).Call("CalcCellValue")
 	assert.EqualError(t, errArgNum, ret.Get("error").String())
+
+	ret = f.(js.Value).Call("CalcCellValue", js.ValueOf("Sheet1"), js.ValueOf("A1"), js.ValueOf(map[string]interface{}{"RawCellValue": 1}))
+	assert.EqualError(t, errArgType, ret.Get("error").String())
 
 	ret = f.(js.Value).Call("CalcCellValue", js.ValueOf("SheetN"), js.ValueOf("A1"))
 	assert.Equal(t, "sheet SheetN does not exist", ret.Get("error").String())

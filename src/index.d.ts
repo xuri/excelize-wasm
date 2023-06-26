@@ -320,6 +320,14 @@ declare module 'excelize-wasm' {
     Expression?: string;
   };
 
+  /*
+   * ChartNumFmt directly maps the number format settings of the chart.
+   */
+  export type ChartNumFmt = {
+    CustomNumFmt?: string;
+    SourceLinked?: boolean;
+  };
+
   /**
    * ChartAxis directly maps the format settings of the chart axis.
    */
@@ -334,6 +342,8 @@ declare module 'excelize-wasm' {
     Minimum?:        number;
     Font?:           Font;
     LogBase?:        number;
+    NumFmt?:         ChartNumFmt;
+    Title?:          RichTextRun[];
   };
 
   /**
@@ -1049,8 +1059,9 @@ declare module 'excelize-wasm' {
      * formula and some other formulas are not supported currently.
      * @param sheet The worksheet name
      * @param cell The cell reference
+     * @param opts The options for get calculated cell value
      */
-    CalcCellValue(sheet: string, cell: string): { value: string, error: string | null }
+    CalcCellValue(sheet: string, cell: string, opts?: Options): { value: string, error: string | null }
 
     /**
      * CopySheet provides a function to duplicate a worksheet by gave source
@@ -1194,7 +1205,7 @@ declare module 'excelize-wasm' {
      * the same in a merged range.
      * @param sheet The worksheet name
      * @param cell The cell reference
-     * @param opts
+     * @param opts The options for get cell value
      */
     GetCellValue(sheet: string, cell: string, opts?: Options): { value: string, error: string | null }
 
@@ -1237,7 +1248,7 @@ declare module 'excelize-wasm' {
      * format can be applied to the value of the cell, the applied value will
      * be used, otherwise the original value will be used.
      * @param sheet The worksheet name
-     * @param opts
+     * @param opts The options for get column cells
      */
     GetCols(sheet: string, opts?: Options): { result: string[][], error: string | null }
 

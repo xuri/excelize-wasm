@@ -1230,12 +1230,22 @@ func CalcCellValue(f *excelize.File) func(this js.Value, args []js.Value) interf
 		err := prepareArgs(args, []argsRule{
 			{types: []js.Type{js.TypeString}},
 			{types: []js.Type{js.TypeString}},
+			{types: []js.Type{js.TypeObject}, opts: true},
 		})
 		if err != nil {
 			ret["error"] = err.Error()
 			return js.ValueOf(ret)
 		}
-		if ret["value"], err = f.CalcCellValue(args[0].String(), args[1].String()); err != nil {
+		var opts excelize.Options
+		if len(args) == 3 {
+			goVal, err := jsValueToGo(args[2], reflect.TypeOf(excelize.Options{}))
+			if err != nil {
+				ret["error"] = err.Error()
+				return js.ValueOf(ret)
+			}
+			opts = goVal.Elem().Interface().(excelize.Options)
+		}
+		if ret["value"], err = f.CalcCellValue(args[0].String(), args[1].String(), opts); err != nil {
 			ret["error"] = err.Error()
 		}
 		return js.ValueOf(ret)
