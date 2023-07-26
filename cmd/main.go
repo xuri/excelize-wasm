@@ -197,6 +197,18 @@ func regConstants() {
 		js.Global().Get("excelize").Set(name, constant)
 	}
 	for name, constant := range map[string]int{
+		"FormControlNote":         int(excelize.FormControlNote),
+		"FormControlButton":       int(excelize.FormControlButton),
+		"FormControlOptionButton": int(excelize.FormControlOptionButton),
+		"FormControlSpinButton":   int(excelize.FormControlSpinButton),
+		"FormControlCheckBox":     int(excelize.FormControlCheckBox),
+		"FormControlGroupBox":     int(excelize.FormControlGroupBox),
+		"FormControlLabel":        int(excelize.FormControlLabel),
+		"FormControlScrollBar":    int(excelize.FormControlScrollBar),
+	} {
+		js.Global().Get("excelize").Set(name, constant)
+	}
+	for name, constant := range map[string]int{
 		"Area":                        int(excelize.Area),
 		"AreaStacked":                 int(excelize.AreaStacked),
 		"AreaPercentStacked":          int(excelize.AreaPercentStacked),
@@ -264,6 +276,7 @@ func regInteropFunc(f *excelize.File, fn map[string]interface{}) interface{} {
 		"AddChartSheet":               AddChartSheet(f),
 		"AddComment":                  AddComment(f),
 		"AddDataValidation":           AddDataValidation(f),
+		"AddFormControl":              AddFormControl(f),
 		"AddPictureFromBytes":         AddPictureFromBytes(f),
 		"AddPivotTable":               AddPivotTable(f),
 		"AddShape":                    AddShape(f),
@@ -1053,6 +1066,35 @@ func AddDataValidation(f *excelize.File) func(this js.Value, args []js.Value) in
 	}
 }
 
+// AddFormControl provides the method to add form control button in a worksheet
+// by given worksheet name and form control options. Supported form control
+// type: button, check box, group box, label, option button, scroll bar and
+// spinner. If set macro for the form control, the workbook extension should be
+// XLSM or XLTM. Scroll value must be between 0 and 30000.
+func AddFormControl(f *excelize.File) func(this js.Value, args []js.Value) interface{} {
+	return func(this js.Value, args []js.Value) interface{} {
+		ret := map[string]interface{}{"error": nil}
+		if err := prepareArgs(args, []argsRule{
+			{types: []js.Type{js.TypeString}},
+			{types: []js.Type{js.TypeObject}},
+		}); err != nil {
+			ret["error"] = err.Error()
+			return js.ValueOf(ret)
+		}
+		var opts excelize.FormControl
+		goVal, err := jsValueToGo(args[1], reflect.TypeOf(excelize.FormControl{}))
+		if err != nil {
+			ret["error"] = err.Error()
+			return js.ValueOf(ret)
+		}
+		opts = goVal.Elem().Interface().(excelize.FormControl)
+		if err := f.AddFormControl(args[0].String(), opts); err != nil {
+			ret["error"] = err.Error()
+		}
+		return js.ValueOf(ret)
+	}
+}
+
 // AddPictureFromBytes provides the method to add picture in a sheet by given
 // picture format set (such as offset, scale, aspect ratio setting and print
 // settings), file base name, extension name and file bytes.
@@ -1115,20 +1157,19 @@ func AddShape(f *excelize.File) func(this js.Value, args []js.Value) interface{}
 		ret := map[string]interface{}{"error": nil}
 		if err := prepareArgs(args, []argsRule{
 			{types: []js.Type{js.TypeString}},
-			{types: []js.Type{js.TypeString}},
 			{types: []js.Type{js.TypeObject}},
 		}); err != nil {
 			ret["error"] = err.Error()
 			return js.ValueOf(ret)
 		}
 		var opts excelize.Shape
-		goVal, err := jsValueToGo(args[2], reflect.TypeOf(excelize.Shape{}))
+		goVal, err := jsValueToGo(args[1], reflect.TypeOf(excelize.Shape{}))
 		if err != nil {
 			ret["error"] = err.Error()
 			return js.ValueOf(ret)
 		}
 		opts = goVal.Elem().Interface().(excelize.Shape)
-		if err := f.AddShape(args[0].String(), args[1].String(), &opts); err != nil {
+		if err := f.AddShape(args[0].String(), &opts); err != nil {
 			ret["error"] = err.Error()
 		}
 		return js.ValueOf(ret)

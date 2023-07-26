@@ -383,7 +383,7 @@ func TestComments(t *testing.T) {
 	comment := js.ValueOf(map[string]interface{}{
 		"Cell":   "A12",
 		"Author": "Excelize",
-		"Runs": []interface{}{
+		"Paragraph": []interface{}{
 			map[string]interface{}{
 				"Text": "Excelize: ",
 				"Font": map[string]interface{}{"Bold": true},
@@ -439,6 +439,29 @@ func TestAddDataValidation(t *testing.T) {
 	assert.Equal(t, errArgType.Error(), ret.Get("error").String())
 
 	ret = f.(js.Value).Call("AddDataValidation", js.ValueOf("SheetN"), dv)
+	assert.Equal(t, "sheet SheetN does not exist", ret.Get("error").String())
+}
+
+func TestFormControl(t *testing.T) {
+	f := NewFile(js.Value{}, []js.Value{})
+	assert.True(t, f.(js.Value).Get("error").IsNull())
+
+	ret := f.(js.Value).Call("AddFormControl",  js.ValueOf("Sheet1"), js.ValueOf(map[string]interface{}{
+		"Cell": "A1", "Type": int(excelize.FormControlButton),
+	}))
+	assert.True(t, ret.Get("error").IsNull())
+
+	ret = f.(js.Value).Call("AddFormControl")
+	assert.EqualError(t, errArgNum, ret.Get("error").String())
+
+	ret = f.(js.Value).Call("AddFormControl",  js.ValueOf("Sheet1"), js.ValueOf(map[string]interface{}{
+		"Cell": "A1", "Type": true,
+	}))
+	assert.Equal(t, errArgType.Error(), ret.Get("error").String())
+
+	ret = f.(js.Value).Call("AddFormControl",  js.ValueOf("SheetN"), js.ValueOf(map[string]interface{}{
+		"Cell": "A1", "Type": int(excelize.FormControlButton),
+	}))
 	assert.Equal(t, "sheet SheetN does not exist", ret.Get("error").String())
 }
 
@@ -563,21 +586,21 @@ func TestAddShape(t *testing.T) {
 	f := NewFile(js.Value{}, []js.Value{})
 	assert.True(t, f.(js.Value).Get("error").IsNull())
 
-	ret := f.(js.Value).Call("AddShape", js.ValueOf("Sheet1"), js.ValueOf("C30"),
-		js.ValueOf(map[string]interface{}{"Type": "rect", "Paragraph": map[string]interface{}{}}))
+	ret := f.(js.Value).Call("AddShape", js.ValueOf("Sheet1"),
+		js.ValueOf(map[string]interface{}{"Cell": "C30", "Type": "rect", "Paragraph": map[string]interface{}{}}))
 	assert.True(t, ret.Get("error").IsNull())
 
 	ret = f.(js.Value).Call("AddShape")
 	assert.EqualError(t, errArgNum, ret.Get("error").String())
 
-	ret = f.(js.Value).Call("AddShape", js.ValueOf("Sheet1"), js.ValueOf("C30"),
-		js.ValueOf(map[string]interface{}{"Type": true}))
+	ret = f.(js.Value).Call("AddShape", js.ValueOf("Sheet1"),
+		js.ValueOf(map[string]interface{}{"Cell": "C30", "Type": true}))
 	assert.EqualError(t, errArgType, ret.Get("error").String())
 
-	ret = f.(js.Value).Call("AddShape", js.ValueOf("SheetN"), js.ValueOf("C30"), js.ValueOf(map[string]interface{}{}))
+	ret = f.(js.Value).Call("AddShape", js.ValueOf("SheetN"), js.ValueOf(map[string]interface{}{"Cell": "C30", "Type": "rect"}))
 	assert.Equal(t, "sheet SheetN does not exist", ret.Get("error").String())
 
-	ret = f.(js.Value).Call("AddShape", js.ValueOf("Sheet1"), js.ValueOf("C30"), js.ValueOf(nil))
+	ret = f.(js.Value).Call("AddShape", js.ValueOf("Sheet1"), js.ValueOf(nil))
 	assert.Equal(t, errArgType.Error(), ret.Get("error").String())
 }
 

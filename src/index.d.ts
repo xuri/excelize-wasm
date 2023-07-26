@@ -35,6 +35,20 @@ declare module 'excelize-wasm' {
   }
 
   /**
+   * FormControlType is the type of supported form controls.
+   */
+  export enum FormControlType {
+    FormControlNote,
+    FormControlButton,
+    FormControlOptionButton,
+    FormControlSpinButton,
+    FormControlCheckBox,
+    FormControlGroupBox,
+    FormControlLabel,
+    FormControlScrollBar,
+  }
+
+  /**
    * Options define the options for o`pen and reading spreadsheet.
    *
    * MaxCalcIterations specifies the maximum iterations for iterative
@@ -213,6 +227,7 @@ declare module 'excelize-wasm' {
    * Shape directly maps the format settings of the shape.
    */
    export type Shape = {
+    Cell:       string;
     Macro?:     string;
     Type?:      string;
     Width?:     number;
@@ -320,6 +335,28 @@ declare module 'excelize-wasm' {
     Expression?: string;
   };
 
+  /**
+   * FormControl directly maps the form controls information.
+   */
+  export type FormControl = {
+    Cell:          string;
+    Macro?:        string;
+    Width?:        number;
+    Height?:       number;
+    Checked?:      boolean;
+    CurrentVal?:   number;
+    MinVal?:       number;
+    MaxVal?:       number;
+    IncChange?:    number;
+    PageChange?:   number;
+    Horizontally?: boolean;
+    CellLink?:     string;
+    Text?:         string;
+    Paragraph?:    RichTextRun[];
+    Type?:         FormControlType;
+    Format?:       GraphicOptions;
+  };
+
   /*
    * ChartNumFmt directly maps the number format settings of the chart.
    */
@@ -338,6 +375,7 @@ declare module 'excelize-wasm' {
     MajorUnit?:      number;
     TickLabelSkip?:  number;
     ReverseOrder?:   boolean;
+    Secondary?:      boolean;
     Maximum?:        number;
     Minimum?:        number;
     Font?:           Font;
@@ -554,11 +592,11 @@ declare module 'excelize-wasm' {
    * Comment directly maps the comment information.
    */
   export type Comment = {
-    Author?:   string;
-    AuthorID?: number;
-    Cell?:     string;
-    Text?:     string;
-    Runs?:     RichTextRun[];
+    Author?:    string;
+    AuthorID?:  number;
+    Cell?:      string;
+    Text?:      string;
+    Paragraph?: RichTextRun[];
   };
 
   /**
@@ -976,6 +1014,100 @@ declare module 'excelize-wasm' {
     AddPictureFromBytes(sheet: string, cell: string, pic: Picture): { error: string | null }
 
     /**
+     * AddFormControl provides the method to add form control button in a
+     * worksheet by given worksheet name and form control options. Supported
+     * form control type: button, check box, group box, label, option button,
+     * scroll bar and spinner. If set macro for the form control, the workbook
+     * extension should be XLSM or XLTM. Scroll value must be between 0 and
+     * 30000.
+     *
+     * Example 1, add button form control with macro, rich-text, custom button
+     * size, print property on Sheet1!A2, and let the button do not move or
+     * size with cells:
+     *
+     * ```typescript
+     *	const { error } = f.AddFormControl("Sheet1", {
+     *	    Cell:   "A2",
+     *	    Type:   excelize.FormControlButton,
+     *	    Macro:  "Button1_Click",
+     *	    Width:  140,
+     *	    Height: 60,
+     *	    Text:   "Button 1\r\n",
+     *	    Paragraph: [
+     *	        {
+     *	            Font: {
+     *	                Bold:      true,
+     *	                Italic:    true,
+     *	                Underline: "single",
+     *	                Family:    "Times New Roman",
+     *	                Size:      14,
+     *	                Color:     "777777",
+     *	            },
+     *	            Text: "C1=A1+B1",
+     *	        },
+     *	    ],
+     *	    Format: {
+     *	        PrintObject: true,
+     *	        Positioning: "absolute",
+     *	    },
+     *	})
+     * ```
+     *
+     * Example 2, add option button form control with checked status and text
+     * on Sheet1!A1:
+     *
+     * ```typescript
+     *	const { error } = f.AddFormControl("Sheet1", {
+     *	    Cell:    "A1",
+     *	    Type:    excelize.FormControlOptionButton,
+     *	    Text:    "Option Button 1",
+     *	    Checked: true,
+     *	})
+     * ```
+     *
+     * Example 3, add spin button form control on Sheet1!B1 to increase or
+     * decrease the value of Sheet1!A1:
+     *
+     * ```typescript
+     *	const { error } = f.AddFormControl("Sheet1", {
+     *	    Cell:       "B1",
+     *	    Type:       excelize.FormControlSpinButton,
+     *	    Width:      15,
+     *	    Height:     40,
+     *	    CurrentVal: 7,
+     *	    MinVal:     5,
+     *	    MaxVal:     10,
+     *	    IncChange:  1,
+     *	    CellLink:   "A1",
+     *	})
+     * ```
+     *
+     * Example 4, add horizontally scroll bar form control on Sheet1!A2 to
+     * change the value of Sheet1!A1 by click the scroll arrows or drag the
+     * scroll box:
+     *
+     * ```typescript
+     *	const { error } = f.AddFormControl("Sheet1", {
+     *	    Cell:         "A2",
+     *	    Type:         excelize.FormControlScrollBar,
+     *	    Width:        140,
+     *	    Height:       20,
+     *	    CurrentVal:   50,
+     *	    MinVal:       10,
+     *	    MaxVal:       100,
+     *	    IncChange:    1,
+     *	    PageChange:   1,
+     *	    CellLink:     "A1",
+     *	    Horizontally: true,
+     *	})
+     * ```
+     *
+     * @param sheet The worksheet name
+     * @param opts The form control options
+     */
+    AddFormControl(sheet: string, opts: FormControl): { error: string | null }
+
+    /**
      * AddPivotTable provides the method to add pivot table by given pivot
      * table options. Note that the same fields can not in Columns, Rows and
      * Filter fields at the same time.
@@ -988,10 +1120,9 @@ declare module 'excelize-wasm' {
      * index, shape format set (such as offset, scale, aspect ratio setting
      * and print settings) and properties set.
      * @param sheet The worksheet name
-     * @param cell The cell reference
      * @param opts The shape options
      */
-    AddShape(sheet: string, cell: string, opts: Shape): { error: string | null }
+    AddShape(sheet: string, opts: Shape): { error: string | null }
 
     /**
      * AddSparkline provides a function to add sparklines to the worksheet by
@@ -2573,6 +2704,14 @@ declare module 'excelize-wasm' {
     CultureNameUnknown:          typeof CultureName.CultureNameUnknown;
     CultureNameEnUS:             typeof CultureName.CultureNameEnUS;
     CultureNameZhCN:             typeof CultureName.CultureNameZhCN;
+    FormControlNote:             typeof FormControlType.FormControlNote;
+    FormControlButton:           typeof FormControlType.FormControlButton;
+    FormControlOptionButton:     typeof FormControlType.FormControlOptionButton;
+    FormControlSpinButton:       typeof FormControlType.FormControlSpinButton;
+    FormControlCheckBox:         typeof FormControlType.FormControlCheckBox;
+    FormControlGroupBox:         typeof FormControlType.FormControlGroupBox;
+    FormControlLabel:            typeof FormControlType.FormControlLabel;
+    FormControlScrollBar:        typeof FormControlType.FormControlScrollBar;
     Area:                        typeof ChartType.Area;
     AreaStacked:                 typeof ChartType.AreaStacked;
     AreaPercentStacked:          typeof ChartType.AreaPercentStacked;
