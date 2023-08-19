@@ -6,7 +6,7 @@ jobs:
   publish:
     steps:
       - name: Build
-      uses: ./.github/workflows/build
+        uses: ./.github/workflows/build
 
       - name: NPM Publish
         uses: JS-DevTools/npm-publish@v2
