@@ -3,12 +3,13 @@ on:
   pull_request:
     branches: [ main ]
 jobs:
-  - name: Build
-  uses: ./.github/workflows/build
+  publish:
+    - name: Build
+    uses: ./.github/workflows/build
 
-  - name: NPM Publish
-    uses: JS-DevTools/npm-publish@v2
-    with:
-      token: ${{secrets.NPM_TOKEN}}
-      package: ./dist/package.json
-      strategy: upgrade
+    - name: NPM Publish
+      uses: JS-DevTools/npm-publish@v2
+      with:
+        token: ${{secrets.NPM_TOKEN}}
+        package: ./dist/package.json
+        strategy: upgrade
