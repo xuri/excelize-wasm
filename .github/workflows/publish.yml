@@ -4,12 +4,13 @@ on:
     branches: [ main ]
 jobs:
   publish:
-    - name: Build
-    uses: ./.github/workflows/build
+    steps:
+      - name: Build
+      uses: ./.github/workflows/build
 
-    - name: NPM Publish
-      uses: JS-DevTools/npm-publish@v2
-      with:
-        token: ${{secrets.NPM_TOKEN}}
-        package: ./dist/package.json
-        strategy: upgrade
+      - name: NPM Publish
+        uses: JS-DevTools/npm-publish@v2
+        with:
+          token: ${{secrets.NPM_TOKEN}}
+          package: ./dist/package.json
+          strategy: upgrade
