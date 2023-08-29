@@ -1237,6 +1237,14 @@ declare module 'excelize-wasm' {
     DeleteDefinedName(definedName: DefinedName): { error: string | null }
 
     /**
+     * DeleteFormControl provides the method to delete form control in a
+     * worksheet by given worksheet name and cell reference.
+     * @param sheet The worksheet name
+     * @param cell The cell reference
+     */
+    DeleteFormControl(sheet: string, cell: string): { error: string | null }
+
+    /**
      * DeletePicture provides a function to delete charts in spreadsheet by
      * given worksheet name and cell reference. Note that the image file won't
      * be deleted from the document currently.

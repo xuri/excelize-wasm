@@ -289,6 +289,7 @@ func regInteropFunc(f *excelize.File, fn map[string]interface{}) interface{} {
 		"DeleteComment":               DeleteComment(f),
 		"DeleteDataValidation":        DeleteDataValidation(f),
 		"DeleteDefinedName":           DeleteDefinedName(f),
+		"DeleteFormControl":           DeleteFormControl(f),
 		"DeletePicture":               DeletePicture(f),
 		"DeleteSheet":                 DeleteSheet(f),
 		"DuplicateRow":                DuplicateRow(f),
@@ -1400,6 +1401,25 @@ func DeleteDefinedName(f *excelize.File) func(this js.Value, args []js.Value) in
 		if err = f.DeleteDefinedName(&definedName); err != nil {
 			ret["error"] = err.Error()
 			return js.ValueOf(ret)
+		}
+		return js.ValueOf(ret)
+	}
+}
+
+// DeleteFormControl provides the method to delete form control in a worksheet
+// by given worksheet name and cell reference.
+func DeleteFormControl(f *excelize.File) func(this js.Value, args []js.Value) interface{} {
+	return func(this js.Value, args []js.Value) interface{} {
+		ret := map[string]interface{}{"error": nil}
+		if err := prepareArgs(args, []argsRule{
+			{types: []js.Type{js.TypeString}},
+			{types: []js.Type{js.TypeString}},
+		}); err != nil {
+			ret["error"] = err.Error()
+			return js.ValueOf(ret)
+		}
+		if err := f.DeleteFormControl(args[0].String(), args[1].String()); err != nil {
+			ret["error"] = err.Error()
 		}
 		return js.ValueOf(ret)
 	}
