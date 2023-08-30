@@ -446,22 +446,34 @@ func TestFormControl(t *testing.T) {
 	f := NewFile(js.Value{}, []js.Value{})
 	assert.True(t, f.(js.Value).Get("error").IsNull())
 
-	ret := f.(js.Value).Call("AddFormControl",  js.ValueOf("Sheet1"), js.ValueOf(map[string]interface{}{
+	ret := f.(js.Value).Call("AddFormControl", js.ValueOf("Sheet1"), js.ValueOf(map[string]interface{}{
 		"Cell": "A1", "Type": int(excelize.FormControlButton),
 	}))
+	assert.True(t, ret.Get("error").IsNull())
+
+	ret = f.(js.Value).Call("DeleteFormControl", js.ValueOf("Sheet1"), js.ValueOf("A1"))
 	assert.True(t, ret.Get("error").IsNull())
 
 	ret = f.(js.Value).Call("AddFormControl")
 	assert.EqualError(t, errArgNum, ret.Get("error").String())
 
-	ret = f.(js.Value).Call("AddFormControl",  js.ValueOf("Sheet1"), js.ValueOf(map[string]interface{}{
+	ret = f.(js.Value).Call("AddFormControl", js.ValueOf("Sheet1"), js.ValueOf(map[string]interface{}{
 		"Cell": "A1", "Type": true,
 	}))
 	assert.Equal(t, errArgType.Error(), ret.Get("error").String())
 
-	ret = f.(js.Value).Call("AddFormControl",  js.ValueOf("SheetN"), js.ValueOf(map[string]interface{}{
+	ret = f.(js.Value).Call("AddFormControl", js.ValueOf("SheetN"), js.ValueOf(map[string]interface{}{
 		"Cell": "A1", "Type": int(excelize.FormControlButton),
 	}))
+	assert.Equal(t, "sheet SheetN does not exist", ret.Get("error").String())
+
+	ret = f.(js.Value).Call("DeleteFormControl")
+	assert.EqualError(t, errArgNum, ret.Get("error").String())
+
+	ret = f.(js.Value).Call("DeleteFormControl", js.ValueOf("Sheet1"), js.ValueOf(true))
+	assert.Equal(t, errArgType.Error(), ret.Get("error").String())
+
+	ret = f.(js.Value).Call("DeleteFormControl", js.ValueOf("SheetN"), js.ValueOf("A1"))
 	assert.Equal(t, "sheet SheetN does not exist", ret.Get("error").String())
 }
 

@@ -4,9 +4,22 @@ on:
     branches: [ main ]
 jobs:
   publish:
+    strategy:
+      matrix:
+        go-version: [1.20.x]
+        os: [ubuntu-latest]
+        targetplatform: [x64]
+
+    runs-on: ${{ matrix.os }}
+    environment: production
+    env:
+      GOOS: js
+      GOARCH: wasm
+      GO111MODULE: on
+
     steps:
       - name: Build
-        uses: ./.github/workflows/build
+        uses: ./.github/workflows/go
 
       - name: NPM Publish
         uses: JS-DevTools/npm-publish@v2
