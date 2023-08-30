@@ -310,6 +310,7 @@ func regInteropFunc(f *excelize.File, fn map[string]interface{}) interface{} {
 		"GetDefaultFont":              GetDefaultFont(f),
 		"GetDefinedName":              GetDefinedName(f),
 		"GetDocProps":                 GetDocProps(f),
+		"GetFormControls":             GetFormControls(f),
 		"GetPageLayout":               GetPageLayout(f),
 		"GetPageMargins":              GetPageMargins(f),
 		"GetPanes":                    GetPanes(f),
@@ -1888,6 +1889,35 @@ func GetDocProps(f *excelize.File) func(this js.Value, args []js.Value) interfac
 		if jsVal, err := goValueToJS(reflect.ValueOf(*props),
 			reflect.TypeOf(excelize.DocProperties{})); err == nil {
 			ret["props"] = jsVal
+		}
+		return js.ValueOf(ret)
+	}
+}
+
+// GetFormControls retrieves all form controls in a worksheet by a given
+// worksheet name. Note that, this function does not support getting the width
+// and height of the form controls currently.
+func GetFormControls(f *excelize.File) func(this js.Value, args []js.Value) interface{} {
+	return func(this js.Value, args []js.Value) interface{} {
+		ret := map[string]interface{}{"formControls": []interface{}{}, "error": nil}
+		if err := prepareArgs(args, []argsRule{
+			{types: []js.Type{js.TypeString}},
+		}); err != nil {
+			ret["error"] = err.Error()
+			return js.ValueOf(ret)
+		}
+		formControls, err := f.GetFormControls(args[0].String())
+		if err != nil {
+			ret["error"] = err.Error()
+			return js.ValueOf(ret)
+		}
+		for _, formCtrl := range formControls {
+			if jsVal, err := goValueToJS(reflect.ValueOf(formCtrl),
+				reflect.TypeOf(excelize.FormControl{})); err == nil {
+				x := ret["formControls"].([]interface{})
+				x = append(x, jsVal)
+				ret["formControls"] = x
+			}
 		}
 		return js.ValueOf(ret)
 	}

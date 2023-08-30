@@ -451,6 +451,10 @@ func TestFormControl(t *testing.T) {
 	}))
 	assert.True(t, ret.Get("error").IsNull())
 
+	ret = f.(js.Value).Call("GetFormControls", js.ValueOf("Sheet1"))
+	assert.True(t, ret.Get("error").IsNull())
+	assert.Equal(t, 1, ret.Get("formControls").Length())
+
 	ret = f.(js.Value).Call("DeleteFormControl", js.ValueOf("Sheet1"), js.ValueOf("A1"))
 	assert.True(t, ret.Get("error").IsNull())
 
@@ -466,6 +470,15 @@ func TestFormControl(t *testing.T) {
 		"Cell": "A1", "Type": int(excelize.FormControlButton),
 	}))
 	assert.Equal(t, "sheet SheetN does not exist", ret.Get("error").String())
+
+	ret = f.(js.Value).Call("GetFormControls")
+	assert.EqualError(t, errArgNum, ret.Get("error").String())
+
+	ret = f.(js.Value).Call("GetFormControls", js.ValueOf("SheetN"))
+	assert.Equal(t, "sheet SheetN does not exist", ret.Get("error").String())
+
+	ret = f.(js.Value).Call("GetFormControls", js.ValueOf(true))
+	assert.Equal(t, errArgType.Error(), ret.Get("error").String())
 
 	ret = f.(js.Value).Call("DeleteFormControl")
 	assert.EqualError(t, errArgNum, ret.Get("error").String())

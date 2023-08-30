@@ -1416,6 +1416,14 @@ declare module 'excelize-wasm' {
     GetDocProps(): { props: DocProperties, error: string | null }
 
     /**
+     * GetFormControls retrieves all form controls in a worksheet by a given
+     * worksheet name. Note that, this function does not support getting the
+     * width and height of the form controls currently.
+     * @param sheet The worksheet name
+     */
+    GetFormControls(sheet: string): { formControls: FormControl[], error: string | null }
+
+    /**
      * GetPageLayout provides a function to gets worksheet page layout.
      * @param sheet The worksheet name
      */
