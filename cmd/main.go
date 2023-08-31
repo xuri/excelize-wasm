@@ -326,6 +326,7 @@ func regInteropFunc(f *excelize.File, fn map[string]interface{}) interface{} {
 		"GetSheetProps":               GetSheetProps(f),
 		"GetSheetView":                GetSheetView(f),
 		"GetSheetVisible":             GetSheetVisible(f),
+		"GetStyle":                    GetStyle(f),
 		"GetWorkbookProps":            GetWorkbookProps(f),
 		"GroupSheets":                 GroupSheets(f),
 		"InsertCols":                  InsertCols(f),
@@ -2265,6 +2266,29 @@ func GetSheetVisible(f *excelize.File) func(this js.Value, args []js.Value) inte
 		}
 		if ret["visible"], err = f.GetSheetVisible(args[0].String()); err != nil {
 			ret["error"] = err.Error()
+		}
+		return js.ValueOf(ret)
+	}
+}
+
+// GetStyle provides a function to get style definition by given style index.
+func GetStyle(f *excelize.File) func(this js.Value, args []js.Value) interface{} {
+	return func(this js.Value, args []js.Value) interface{} {
+		ret := map[string]interface{}{"style": map[string]interface{}{}, "error": nil}
+		if err := prepareArgs(args, []argsRule{
+			{types: []js.Type{js.TypeNumber}},
+		}); err != nil {
+			ret["error"] = err.Error()
+			return js.ValueOf(ret)
+		}
+		style, err := f.GetStyle(args[0].Int())
+		if err != nil {
+			ret["error"] = err.Error()
+			return js.ValueOf(ret)
+		}
+		if jsVal, err := goValueToJS(reflect.ValueOf(*style),
+			reflect.TypeOf(excelize.Style{})); err == nil {
+			ret["style"] = jsVal
 		}
 		return js.ValueOf(ret)
 	}
