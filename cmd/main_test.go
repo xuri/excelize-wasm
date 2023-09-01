@@ -1355,7 +1355,7 @@ func TestNewSheet(t *testing.T) {
 	assert.Equal(t, 0, ret.Get("index").Int())
 }
 
-func TestNewStyle(t *testing.T) {
+func TestStyle(t *testing.T) {
 	f := NewFile(js.Value{}, []js.Value{})
 	assert.True(t, f.(js.Value).Get("error").IsNull())
 
@@ -1400,6 +1400,12 @@ func TestNewStyle(t *testing.T) {
 	}))
 	assert.True(t, ret.Get("error").IsNull(), ret.Get("error").String())
 	assert.Equal(t, 1, ret.Get("style").Int())
+
+	ret = f.(js.Value).Call("GetStyle", ret.Get("style"))
+	assert.True(t, ret.Get("error").IsNull())
+	assert.Equal(t, "0.00", ret.Get("style").Get("CustomNumFmt").String())
+	assert.True(t, ret.Get("style").Get("Font").Get("Bold").Bool())
+	assert.Equal(t, "single", ret.Get("style").Get("Font").Get("Underline").String())
 
 	for _, arg := range []map[string]interface{}{
 		{"NumFmt": "1"},
@@ -1452,6 +1458,15 @@ func TestNewStyle(t *testing.T) {
 	assert.EqualError(t, excelize.ErrFontSize, ret.Get("error").String())
 
 	ret = f.(js.Value).Call("NewStyle")
+	assert.EqualError(t, errArgNum, ret.Get("error").String())
+
+	ret = f.(js.Value).Call("GetStyle", js.ValueOf(-1))
+	assert.Equal(t, "invalid style ID -1", ret.Get("error").String())
+
+	ret = f.(js.Value).Call("GetStyle", js.ValueOf(true))
+	assert.EqualError(t, errArgType, ret.Get("error").String())
+
+	ret = f.(js.Value).Call("GetStyle")
 	assert.EqualError(t, errArgNum, ret.Get("error").String())
 }
 

@@ -1,8 +1,10 @@
 name: Publish
 on:
   push:
-    branches: [ main ]
+    branches:
+      - main
 jobs:
+
   publish:
     strategy:
       matrix:
@@ -64,9 +66,8 @@ jobs:
         cp src/package.json ./dist
         cp src/index.d.ts ./dist
 
-      - name: NPM Publish
-        uses: JS-DevTools/npm-publish@v2
-        with:
-          token: ${{secrets.NPM_TOKEN}}
-          package: ./dist/package.json
-          strategy: upgrade
+    - name: NPM Publish
+      uses: JS-DevTools/npm-publish@v1
+      with:
+        token: ${{secrets.NPM_TOKEN}}
+        package: ./dist/package.json

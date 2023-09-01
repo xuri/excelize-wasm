@@ -1531,6 +1531,12 @@ declare module 'excelize-wasm' {
     GetSheetVisible(sheet: string): { visible: boolean, error: string | null }
 
     /**
+     * GetStyle provides a function to get style definition by given style index.
+     * @param styleID The style ID
+     */
+    GetStyle(styleID: number): { style: Style, error: string | null }
+
+    /**
      * GetWorkbookProps provides a function to gets workbook properties.
      */
     GetWorkbookProps(): { props: WorkbookPropsOptions, error: string | null }
