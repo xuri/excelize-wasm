@@ -292,6 +292,7 @@ func regInteropFunc(f *excelize.File, fn map[string]interface{}) interface{} {
 		"DeleteFormControl":           DeleteFormControl(f),
 		"DeletePicture":               DeletePicture(f),
 		"DeleteSheet":                 DeleteSheet(f),
+		"DeleteTable":                 DeleteTable(f),
 		"DuplicateRow":                DuplicateRow(f),
 		"DuplicateRowTo":              DuplicateRowTo(f),
 		"GetActiveSheetIndex":         GetActiveSheetIndex(f),
@@ -327,6 +328,7 @@ func regInteropFunc(f *excelize.File, fn map[string]interface{}) interface{} {
 		"GetSheetView":                GetSheetView(f),
 		"GetSheetVisible":             GetSheetVisible(f),
 		"GetStyle":                    GetStyle(f),
+		"GetTables":                   GetTables(f),
 		"GetWorkbookProps":            GetWorkbookProps(f),
 		"GroupSheets":                 GroupSheets(f),
 		"InsertCols":                  InsertCols(f),
@@ -1468,6 +1470,23 @@ func DeleteSheet(f *excelize.File) func(this js.Value, args []js.Value) interfac
 	}
 }
 
+// DeleteTable provides the method to delete table by given table name.
+func DeleteTable(f *excelize.File) func(this js.Value, args []js.Value) interface{} {
+	return func(this js.Value, args []js.Value) interface{} {
+		ret := map[string]interface{}{"error": nil}
+		if err := prepareArgs(args, []argsRule{
+			{types: []js.Type{js.TypeString}},
+		}); err != nil {
+			ret["error"] = err.Error()
+			return js.ValueOf(ret)
+		}
+		if err := f.DeleteTable(args[0].String()); err != nil {
+			ret["error"] = err.Error()
+		}
+		return js.ValueOf(ret)
+	}
+}
+
 // DuplicateRow inserts a copy of specified row (by its Excel row number)
 // below. Use this method with caution, which will affect changes in
 // references such as formulas, charts, and so on. If there is any referenced
@@ -2289,6 +2308,34 @@ func GetStyle(f *excelize.File) func(this js.Value, args []js.Value) interface{}
 		if jsVal, err := goValueToJS(reflect.ValueOf(*style),
 			reflect.TypeOf(excelize.Style{})); err == nil {
 			ret["style"] = jsVal
+		}
+		return js.ValueOf(ret)
+	}
+}
+
+// GetTables provides the method to get all tables in a worksheet by given
+// worksheet name.
+func GetTables(f *excelize.File) func(this js.Value, args []js.Value) interface{} {
+	return func(this js.Value, args []js.Value) interface{} {
+		ret := map[string]interface{}{"tables": []interface{}{}, "error": nil}
+		if err := prepareArgs(args, []argsRule{
+			{types: []js.Type{js.TypeString}},
+		}); err != nil {
+			ret["error"] = err.Error()
+			return js.ValueOf(ret)
+		}
+		tables, err := f.GetTables(args[0].String())
+		if err != nil {
+			ret["error"] = err.Error()
+			return js.ValueOf(ret)
+		}
+		for _, tbl := range tables {
+			if jsVal, err := goValueToJS(reflect.ValueOf(tbl),
+				reflect.TypeOf(excelize.Table{})); err == nil {
+				x := ret["tables"].([]interface{})
+				x = append(x, jsVal)
+				ret["tables"] = x
+			}
 		}
 		return js.ValueOf(ret)
 	}

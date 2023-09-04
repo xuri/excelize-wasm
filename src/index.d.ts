@@ -1265,6 +1265,12 @@ declare module 'excelize-wasm' {
     DeleteSheet(sheet: string): { error: string | null }
 
     /**
+     * DeleteTable provides the method to delete table by given table name.
+     * @param name The table name
+     */
+    DeleteTable(name: string): { error: string | null }
+
+    /**
      * DuplicateRow inserts a copy of specified row (by its Excel row number)
      * below. Use this method with caution, which will affect changes in
      * references such as formulas, charts, and so on. If there is any
@@ -1535,6 +1541,13 @@ declare module 'excelize-wasm' {
      * @param styleID The style ID
      */
     GetStyle(styleID: number): { style: Style, error: string | null }
+
+    /**
+     * GetTables provides the method to get all tables in a worksheet by given
+     * worksheet name.
+     * @param sheet The worksheet name
+     */
+    GetTables(sheet: string): { tables: TableOptions[], error: string | null }
 
     /**
      * GetWorkbookProps provides a function to gets workbook properties.

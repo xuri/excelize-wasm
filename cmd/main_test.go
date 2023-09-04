@@ -666,11 +666,19 @@ func TestAddSparkline(t *testing.T) {
 	assert.Equal(t, "sheet SheetN does not exist", ret.Get("error").String())
 }
 
-func TestAddTable(t *testing.T) {
+func TestTable(t *testing.T) {
 	f := NewFile(js.Value{}, []js.Value{})
 	assert.True(t, f.(js.Value).Get("error").IsNull())
 
 	ret := f.(js.Value).Call("AddTable", js.ValueOf("Sheet1"), js.ValueOf(map[string]interface{}{"Range": "B26:A21"}))
+	assert.True(t, ret.Get("error").IsNull())
+
+	ret = f.(js.Value).Call("GetTables", js.ValueOf("Sheet1"))
+	assert.True(t, ret.Get("error").IsNull())
+	assert.Equal(t, 1, ret.Get("tables").Length())
+	assert.Equal(t, "A21:B26", ret.Get("tables").Index(0).Get("Range").String())
+
+	ret = f.(js.Value).Call("DeleteTable", js.ValueOf("Table1"))
 	assert.True(t, ret.Get("error").IsNull())
 
 	ret = f.(js.Value).Call("AddTable")
@@ -681,6 +689,24 @@ func TestAddTable(t *testing.T) {
 
 	ret = f.(js.Value).Call("AddTable", js.ValueOf("SheetN"), js.ValueOf(map[string]interface{}{"Range": "B26:A21"}))
 	assert.Equal(t, "sheet SheetN does not exist", ret.Get("error").String())
+
+	ret = f.(js.Value).Call("GetTables")
+	assert.EqualError(t, errArgNum, ret.Get("error").String())
+
+	ret = f.(js.Value).Call("GetTables", js.ValueOf(true))
+	assert.EqualError(t, errArgType, ret.Get("error").String())
+
+	ret = f.(js.Value).Call("GetTables", js.ValueOf("SheetN"))
+	assert.Equal(t, "sheet SheetN does not exist", ret.Get("error").String())
+
+	ret = f.(js.Value).Call("DeleteTable")
+	assert.EqualError(t, errArgNum, ret.Get("error").String())
+
+	ret = f.(js.Value).Call("DeleteTable", js.ValueOf(true))
+	assert.EqualError(t, errArgType, ret.Get("error").String())
+
+	ret = f.(js.Value).Call("DeleteTable", js.ValueOf("X"))
+	assert.Equal(t, "table X does not exist", ret.Get("error").String())
 }
 
 func TestAutoFilter(t *testing.T) {

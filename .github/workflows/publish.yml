@@ -67,7 +67,7 @@ jobs:
         cp src/index.d.ts ./dist
 
     - name: NPM Publish
-      uses: JS-DevTools/npm-publish@v1
+      uses: JS-DevTools/npm-publish@v2
       with:
         token: ${{secrets.NPM_TOKEN}}
         package: ./dist/package.json
