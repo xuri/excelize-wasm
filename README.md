@@ -122,7 +122,7 @@ Create spreadsheet in browser:
         );
         link.click();
       });
-    }
+  }
   </script>
 </body>
 ```
@@ -209,9 +209,9 @@ init('./node_modules/excelize-wasm/excelize.wasm.gz').then((excelize) => {
         Values: 'Sheet1!$B$4:$D$4',
       },
     ],
-    Title: {
-      Name: 'Fruit 3D Clustered Column Chart',
-    },
+    Title: [{
+      Text: 'Fruit 3D Clustered Column Chart',
+    }],
   });
   if (ret3.error) {
     console.log(ret3.error);

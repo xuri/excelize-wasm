@@ -474,7 +474,7 @@ declare module 'excelize-wasm' {
     Format?:       GraphicOptions;
     Dimension?:    ChartDimension;
     Legend?:       ChartLegend;
-    Title?:        ChartTitle;
+    Title?:        RichTextRun[];
     VaryColors?:   boolean;
     XAxis?:        ChartAxis;
     YAxis?:        ChartAxis;
@@ -517,13 +517,6 @@ declare module 'excelize-wasm' {
     Values?:     string;
     Line?:       ChartLine;
     Marker?:     ChartMarker;
-  };
-
-  /**
-   * ChartTitle directly maps the format settings of the chart title.
-   */
-  export type ChartTitle = {
-    Name?: string;
   };
 
   /**

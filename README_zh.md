@@ -95,33 +95,33 @@ init('./node_modules/excelize-wasm/excelize.wasm.gz').then((excelize) => {
     <button onclick="download()">下载</button>
   </div>
   <script>
-function download() {
-  excelizeWASM
-    .init('https://<服务器地址>/excelize-wasm/excelize.wasm.gz')
-    .then((excelize) => {
-      const f = excelize.NewFile();
-      // 创建一个工作表
-      const { index } = f.NewSheet('Sheet2');
-      // 设置单元格的值
-      f.SetCellValue('Sheet2', 'A2', 'Hello world.');
-      f.SetCellValue('Sheet1', 'B2', 100);
-      // 设置工作簿的默认工作表
-      f.SetActiveSheet(index);
-      // 根据指定路径保存文件
-      const { buffer, error } = f.WriteToBuffer();
-      if (error) {
-        console.log(error);
-        return;
-      }
-      const link = document.createElement('a');
-      link.download = 'Book1.xlsx';
-      link.href = URL.createObjectURL(
-        new Blob([buffer], {
-          type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-        })
-      );
-      link.click();
-    });
+  function download() {
+    excelizeWASM
+      .init('https://<服务器地址>/excelize-wasm/excelize.wasm.gz')
+      .then((excelize) => {
+        const f = excelize.NewFile();
+        // 创建一个工作表
+        const { index } = f.NewSheet('Sheet2');
+        // 设置单元格的值
+        f.SetCellValue('Sheet2', 'A2', 'Hello world.');
+        f.SetCellValue('Sheet1', 'B2', 100);
+        // 设置工作簿的默认工作表
+        f.SetActiveSheet(index);
+        // 根据指定路径保存文件
+        const { buffer, error } = f.WriteToBuffer();
+        if (error) {
+          console.log(error);
+          return;
+        }
+        const link = document.createElement('a');
+        link.download = 'Book1.xlsx';
+        link.href = URL.createObjectURL(
+          new Blob([buffer], {
+            type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+          })
+        );
+        link.click();
+      });
   }
   </script>
 </body>
@@ -209,9 +209,9 @@ init('./node_modules/excelize-wasm/excelize.wasm.gz').then((excelize) => {
         Values: 'Sheet1!$B$4:$D$4',
       },
     ],
-    Title: {
-      Name: 'Fruit 3D Clustered Column Chart',
-    },
+    Title: [{
+      Text: 'Fruit 3D Clustered Column Chart',
+    }],
   });
   if (ret3.error) {
     console.log(ret3.error);

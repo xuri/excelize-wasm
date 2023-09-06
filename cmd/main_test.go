@@ -244,8 +244,8 @@ func TestAddChart(t *testing.T) {
 				"Values":     "Sheet1!$B$4:$D$4",
 			},
 		},
-		"Title": map[string]interface{}{
-			"Name": "Fruit 3D Clustered Column Chart",
+		"Title": []interface{}{
+			js.ValueOf(map[string]interface{}{"Text": "Fruit 3D Clustered Column Chart"}),
 		},
 	})
 	colChart := js.ValueOf(map[string]interface{}{
@@ -267,8 +267,8 @@ func TestAddChart(t *testing.T) {
 				"Values":     "Sheet1!$B$4:$D$4",
 			},
 		},
-		"Title": map[string]interface{}{
-			"Name": "Fruit 3D Clustered Column Chart",
+		"Title": []interface{}{
+			js.ValueOf(map[string]interface{}{"Text": "Fruit 3D Clustered Column Chart"}),
 		},
 	})
 	ret := f.(js.Value).Call("AddChart", js.ValueOf("Sheet1"), js.ValueOf("A1"), lineChart)
@@ -325,8 +325,8 @@ func TestAddChartSheet(t *testing.T) {
 				"Values":     "Sheet1!$B$4:$D$4",
 			},
 		},
-		"Title": map[string]interface{}{
-			"Name": "Fruit 3D Clustered Column Chart",
+		"Title": []interface{}{
+			js.ValueOf(map[string]interface{}{"Text": "Fruit 3D Clustered Column Chart"}),
 		},
 	})
 	colChart := js.ValueOf(map[string]interface{}{
@@ -348,8 +348,8 @@ func TestAddChartSheet(t *testing.T) {
 				"Values":     "Sheet1!$B$4:$D$4",
 			},
 		},
-		"Title": map[string]interface{}{
-			"Name": "Fruit 3D Clustered Column Chart",
+		"Title": []interface{}{
+			js.ValueOf(map[string]interface{}{"Text": "Fruit 3D Clustered Column Chart"}),
 		},
 	})
 	ret := f.(js.Value).Call("AddChartSheet", js.ValueOf("Sheet2"), lineChart)
