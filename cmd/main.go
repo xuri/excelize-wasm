@@ -316,6 +316,7 @@ func regInteropFunc(f *excelize.File, fn map[string]interface{}) interface{} {
 		"GetPageMargins":              GetPageMargins(f),
 		"GetPanes":                    GetPanes(f),
 		"GetPictures":                 GetPictures(f),
+		"GetPivotTables":              GetPivotTables(f),
 		"GetRowHeight":                GetRowHeight(f),
 		"GetRowOutlineLevel":          GetRowOutlineLevel(f),
 		"GetRows":                     GetRows(f),
@@ -2037,6 +2038,32 @@ func GetPictures(f *excelize.File) func(this js.Value, args []js.Value) interfac
 				x := ret["pictures"].([]interface{})
 				x = append(x, jsVal)
 				ret["pictures"] = x
+			}
+		}
+		return js.ValueOf(ret)
+	}
+}
+
+// GetPivotTables returns all pivot table definitions in a worksheet by given
+// worksheet name.
+func GetPivotTables(f *excelize.File) func(this js.Value, args []js.Value) interface{} {
+	return func(this js.Value, args []js.Value) interface{} {
+		ret := map[string]interface{}{"opts": []interface{}{}, "error": nil}
+		if err := prepareArgs(args, []argsRule{{types: []js.Type{js.TypeString}}}); err != nil {
+			ret["error"] = err.Error()
+			return js.ValueOf(ret)
+		}
+		opts, err := f.GetPivotTables(args[0].String())
+		if err != nil {
+			ret["error"] = err.Error()
+			return js.ValueOf(ret)
+		}
+		for _, opt := range opts {
+			if jsVal, err := goValueToJS(reflect.ValueOf(opt),
+				reflect.TypeOf(excelize.PivotTableOptions{})); err == nil {
+				x := ret["opts"].([]interface{})
+				x = append(x, jsVal)
+				ret["opts"] = x
 			}
 		}
 		return js.ValueOf(ret)

@@ -541,7 +541,7 @@ func TestAddPictureFromBytes(t *testing.T) {
 	assert.Equal(t, "sheet SheetN does not exist", ret.Get("error").String())
 }
 
-func TestAddPivotTable(t *testing.T) {
+func TestPivotTable(t *testing.T) {
 	f := NewFile(js.Value{}, []js.Value{})
 	assert.True(t, f.(js.Value).Get("error").IsNull())
 
@@ -594,6 +594,9 @@ func TestAddPivotTable(t *testing.T) {
 	ret = f.(js.Value).Call("AddPivotTable", opts)
 	assert.True(t, ret.Get("error").IsNull())
 
+	ret = f.(js.Value).Call("GetPivotTables", js.ValueOf("Sheet1"))
+	assert.True(t, ret.Get("error").IsNull())
+
 	ret = f.(js.Value).Call("AddPivotTable")
 	assert.EqualError(t, errArgNum, ret.Get("error").String())
 
@@ -605,6 +608,15 @@ func TestAddPivotTable(t *testing.T) {
 
 	ret = f.(js.Value).Call("AddPivotTable", js.ValueOf(map[string]interface{}{}))
 	assert.Equal(t, "parameter 'PivotTableRange' parsing error: parameter is required", ret.Get("error").String())
+
+	ret = f.(js.Value).Call("GetPivotTables")
+	assert.EqualError(t, errArgNum, ret.Get("error").String())
+
+	ret = f.(js.Value).Call("GetPivotTables", js.ValueOf(nil))
+	assert.Equal(t, errArgType.Error(), ret.Get("error").String())
+
+	ret = f.(js.Value).Call("GetPivotTables", js.ValueOf("SheetN"))
+	assert.Equal(t, "sheet SheetN does not exist", ret.Get("error").String())
 }
 
 func TestAddShape(t *testing.T) {

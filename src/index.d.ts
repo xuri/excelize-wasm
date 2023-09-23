@@ -531,6 +531,7 @@ declare module 'excelize-wasm' {
   export type PivotTableOptions = {
     DataRange?:           string;
     PivotTableRange?:     string;
+    Name?:                string;
     Rows?:                PivotTableField[];
     Columns?:             PivotTableField[];
     Data?:                PivotTableField[];
@@ -1444,6 +1445,12 @@ declare module 'excelize-wasm' {
     GetPictures(sheet: string, cell: string): { pictures: Picture[], error: string | null }
 
     /**
+     * GetPivotTables returns all pivot table definitions in a worksheet by
+     * given worksheet name.
+     */
+    GetPivotTables(sheet: string): { opts: PivotTableOptions[], error: string | null }
+
+    /**
      * GetRowHeight provides a function to get row height by given worksheet
      * name and row number.
      * @param sheet The worksheet name
@@ -2281,8 +2288,10 @@ declare module 'excelize-wasm' {
      *      DifferentFirst   | Different first-page header and footer indicator
      *      DifferentOddEven | Different odd and even page headers and footers indicator
      *      ScaleWithDoc     | Scale header and footer with document scaling
-     *      OddFooter        | Odd Page Footer
-     *      OddHeader        | Odd Header
+     *      OddFooter        | Odd Page Footer, or primary Page Footer if
+     *                       | 'DifferentOddEven' is 'false'
+     *      OddHeader        | Odd Header, or primary Page Header if 'DifferentOddEven'
+     *                       | is 'false'
      *      EvenFooter       | Even Page Footer
      *      EvenHeader       | Even Page Header
      *      FirstFooter      | First Page Footer
