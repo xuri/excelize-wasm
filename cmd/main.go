@@ -280,6 +280,7 @@ func regInteropFunc(f *excelize.File, fn map[string]interface{}) interface{} {
 		"AddPictureFromBytes":         AddPictureFromBytes(f),
 		"AddPivotTable":               AddPivotTable(f),
 		"AddShape":                    AddShape(f),
+		"AddSlicer":                   AddSlicer(f),
 		"AddSparkline":                AddSparkline(f),
 		"AddTable":                    AddTable(f),
 		"AutoFilter":                  AutoFilter(f),
@@ -1176,6 +1177,32 @@ func AddShape(f *excelize.File) func(this js.Value, args []js.Value) interface{}
 		}
 		opts = goVal.Elem().Interface().(excelize.Shape)
 		if err := f.AddShape(args[0].String(), &opts); err != nil {
+			ret["error"] = err.Error()
+		}
+		return js.ValueOf(ret)
+	}
+}
+
+// AddSlicer function inserts a slicer by giving the worksheet name and slicer
+// settings. The pivot table slicer is not supported currently.
+func AddSlicer(f *excelize.File) func(this js.Value, args []js.Value) interface{} {
+	return func(this js.Value, args []js.Value) interface{} {
+		ret := map[string]interface{}{"error": nil}
+		if err := prepareArgs(args, []argsRule{
+			{types: []js.Type{js.TypeString}},
+			{types: []js.Type{js.TypeObject}},
+		}); err != nil {
+			ret["error"] = err.Error()
+			return js.ValueOf(ret)
+		}
+		var opts excelize.SlicerOptions
+		goVal, err := jsValueToGo(args[1], reflect.TypeOf(excelize.SlicerOptions{}))
+		if err != nil {
+			ret["error"] = err.Error()
+			return js.ValueOf(ret)
+		}
+		opts = goVal.Elem().Interface().(excelize.SlicerOptions)
+		if err := f.AddSlicer(args[0].String(), &opts); err != nil {
 			ret["error"] = err.Error()
 		}
 		return js.ValueOf(ret)

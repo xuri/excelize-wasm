@@ -226,7 +226,7 @@ declare module 'excelize-wasm' {
   /**
    * Shape directly maps the format settings of the shape.
    */
-   export type Shape = {
+  export type Shape = {
     Cell:       string;
     Macro?:     string;
     Type?:      string;
@@ -239,10 +239,52 @@ declare module 'excelize-wasm' {
   };
 
   /**
+   * SlicerOptions represents the settings of the slicer.
+   *
+   * Name specifies the slicer name, should be an existing field name of the
+   * given table or pivot table, this setting is required.
+   *
+   * Table specifies the name of the table or pivot table, this setting is
+   * required.
+   *
+   * Cell specifies the left top cell coordinates the position for inserting the
+   * slicer, this setting is required.
+   *
+   * Caption specifies the caption of the slicer, this setting is optional.
+   *
+   * Macro used for set macro for the slicer, the workbook extension should be
+   * XLSM or XLTM.
+   *
+   * Width specifies the width of the slicer, this setting is optional.
+   *
+   * Height specifies the height of the slicer, this setting is optional.
+   *
+   * DisplayHeader specifies if display header of the slicer, this setting is
+   * optional, the default setting is display.
+   *
+   * ItemDesc specifies descending (Z-A) item sorting, this setting is optional,
+   * and the default setting is false (represents ascending).
+   *
+   * Format specifies the format of the slicer, this setting is optional.
+   */
+  export type SlicerOptions = {
+    Name:           string;
+    Table:          string;
+    Cell:           string;
+    Caption?:       string;
+    Macro?:         string;
+    Width?:         number;
+    Height?:        number;
+    DisplayHeader?: boolean;
+    ItemDesc?:      boolean;
+    Format?:        GraphicOptions;
+  };
+
+  /**
    * ShapeParagraph directly maps the format settings of the paragraph in the
    * shape.
    */
-   export type ShapeParagraph = {
+  export type ShapeParagraph = {
     Font?: Font;
     Text?: string;
   };
@@ -1117,6 +1159,14 @@ declare module 'excelize-wasm' {
      * @param opts The shape options
      */
     AddShape(sheet: string, opts: Shape): { error: string | null }
+
+    /**
+     * AddSlicer function inserts a slicer by giving the worksheet name and
+     * slicer settings. The pivot table slicer is not supported currently.
+     * @param sheet The worksheet name
+     * @param opts The slicer options
+     */
+    AddSlicer(sheet: string, opts: SlicerOptions): { error: string | null }
 
     /**
      * AddSparkline provides a function to add sparklines to the worksheet by
