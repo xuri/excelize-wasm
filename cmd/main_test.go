@@ -645,11 +645,18 @@ func TestSlicer(t *testing.T) {
 	f := NewFile(js.Value{}, []js.Value{})
 	assert.True(t, f.(js.Value).Get("error").IsNull())
 
-	ret := f.(js.Value).Call("AddTable", js.ValueOf("Sheet1"), js.ValueOf(map[string]interface{}{"Name": "Table1", "Range": "A1:D5"}))
+	ret := f.(js.Value).Call("AddTable", js.ValueOf("Sheet1"),
+		js.ValueOf(map[string]interface{}{"Name": "Table1", "Range": "A1:D5"}))
 	assert.True(t, ret.Get("error").IsNull())
 
 	ret = f.(js.Value).Call("AddSlicer", js.ValueOf("Sheet1"),
-		js.ValueOf(map[string]interface{}{"Name": "Column1", "Table": "Table1", "Cell": "E1", "Caption": "Column1"}))
+		js.ValueOf(map[string]interface{}{
+			"Name":       "Column1",
+			"Cell":       "E1",
+			"TableSheet": "Sheet1",
+			"TableName":  "Table1",
+			"Caption":    "Column1",
+		}))
 	assert.True(t, ret.Get("error").IsNull())
 
 	ret = f.(js.Value).Call("AddSlicer")
@@ -663,7 +670,13 @@ func TestSlicer(t *testing.T) {
 	assert.EqualError(t, errArgType, ret.Get("error").String())
 
 	ret = f.(js.Value).Call("AddSlicer", js.ValueOf("SheetN"),
-		js.ValueOf(map[string]interface{}{"Name": "Table1", "Table": "Column1", "Cell": "E1", "Caption": "Column1"}))
+		js.ValueOf(map[string]interface{}{
+			"Name":       "Column1",
+			"Cell":       "E1",
+			"TableSheet": "SheetN",
+			"TableName":  "Table1",
+			"Caption":    "Column1",
+		}))
 	assert.Equal(t, "sheet SheetN does not exist", ret.Get("error").String())
 }
 

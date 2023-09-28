@@ -19,8 +19,8 @@ github.com/stretchr/testify v1.8.1 h1:w7B6lhMri9wdJUVmEZPGGhZzrYTPvgJArz7wNPgYKs
 github.com/stretchr/testify v1.8.1/go.mod h1:w2LPCIKwWwSfY2zedu0+kehJoqGctiVI29o6fzry7u4=
 github.com/xuri/efp v0.0.0-20230802181842-ad255f2331ca h1:uvPMDVyP7PXMMioYdyPH+0O+Ta/UO1WFfNYMO3Wz0eg=
 github.com/xuri/efp v0.0.0-20230802181842-ad255f2331ca/go.mod h1:ybY/Jr0T0GTCnYjKqmdwxyxn2BQf2RcQIIvex5QldPI=
-github.com/xuri/excelize/v2 v2.8.1-0.20230920160631-9c079e5eec19 h1:+Ytc0a/vdT7PohdI9nvn8IjTLm6dtnDoWyJeA8xnGno=
-github.com/xuri/excelize/v2 v2.8.1-0.20230920160631-9c079e5eec19/go.mod h1:GKocsEKQZgdn03padVqGDQpXV9NX2tNf1bqc9cFk7nE=
+github.com/xuri/excelize/v2 v2.8.1-0.20230928005354-1c23dc3507c6 h1:xUVR0duWw+DpXY1tNvQMw/0C7Cb5IetLZpzULoRfWIk=
+github.com/xuri/excelize/v2 v2.8.1-0.20230928005354-1c23dc3507c6/go.mod h1:GKocsEKQZgdn03padVqGDQpXV9NX2tNf1bqc9cFk7nE=
 github.com/xuri/nfp v0.0.0-20230918160701-e5a3f5b24785/go.mod h1:WwHg+CVyzlv/TX9xqBFXEZAuxOPxn2k1GNHwG41IIUQ=
 github.com/xuri/nfp v0.0.0-20230919160717-d98342af3f05 h1:qhbILQo1K3mphbwKh1vNm4oGezE1eF9fQWmNiIpSfI4=
 github.com/xuri/nfp v0.0.0-20230919160717-d98342af3f05/go.mod h1:WwHg+CVyzlv/TX9xqBFXEZAuxOPxn2k1GNHwG41IIUQ=

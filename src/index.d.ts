@@ -244,11 +244,14 @@ declare module 'excelize-wasm' {
    * Name specifies the slicer name, should be an existing field name of the
    * given table or pivot table, this setting is required.
    *
-   * Table specifies the name of the table or pivot table, this setting is
-   * required.
-   *
    * Cell specifies the left top cell coordinates the position for inserting the
    * slicer, this setting is required.
+   *
+   * TableSheet specifies the worksheet name of the table or pivot table, this
+   * setting is required.
+   *
+   * TableName specifies the name of the table or pivot table, this setting is
+   * required.
    *
    * Caption specifies the caption of the slicer, this setting is optional.
    *
@@ -269,8 +272,9 @@ declare module 'excelize-wasm' {
    */
   export type SlicerOptions = {
     Name:           string;
-    Table:          string;
     Cell:           string;
+    TableSheet:     string;
+    TableName:      string;
     Caption?:       string;
     Macro?:         string;
     Width?:         number;
@@ -1162,7 +1166,7 @@ declare module 'excelize-wasm' {
 
     /**
      * AddSlicer function inserts a slicer by giving the worksheet name and
-     * slicer settings. The pivot table slicer is not supported currently.
+     * slicer settings.
      * @param sheet The worksheet name
      * @param opts The slicer options
      */

@@ -1184,7 +1184,7 @@ func AddShape(f *excelize.File) func(this js.Value, args []js.Value) interface{}
 }
 
 // AddSlicer function inserts a slicer by giving the worksheet name and slicer
-// settings. The pivot table slicer is not supported currently.
+// settings.
 func AddSlicer(f *excelize.File) func(this js.Value, args []js.Value) interface{} {
 	return func(this js.Value, args []js.Value) interface{} {
 		ret := map[string]interface{}{"error": nil}
