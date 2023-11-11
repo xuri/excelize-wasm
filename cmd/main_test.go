@@ -1397,7 +1397,15 @@ func TestNewConditionalStyle(t *testing.T) {
 		}),
 	)
 	assert.True(t, ret.Get("error").IsNull(), ret.Get("error").String())
-	assert.Equal(t, 0, ret.Get("style").Int())
+	styleID := ret.Get("style")
+	assert.Equal(t, 0, styleID.Int())
+
+	ret = f.(js.Value).Call("GetConditionalStyle", styleID)
+	assert.True(t, ret.Get("error").IsNull())
+	assert.Equal(t, "pattern", ret.Get("style").Get("Fill").Get("Type").String())
+
+	ret = f.(js.Value).Call("GetConditionalStyle", js.ValueOf(2))
+	assert.Equal(t, "invalid style ID 2", ret.Get("error").String())
 
 	ret = f.(js.Value).Call("NewConditionalStyle",
 		js.ValueOf(map[string]interface{}{
@@ -1411,9 +1419,15 @@ func TestNewConditionalStyle(t *testing.T) {
 	ret = f.(js.Value).Call("NewConditionalStyle")
 	assert.EqualError(t, errArgNum, ret.Get("error").String())
 
+	ret = f.(js.Value).Call("GetConditionalStyle")
+	assert.EqualError(t, errArgNum, ret.Get("error").String())
+
 	ret = f.(js.Value).Call("NewConditionalStyle", js.ValueOf(map[string]interface{}{"Fill": 1}))
 	assert.Equal(t, errArgType.Error(), ret.Get("error").String())
 	assert.Equal(t, 0, ret.Get("style").Int())
+
+	ret = f.(js.Value).Call("GetConditionalStyle", js.ValueOf(true))
+	assert.EqualError(t, errArgType, ret.Get("error").String())
 }
 
 func TestNewSheet(t *testing.T) {

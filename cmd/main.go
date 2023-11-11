@@ -309,6 +309,7 @@ func regInteropFunc(f *excelize.File, fn map[string]interface{}) interface{} {
 		"GetColVisible":               GetColVisible(f),
 		"GetColWidth":                 GetColWidth(f),
 		"GetComments":                 GetComments(f),
+		"GetConditionalStyle":         GetConditionalStyle(f),
 		"GetDefaultFont":              GetDefaultFont(f),
 		"GetDefinedName":              GetDefinedName(f),
 		"GetDocProps":                 GetDocProps(f),
@@ -1878,6 +1879,30 @@ func GetComments(f *excelize.File) func(this js.Value, args []js.Value) interfac
 				x = append(x, jsVal)
 				ret["comments"] = x
 			}
+		}
+		return js.ValueOf(ret)
+	}
+}
+
+// GetConditionalStyle returns conditional format style definition by specified
+// style index.
+func GetConditionalStyle(f *excelize.File) func(this js.Value, args []js.Value) interface{} {
+	return func(this js.Value, args []js.Value) interface{} {
+		ret := map[string]interface{}{"style": map[string]interface{}{}, "error": nil}
+		if err := prepareArgs(args, []argsRule{
+			{types: []js.Type{js.TypeNumber}},
+		}); err != nil {
+			ret["error"] = err.Error()
+			return js.ValueOf(ret)
+		}
+		style, err := f.GetConditionalStyle(args[0].Int())
+		if err != nil {
+			ret["error"] = err.Error()
+			return js.ValueOf(ret)
+		}
+		if jsVal, err := goValueToJS(reflect.ValueOf(*style),
+			reflect.TypeOf(excelize.Style{})); err == nil {
+			ret["style"] = jsVal
 		}
 		return js.ValueOf(ret)
 	}
