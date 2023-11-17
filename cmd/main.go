@@ -318,6 +318,7 @@ func regInteropFunc(f *excelize.File, fn map[string]interface{}) interface{} {
 		"GetPageMargins":              GetPageMargins(f),
 		"GetPanes":                    GetPanes(f),
 		"GetPictures":                 GetPictures(f),
+		"GetPictureCells":             GetPictureCells(f),
 		"GetPivotTables":              GetPivotTables(f),
 		"GetRowHeight":                GetRowHeight(f),
 		"GetRowOutlineLevel":          GetRowOutlineLevel(f),
@@ -358,6 +359,7 @@ func regInteropFunc(f *excelize.File, fn map[string]interface{}) interface{} {
 		"SetCellRichText":             SetCellRichText(f),
 		"SetCellStr":                  SetCellStr(f),
 		"SetCellStyle":                SetCellStyle(f),
+		"SetCellUint":                 SetCellInt(f),
 		"SetCellValue":                SetCellValue(f),
 		"SetColOutlineLevel":          SetColOutlineLevel(f),
 		"SetColStyle":                 SetColStyle(f),
@@ -2092,6 +2094,29 @@ func GetPictures(f *excelize.File) func(this js.Value, args []js.Value) interfac
 				ret["pictures"] = x
 			}
 		}
+		return js.ValueOf(ret)
+	}
+}
+
+// GetPictureCells returns all picture cell references in a worksheet by a
+// specific worksheet name.
+func GetPictureCells(f *excelize.File) func(this js.Value, args []js.Value) interface{} {
+	return func(this js.Value, args []js.Value) interface{} {
+		ret := map[string]interface{}{"cells": js.ValueOf([]interface{}{}), "error": nil}
+		if err := prepareArgs(args, []argsRule{{types: []js.Type{js.TypeString}}}); err != nil {
+			ret["error"] = err.Error()
+			return js.ValueOf(ret)
+		}
+		cells, err := f.GetPictureCells(args[0].String())
+		if err != nil {
+			ret["error"] = err.Error()
+			return js.ValueOf(ret)
+		}
+		expected := make([]interface{}, len(cells))
+		for i, name := range cells {
+			expected[i] = name
+		}
+		ret["cells"] = expected
 		return js.ValueOf(ret)
 	}
 }

@@ -517,6 +517,11 @@ func TestAddPictureFromBytes(t *testing.T) {
 	assert.Equal(t, 1, ret.Get("pictures").Length())
 	assert.Equal(t, uint8Array.Length(), ret.Get("pictures").Index(0).Get("File").Length())
 
+	ret = f.(js.Value).Call("GetPictureCells", js.ValueOf("Sheet1"))
+	assert.True(t, ret.Get("error").IsNull(), ret.Get("error").String())
+	assert.Equal(t, 1, ret.Get("cells").Length())
+	assert.Equal(t, "A1", ret.Get("cells").Index(0).String())
+
 	ret = f.(js.Value).Call("AddPictureFromBytes")
 	assert.EqualError(t, errArgNum, ret.Get("error").String())
 
@@ -531,13 +536,22 @@ func TestAddPictureFromBytes(t *testing.T) {
 	)
 	assert.EqualError(t, errArgType, ret.Get("error").String())
 
+	ret = f.(js.Value).Call("GetPictureCells", js.ValueOf(true))
+	assert.EqualError(t, errArgType, ret.Get("error").String())
+
 	ret = f.(js.Value).Call("AddPictureFromBytes", js.ValueOf("Sheet1"), js.ValueOf("A1"), js.ValueOf(map[string]interface{}{"Extension": "png", "File": uint8Array, "Format": map[string]interface{}{}}))
 	assert.EqualError(t, excelize.ErrImgExt, ret.Get("error").String())
 
 	ret = f.(js.Value).Call("GetPictures", js.ValueOf("Sheet1"))
 	assert.EqualError(t, errArgNum, ret.Get("error").String())
 
+	ret = f.(js.Value).Call("GetPictureCells")
+	assert.EqualError(t, errArgNum, ret.Get("error").String())
+
 	ret = f.(js.Value).Call("GetPictures", js.ValueOf("SheetN"), js.ValueOf("A1"))
+	assert.Equal(t, "sheet SheetN does not exist", ret.Get("error").String())
+
+	ret = f.(js.Value).Call("GetPictureCells", js.ValueOf("SheetN"))
 	assert.Equal(t, "sheet SheetN does not exist", ret.Get("error").String())
 }
 

@@ -634,8 +634,10 @@ declare module 'excelize-wasm' {
   export type Comment = {
     Author?:    string;
     AuthorID?:  number;
-    Cell?:      string;
+    Cell:       string;
     Text?:      string;
+    Width?:     number;
+    Height?:    number;
     Paragraph?: RichTextRun[];
   };
 
@@ -1024,9 +1026,32 @@ declare module 'excelize-wasm' {
     AddChartSheet(sheet: string, chart: Chart, combo?: Chart): { error: string | null }
 
     /**
-     * AddComment provides the method to add comment in a sheet by given
-     * worksheet index, cell and format set (such as author and text). Note
-     * that the max author length is 255 and the max text length is 32512.
+     * AddComment provides the method to add comments in a sheet by giving the
+     * worksheet name, cell reference, and format set (such as author and text).
+     * Note that the maximum author name length is 255 and the max text length
+     * is 32512. For example, add a rich-text comment with a specified comments
+     * box size in Sheet1!A5:
+     *
+     * ```typescript
+     *	const { error } = f.AddComment("Sheet1", {
+     *	    Cell:   "A5",
+     *	    Author: "Excelize",
+     *	    Height: 40,
+     *	    Width:  180,
+     *	    Paragraph: [
+     *	        {
+     *	            Font: {
+     *	                Bold: true,
+     *	            },
+     *	            Text: "Excelize: ",
+     *	        },
+     *	        {
+     *	            Text: "This is a comment.",
+     *	        },
+     *	    ],
+     *	})
+     * ```
+     *
      * @param sheet The worksheet name
      * @param comment The comment options
      */
@@ -1504,6 +1529,13 @@ declare module 'excelize-wasm' {
      * @param cell The cell reference
      */
     GetPictures(sheet: string, cell: string): { pictures: Picture[], error: string | null }
+
+    /**
+     * GetPictureCells returns all picture cell references in a worksheet by a
+     * specific worksheet name.
+     * @param sheet The worksheet name
+     */
+    GetPictureCells(sheet: string): { cells: string[], error: string | null }
 
     /**
      * GetPivotTables returns all pivot table definitions in a worksheet by
@@ -2028,6 +2060,15 @@ declare module 'excelize-wasm' {
      * @param value The cell value to be write
      */
     SetCellInt(sheet: string, cell: string, value: number): { error: string | null }
+
+    /**
+     * SetCellUint provides a function to set uint type value of a cell by given
+     * worksheet name, cell reference and cell value.
+     * @param sheet The worksheet name
+     * @param cell The cell reference
+     * @param value The cell value to be write
+     */
+    SetCellUint(sheet: string, cell: string, value: number): { error: string | null }
 
     /**
      * SetCellRichText provides a function to set cell with rich text by given
