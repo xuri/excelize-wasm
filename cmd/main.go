@@ -267,6 +267,13 @@ func regConstants() {
 	} {
 		js.Global().Get("excelize").Set(name, constant)
 	}
+	for name, constant := range map[string]int{
+		"ChartLineSolid":     int(excelize.ChartLineSolid),
+		"ChartLineNone":      int(excelize.ChartLineNone),
+		"ChartLineAutomatic": int(excelize.ChartLineAutomatic),
+	} {
+		js.Global().Get("excelize").Set(name, constant)
+	}
 }
 
 // regInteropFunc register all exported JavaScript functions.
@@ -3437,7 +3444,9 @@ func SetPanes(f *excelize.File) func(this js.Value, args []js.Value) interface{}
 	}
 }
 
-// SetRowHeight provides a function to set the height of a single row.
+// SetRowHeight provides a function to set the height of a single row. If the
+// value of height is 0, will hide the specified row, if the value of height is
+// -1, will unset the custom row height.
 func SetRowHeight(f *excelize.File) func(this js.Value, args []js.Value) interface{} {
 	return func(this js.Value, args []js.Value) interface{} {
 		ret := map[string]interface{}{"error": nil}

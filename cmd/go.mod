@@ -5,7 +5,7 @@ go 1.16
 require (
 	github.com/stretchr/testify v1.8.1
 	github.com/xuri/efp v0.0.0-20231025114914-d1ff6096ae53 // indirect
-	github.com/xuri/excelize/v2 v2.8.1-0.20231110160405-c7acf4fafef4
+	github.com/xuri/excelize/v2 v2.8.1-0.20231202040309-18a160c5be82
 	golang.org/x/image v0.12.0
-	golang.org/x/net v0.18.0 // indirect
+	golang.org/x/net v0.19.0 // indirect
 )
