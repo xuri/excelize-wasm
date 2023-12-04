@@ -228,14 +228,14 @@ declare module 'excelize-wasm' {
    */
   export type Shape = {
     Cell:       string;
-    Macro?:     string;
     Type?:      string;
+    Macro?:     string;
     Width?:     number;
     Height?:    number;
     Format?:    GraphicOptions;
-    Color?:     ShapeColor;
+    Fill?:      Fill;
     Line?:      ShapeLine;
-    Paragraph?: ShapeParagraph[];
+    Paragraph?: RichTextRun[];
   };
 
   /**
@@ -285,27 +285,10 @@ declare module 'excelize-wasm' {
   };
 
   /**
-   * ShapeParagraph directly maps the format settings of the paragraph in the
-   * shape.
-   */
-  export type ShapeParagraph = {
-    Font?: Font;
-    Text?: string;
-  };
-
-  /**
-   * ShapeColor directly maps the color settings of the shape.
-   */
-  export type ShapeColor = {
-    Line?:   string;
-    Fill?:   string;
-    Effect?: string;
-  };
-
-  /**
    * ShapeLine directly maps the line settings of the shape.
    */
   export type ShapeLine = {
+    Color?: string;
     Width?: number;
   };
 
@@ -451,6 +434,15 @@ declare module 'excelize-wasm' {
   };
 
   /**
+   * ChartLineType defines the currently supported chart line types enumeration.
+   */
+  export enum ChartLineType {
+    ChartLineSolid,
+    ChartLineNone,
+    ChartLineAutomatic,
+  }
+
+  /**
    * ChartType defines the currently supported chart types enumeration.
    */
   export enum ChartType {
@@ -525,6 +517,7 @@ declare module 'excelize-wasm' {
     XAxis?:        ChartAxis;
     YAxis?:        ChartAxis;
     PlotArea?:     ChartPlotArea;
+    Border?:       ChartLine;
     ShowBlanksAs?: string;
     HoleSize?:     number;
   };
@@ -549,7 +542,7 @@ declare module 'excelize-wasm' {
    * ChartLine directly maps the format settings of the chart line.
    */
   export type ChartLine = {
-    Color?:  string
+    Type?:   ChartLineType;
     Smooth?: boolean;
     Width?:  number;
   };
@@ -2652,7 +2645,9 @@ declare module 'excelize-wasm' {
     SetPanes(sheet: string, panes: Panes): { error: string | null }
 
     /**
-     * SetRowHeight provides a function to set the height of a single row.
+     * SetRowHeight provides a function to set the height of a single row. If
+     * the value of height is 0, will hide the specified row, if the value of
+     * height is -1, will unset the custom row height.
      * @param sheet The worksheet name
      * @param row The row number
      * @param height The height of the row
@@ -2906,5 +2901,8 @@ declare module 'excelize-wasm' {
     WireframeContour:            typeof ChartType.WireframeContour;
     Bubble:                      typeof ChartType.Bubble;
     Bubble3D:                    typeof ChartType.Bubble3D;
+    ChartLineSolid:              typeof ChartLineType.ChartLineSolid;
+    ChartLineNone:               typeof ChartLineType.ChartLineNone;
+    ChartLineAutomatic:          typeof ChartLineType.ChartLineAutomatic;
   }>;
 }
