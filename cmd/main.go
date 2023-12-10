@@ -321,6 +321,7 @@ func regInteropFunc(f *excelize.File, fn map[string]interface{}) interface{} {
 		"GetDefinedName":              GetDefinedName(f),
 		"GetDocProps":                 GetDocProps(f),
 		"GetFormControls":             GetFormControls(f),
+		"GetHeaderFooter":             GetHeaderFooter(f),
 		"GetPageLayout":               GetPageLayout(f),
 		"GetPageMargins":              GetPageMargins(f),
 		"GetPanes":                    GetPanes(f),
@@ -2000,6 +2001,30 @@ func GetFormControls(f *excelize.File) func(this js.Value, args []js.Value) inte
 				x = append(x, jsVal)
 				ret["formControls"] = x
 			}
+		}
+		return js.ValueOf(ret)
+	}
+}
+
+// GetHeaderFooter provides a function to get worksheet header and footer by
+// given worksheet name.
+func GetHeaderFooter(f *excelize.File) func(this js.Value, args []js.Value) interface{} {
+	return func(this js.Value, args []js.Value) interface{} {
+		ret := map[string]interface{}{"opts": map[string]interface{}{}, "error": nil}
+		if err := prepareArgs(args, []argsRule{
+			{types: []js.Type{js.TypeString}},
+		}); err != nil {
+			ret["error"] = err.Error()
+			return js.ValueOf(ret)
+		}
+		opts, err := f.GetHeaderFooter(args[0].String())
+		if err != nil {
+			ret["error"] = err.Error()
+			return js.ValueOf(ret)
+		}
+		if jsVal, err := goValueToJS(reflect.ValueOf(*opts),
+			reflect.TypeOf(excelize.HeaderFooterOptions{})); err == nil {
+			ret["opts"] = jsVal
 		}
 		return js.ValueOf(ret)
 	}

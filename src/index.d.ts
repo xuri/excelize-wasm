@@ -1503,6 +1503,13 @@ declare module 'excelize-wasm' {
     GetFormControls(sheet: string): { formControls: FormControl[], error: string | null }
 
     /**
+     * GetHeaderFooter provides a function to get worksheet header and footer by
+     * given worksheet name.
+     * @param sheet The worksheet name
+     */
+    GetHeaderFooter(sheet: string): { opts: HeaderFooterOptions, error: string | null }
+
+    /**
      * GetPageLayout provides a function to gets worksheet page layout.
      * @param sheet The worksheet name
      */
