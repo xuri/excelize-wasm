@@ -274,6 +274,20 @@ func regConstants() {
 	} {
 		js.Global().Get("excelize").Set(name, constant)
 	}
+	for name, constant := range map[string]int{
+		"ChartDataLabelsPositionUnset":      int(excelize.ChartDataLabelsPositionUnset),
+		"ChartDataLabelsPositionBestFit":    int(excelize.ChartDataLabelsPositionBestFit),
+		"ChartDataLabelsPositionBelow":      int(excelize.ChartDataLabelsPositionBelow),
+		"ChartDataLabelsPositionCenter":     int(excelize.ChartDataLabelsPositionCenter),
+		"ChartDataLabelsPositionInsideBase": int(excelize.ChartDataLabelsPositionInsideBase),
+		"ChartDataLabelsPositionInsideEnd":  int(excelize.ChartDataLabelsPositionInsideEnd),
+		"ChartDataLabelsPositionLeft":       int(excelize.ChartDataLabelsPositionLeft),
+		"ChartDataLabelsPositionOutsideEnd": int(excelize.ChartDataLabelsPositionOutsideEnd),
+		"ChartDataLabelsPositionRight":      int(excelize.ChartDataLabelsPositionRight),
+		"ChartDataLabelsPositionAbove":      int(excelize.ChartDataLabelsPositionAbove),
+	} {
+		js.Global().Get("excelize").Set(name, constant)
+	}
 }
 
 // regInteropFunc register all exported JavaScript functions.

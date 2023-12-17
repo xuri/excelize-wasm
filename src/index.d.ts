@@ -81,8 +81,8 @@ declare module 'excelize-wasm' {
    *
    * LongTimePattern specifies the long time number format code.
    *
-   * CultureInfo specifies the country code for applying built-in language number
-   * format code these effect by the system's local language settings.
+   * CultureInfo specifies the country code for applying built-in language
+   * number format code these effect by the system's local language settings.
    */
   export type Options = {
     MaxCalcIterations?: number;
@@ -425,12 +425,14 @@ declare module 'excelize-wasm' {
    * ChartPlotArea directly maps the format settings of the plot area.
    */
   export type ChartPlotArea = {
-    ShowBubbleSize?:  boolean;
-    ShowCatName?:     boolean;
-    ShowLeaderLines?: boolean;
-    ShowPercent?:     boolean;
-    ShowSerName?:     boolean;
-    ShowVal?:         boolean;
+    SecondPlotValues?: number;
+    ShowBubbleSize?:   boolean;
+    ShowCatName?:      boolean;
+    ShowLeaderLines?:  boolean;
+    ShowPercent?:      boolean;
+    ShowSerName?:      boolean;
+    ShowVal?:          boolean;
+    NumFmt?:           ChartNumFmt;
   };
 
   /**
@@ -504,6 +506,22 @@ declare module 'excelize-wasm' {
   }
 
   /**
+   * ChartDataLabelPositionType is the type of chart data labels position.
+   */
+  export enum ChartDataLabelPositionType {
+    ChartDataLabelsPositionUnset,
+    ChartDataLabelsPositionBestFit,
+    ChartDataLabelsPositionBelow,
+    ChartDataLabelsPositionCenter,
+    ChartDataLabelsPositionInsideBase,
+    ChartDataLabelsPositionInsideEnd,
+    ChartDataLabelsPositionLeft,
+    ChartDataLabelsPositionOutsideEnd,
+    ChartDataLabelsPositionRight,
+    ChartDataLabelsPositionAbove,
+  }
+
+  /**
    * Chart directly maps the format settings of the chart.
    */
   export type Chart = {
@@ -519,6 +537,7 @@ declare module 'excelize-wasm' {
     PlotArea?:     ChartPlotArea;
     Border?:       ChartLine;
     ShowBlanksAs?: string;
+    BubbleSize?:   number;
     HoleSize?:     number;
   };
 
@@ -551,11 +570,12 @@ declare module 'excelize-wasm' {
    * ChartSeries directly maps the format settings of the chart series.
    */
   export type ChartSeries = {
-    Name?:       string;
-    Categories?: string;
-    Values?:     string;
-    Line?:       ChartLine;
-    Marker?:     ChartMarker;
+    Name?:              string;
+    Categories?:        string;
+    Values?:            string;
+    Line?:              ChartLine;
+    Marker?:            ChartMarker;
+    DataLabelPosition?: ChartDataLabelPositionType;
   };
 
   /**
@@ -997,7 +1017,475 @@ declare module 'excelize-wasm' {
     /**
      * AddChart provides the method to add chart in a sheet by given chart
      * format set (such as offset, scale, aspect ratio setting and print
-     * settings) and properties set.
+     * settings) and properties set. For example, create 3D clustered column
+     * chart with data Sheet1!$E$1:$L$15:
+     *
+     * ```typescript
+     *	const { init } = require('excelize-wasm');
+     *	const fs = require('fs');
+     *
+     *	init('./node_modules/excelize-wasm/excelize.wasm.gz').then((excelize) => {
+     *	  const f = excelize.NewFile();
+     *	  [
+     *	    [null, 'Apple', 'Orange', 'Pear'],
+     *	    ['Small', 2, 3, 3],
+     *	    ['Normal', 5, 2, 4],
+     *	    ['Large', 6, 7, 8],
+     *	  ].forEach((row, idx) => {
+     *	    const ret1 = excelize.CoordinatesToCellName(1, idx + 1);
+     *	    if (ret1.error) {
+     *	      console.log(ret1.error);
+     *	      return;
+     *	    }
+     *	    const res2 = f.SetSheetRow('Sheet1', ret1.cell, row);
+     *	    if (res2.error) {
+     *	      console.log(res2.error);
+     *	      return;
+     *	    }
+     *	  });
+     *	  const ret3 = f.AddChart('Sheet1', 'E1', {
+     *	    Type: excelize.Col3DClustered,
+     *	    Series: [
+     *	      {
+     *	        Name: 'Sheet1!$A$2',
+     *	        Categories: 'Sheet1!$B$1:$D$1',
+     *	        Values: 'Sheet1!$B$2:$D$2',
+     *	      },
+     *	      {
+     *	        Name: 'Sheet1!$A$3',
+     *	        Categories: 'Sheet1!$B$1:$D$1',
+     *	        Values: 'Sheet1!$B$3:$D$3',
+     *	      },
+     *	      {
+     *	        Name: 'Sheet1!$A$4',
+     *	        Categories: 'Sheet1!$B$1:$D$1',
+     *	        Values: 'Sheet1!$B$4:$D$4',
+     *	      },
+     *	    ],
+     *	    Title: [{
+     *	      Text: 'Fruit 3D Clustered Column Chart',
+     *	    }],
+     *	  });
+     *	  if (ret3.error) {
+     *	    console.log(ret3.error);
+     *	    return;
+     *	  }
+     *	  // Save spreadsheet by the given path.
+     *	  const { buffer, error } = f.WriteToBuffer();
+     *	  if (error) {
+     *	    console.log(error);
+     *	    return;
+     *	  }
+     *	  fs.writeFile('Book1.xlsx', buffer, 'binary', (error) => {
+     *	    if (error) {
+     *	      console.log(error);
+     *	    }
+     *	  });
+     *	});
+     * ```
+     *
+     * The following shows the type of chart supported by excelize:
+     *
+     *       ID | Enumeration                 | Chart
+     *      ----+-----------------------------+------------------------------
+     *       0  | Area                        | 2D area chart
+     *       1  | AreaStacked                 | 2D stacked area chart
+     *       2  | AreaPercentStacked          | 2D 100% stacked area chart
+     *       3  | Area3D                      | 3D area chart
+     *       4  | Area3DStacked               | 3D stacked area chart
+     *       5  | Area3DPercentStacked        | 3D 100% stacked area chart
+     *       6  | Bar                         | 2D clustered bar chart
+     *       7  | BarStacked                  | 2D stacked bar chart
+     *       8  | BarPercentStacked           | 2D 100% stacked bar chart
+     *       9  | Bar3DClustered              | 3D clustered bar chart
+     *       10 | Bar3DStacked                | 3D stacked bar chart
+     *       11 | Bar3DPercentStacked         | 3D 100% stacked bar chart
+     *       12 | Bar3DConeClustered          | 3D cone clustered bar chart
+     *       13 | Bar3DConeStacked            | 3D cone stacked bar chart
+     *       14 | Bar3DConePercentStacked     | 3D cone percent bar chart
+     *       15 | Bar3DPyramidClustered       | 3D pyramid clustered bar chart
+     *       16 | Bar3DPyramidStacked         | 3D pyramid stacked bar chart
+     *       17 | Bar3DPyramidPercentStacked  | 3D pyramid percent stacked bar chart
+     *       18 | Bar3DCylinderClustered      | 3D cylinder clustered bar chart
+     *       19 | Bar3DCylinderStacked        | 3D cylinder stacked bar chart
+     *       20 | Bar3DCylinderPercentStacked | 3D cylinder percent stacked bar chart
+     *       21 | Col                         | 2D clustered column chart
+     *       22 | ColStacked                  | 2D stacked column chart
+     *       23 | ColPercentStacked           | 2D 100% stacked column chart
+     *       24 | Col3DClustered              | 3D clustered column chart
+     *       25 | Col3D                       | 3D column chart
+     *       26 | Col3DStacked                | 3D stacked column chart
+     *       27 | Col3DPercentStacked         | 3D 100% stacked column chart
+     *       28 | Col3DCone                   | 3D cone column chart
+     *       29 | Col3DConeClustered          | 3D cone clustered column chart
+     *       30 | Col3DConeStacked            | 3D cone stacked column chart
+     *       31 | Col3DConePercentStacked     | 3D cone percent stacked column chart
+     *       32 | Col3DPyramid                | 3D pyramid column chart
+     *       33 | Col3DPyramidClustered       | 3D pyramid clustered column chart
+     *       34 | Col3DPyramidStacked         | 3D pyramid stacked column chart
+     *       35 | Col3DPyramidPercentStacked  | 3D pyramid percent stacked column chart
+     *       36 | Col3DCylinder               | 3D cylinder column chart
+     *       37 | Col3DCylinderClustered      | 3D cylinder clustered column chart
+     *       38 | Col3DCylinderStacked        | 3D cylinder stacked column chart
+     *       39 | Col3DCylinderPercentStacked | 3D cylinder percent stacked column chart
+     *       40 | Doughnut                    | doughnut chart
+     *       41 | Line                        | line chart
+     *       42 | Line3D                      | 3D line chart
+     *       43 | Pie                         | pie chart
+     *       44 | Pie3D                       | 3D pie chart
+     *       45 | PieOfPie                    | pie of pie chart
+     *       46 | BarOfPie                    | bar of pie chart
+     *       47 | Radar                       | radar chart
+     *       48 | Scatter                     | scatter chart
+     *       49 | Surface3D                   | 3D surface chart
+     *       50 | WireframeSurface3D          | 3D wireframe surface chart
+     *       51 | Contour                     | contour chart
+     *       52 | WireframeContour            | wireframe contour chart
+     *       53 | Bubble                      | bubble chart
+     *       54 | Bubble3D                    | 3D bubble chart
+     *
+     * In Excel a chart series is a collection of information that defines which
+     * data is plotted such as values, axis labels and formatting.
+     *
+     * The series options that can be set are:
+     *
+     *      Name
+     *      Categories
+     *      Values
+     *      Fill
+     *      Line
+     *      Marker
+     *      DataLabelPosition
+     *
+     * Name: Set the name for the series. The name is displayed in the chart
+     * legend and in the formula bar. The 'Name' property is optional and if it
+     * isn't supplied it will default to Series 1..n. The name can also be a
+     * formula such as Sheet1!$A$1
+     *
+     * Categories: This sets the chart category labels. The category is more or
+     * less the same as the X axis. In most chart types the 'Categories'
+     * property is optional and the chart will just assume a sequential series
+     * from 1..n.
+     *
+     * Values: This is the most important property of a series and is the only
+     * mandatory option for every chart object. This option links the chart with
+     * the worksheet data that it displays.
+     *
+     * Fill: This set the format for the data series fill.
+     *
+     * Line: This sets the line format of the line chart. The 'Line' property is
+     * optional and if it isn't supplied it will default style. The options that
+     * can be set are width and color. The range of width is 0.25pt - 999pt. If
+     * the value of width is outside the range, the default width of the line is
+     * 2pt.
+     *
+     * Marker: This sets the marker of the line chart and scatter chart. The
+     * range of optional field 'Size' is 2-72 (default value is 5). The
+     * enumeration value of optional field 'Symbol' are (default value is
+     * 'auto'):
+     *
+     *      circle
+     *      dash
+     *      diamond
+     *      dot
+     *      none
+     *      picture
+     *      plus
+     *      square
+     *      star
+     *      triangle
+     *      x
+     *      auto
+     *
+     * DataLabelPosition: This sets the position of the chart series data label.
+     *
+     * Set properties of the chart legend. The options that can be set are:
+     *
+     *      Position
+     *      ShowLegendKey
+     *
+     * Position: Set the position of the chart legend. The default legend
+     * position is bottom. The available positions are:
+     *
+     *      none
+     *      top
+     *      bottom
+     *      left
+     *      right
+     *      top_right
+     *
+     * ShowLegendKey: Set the legend keys shall be shown in data labels. The
+     * default value is false.
+     *
+     * Set properties of the chart title. The properties that can be set are:
+     *
+     *      Title
+     *
+     * Title: Set the name (title) for the chart. The name is displayed above
+     * the chart. The name can also be a formula such as Sheet1!$A$1 or a list
+     * with a sheet name. The name property is optional. The default is to have
+     * no chart title.
+     *
+     * Specifies how blank cells are plotted on the chart by 'ShowBlanksAs'. The
+     * default value is gap. The options that can be set are:
+     *
+     *      gap
+     *      span
+     *      zero
+     *
+     * gap: Specifies that blank values shall be left as a gap.
+     *
+     * span: Specifies that blank values shall be spanned with a line.
+     *
+     * zero: Specifies that blank values shall be treated as zero.
+     *
+     * Specifies that each data marker in the series has a different color by
+     * 'VaryColors'. The default value is true.
+     *
+     * Set chart offset, scale, aspect ratio setting and print settings by
+     * 'Format', same as function 'AddPicture'.
+     *
+     * Set the position of the chart plot area by 'PlotArea'. The properties
+     * that can be set are:
+     *
+     *      SecondPlotValues
+     *      ShowBubbleSize
+     *      ShowCatName
+     *      ShowLeaderLines
+     *      ShowPercent
+     *      ShowSerName
+     *      ShowVal
+     *      NumFmt
+     *
+     * SecondPlotValues: Specifies the values in second plot for the 'pieOfPie'
+     * and 'barOfPie' chart.
+     *
+     * ShowBubbleSize: Specifies the bubble size shall be shown in a data label.
+     * The 'ShowBubbleSize' property is optional. The default value is false.
+     *
+     * ShowCatName: Specifies that the category name shall be shown in the data
+     * label. The 'ShowCatName' property is optional. The default value is true.
+     *
+     * ShowLeaderLines: Specifies leader lines shall be shown for data labels.
+     * The 'ShowLeaderLines' property is optional. The default value is false.
+     *
+     * ShowPercent: Specifies that the percentage shall be shown in a data
+     * label. The 'ShowPercent' property is optional. The default value is
+     * false.
+     *
+     * ShowSerName: Specifies that the series name shall be shown in a data
+     * label. The 'ShowSerName' property is optional. The default value is
+     * false.
+     *
+     * ShowVal: Specifies that the value shall be shown in a data label.
+     * The 'ShowVal' property is optional. The default value is false.
+     *
+     * NumFmt: Specifies that if linked to source and set custom number format
+     * code for data labels. The 'NumFmt' property is optional. The default
+     * format code is 'General'.
+     *
+     * Set the primary horizontal and vertical axis options by 'XAxis' and
+     * 'YAxis'. The properties of 'XAxis' that can be set are:
+     *
+     *      None
+     *      MajorGridLines
+     *      MinorGridLines
+     *      TickLabelSkip
+     *      ReverseOrder
+     *      Maximum
+     *      Minimum
+     *      Font
+     *      NumFmt
+     *      Title
+     *
+     * The properties of 'YAxis' that can be set are:
+     *
+     *      None
+     *      MajorGridLines
+     *      MinorGridLines
+     *      MajorUnit
+     *      Secondary
+     *      ReverseOrder
+     *      Maximum
+     *      Minimum
+     *      Font
+     *      LogBase
+     *      NumFmt
+     *      Title
+     *
+     * None: Disable axes.
+     *
+     * MajorGridLines: Specifies major grid lines.
+     *
+     * MinorGridLines: Specifies minor grid lines.
+     *
+     * MajorUnit: Specifies the distance between major ticks. Shall contain a
+     * positive floating-point number. The 'MajorUnit' property is optional. The
+     * default value is auto.
+     *
+     * Secondary: Specifies the current series vertical axis as the secondary
+     * axis, this only works for the second and later chart in the combo chart.
+     * The default value is false.
+     *
+     * TickLabelSkip: Specifies how many tick labels to skip between label that
+     * is drawn. The 'TickLabelSkip' property is optional. The default value is
+     * auto.
+     *
+     * ReverseOrder: Specifies that the categories or values on reverse order
+     * (orientation of the chart). The 'ReverseOrder' property is optional. The
+     * default value is false.
+     *
+     * Maximum: Specifies that the fixed maximum, 0 is auto. The 'Maximum'
+     * property is optional. The default value is auto.
+     *
+     * Minimum: Specifies that the fixed minimum, 0 is auto. The 'Minimum'
+     * property is optional. The default value is auto.
+     *
+     * Font: Specifies that the font of the horizontal and vertical axis. The
+     * properties of font that can be set are:
+     *
+     *      Bold
+     *      Italic
+     *      Underline
+     *      Family
+     *      Size
+     *      Strike
+     *      Color
+     *      VertAlign
+     *
+     * LogBase: Specifies logarithmic scale base number of the vertical axis.
+     *
+     * NumFmt: Specifies that if linked to source and set custom number format
+     * code for axis. The 'NumFmt' property is optional. The default format code
+     * is 'General'.
+     *
+     * Title: Specifies that the primary horizontal or vertical axis title and
+     * resize chart. The 'Title' property is optional.
+     *
+     * Set chart size by 'Dimension' property. The 'Dimension' property is
+     * optional. The default width is 480, and height is 260.
+     *
+     * Set the bubble size in all data series for the bubble chart or 3D bubble
+     * chart by 'BubbleSizes' property. The 'BubbleSizes' property is optional.
+     * The default width is 100, and the value should be great than 0 and less
+     * or equal than 300.
+     *
+     * Set the doughnut hole size in all data series for the doughnut chart by
+     * 'HoleSize' property. The 'HoleSize' property is optional. The default
+     * width is 75, and the value should be great than 0 and less or equal than
+     * 90.
+     *
+     * combo: Specifies the create a chart that combines two or more chart types
+     * in a single chart. For example, create a clustered column - line chart
+     * with data Sheet1!$E$1:$L$15:
+     *
+     * ```typescript
+     *	const { init } = require('excelize-wasm');
+     *	const fs = require('fs');
+     *
+     *	init('./node_modules/excelize-wasm/excelize.wasm.gz').then((excelize) => {
+     *	  const f = excelize.NewFile();
+     *	  [
+     *	    [null, 'Apple', 'Orange', 'Pear'],
+     *	    ['Small', 2, 3, 3],
+     *	    ['Normal', 5, 2, 4],
+     *	    ['Large', 6, 7, 8],
+     *	  ].forEach((row, idx) => {
+     *	    const ret1 = excelize.CoordinatesToCellName(1, idx + 1);
+     *	    if (ret1.error) {
+     *	      console.log(ret1.error);
+     *	      return;
+     *	    }
+     *	    const res2 = f.SetSheetRow('Sheet1', ret1.cell, row);
+     *	    if (res2.error) {
+     *	      console.log(res2.error);
+     *	      return;
+     *	    }
+     *	  });
+     *	  const ret3 = f.AddChart('Sheet1', 'E1', {
+     *	    Type: excelize.Col,
+     *	    Series: [
+     *	      {
+     *	        Name: 'Sheet1!$A$2',
+     *	        Categories: 'Sheet1!$B$1:$D$1',
+     *	        Values: 'Sheet1!$B$2:$D$2',
+     *	      },
+     *	    ],
+     *	    Format: {
+     *	      ScaleX:          1,
+     *	      ScaleY:          1,
+     *	      OffsetX:         15,
+     *	      OffsetY:         10,
+     *	      PrintObject:     true,
+     *	      LockAspectRatio: false,
+     *	      Locked:          false,
+     *	    },
+     *	    Title: [{
+     *	      Text: 'Clustered Column - Line Chart',
+     *	    }],
+     *	    Legend: {
+     *	      Position:      'left',
+     *	      ShowLegendKey: false,
+     *	    },
+     *	    PlotArea: {
+     *	      ShowCatName:     false,
+     *	      ShowLeaderLines: false,
+     *	      ShowPercent:     true,
+     *	      ShowSerName:     true,
+     *	      ShowVal:         true,
+     *	    },
+     *	  }, {
+     *	    Type: excelize.Line,
+     *	    Series: [
+     *	      {
+     *	        Name: 'Sheet1!$A$4',
+     *	        Categories: 'Sheet1!$B$1:$D$1',
+     *	        Values: 'Sheet1!$B$4:$D$4',
+     *	        Marker: {
+     *	          Symbol: 'none',
+     *	          Size: 10,
+     *	        },
+     *	      },
+     *	    ],
+     *	    Format: {
+     *	      ScaleX:          1,
+     *	      ScaleY:          1,
+     *	      OffsetX:         15,
+     *	      OffsetY:         10,
+     *	      PrintObject:     true,
+     *	      LockAspectRatio: false,
+     *	      Locked:          false,
+     *	    },
+     *	    Legend: {
+     *	      Position:      'right',
+     *	      ShowLegendKey: false,
+     *	    },
+     *	    PlotArea: {
+     *	      ShowCatName:     false,
+     *	      ShowLeaderLines: false,
+     *	      ShowPercent:     true,
+     *	      ShowSerName:     true,
+     *	      ShowVal:         true,
+     *	    },
+     *	  });
+     *	  if (ret3.error) {
+     *	    console.log(ret3.error);
+     *	    return;
+     *	  }
+     *	  // Save spreadsheet by the given path.
+     *	  const { buffer, error } = f.WriteToBuffer();
+     *	  if (error) {
+     *	    console.log(error);
+     *	    return;
+     *	  }
+     *	  fs.writeFile('Book1.xlsx', buffer, 'binary', (error) => {
+     *	    if (error) {
+     *	      console.log(error);
+     *	    }
+     *	  });
+     *	});
+     * ```
+     *
      * @param sheet The worksheet name
      * @param cell The cell reference
      * @param chart The chart options
@@ -2831,85 +3319,95 @@ declare module 'excelize-wasm' {
    * @param path The compressed wasm archive path
    */
   export function init(path: string): Promise<{
-    CellNameToCoordinates:       typeof CellNameToCoordinates,
-    ColumnNameToNumber:          typeof ColumnNameToNumber,
-    ColumnNumberToName:          typeof ColumnNumberToName,
-    CoordinatesToCellName:       typeof CoordinatesToCellName,
-    HSLToRGB:                    typeof HSLToRGB,
-    JoinCellName:                typeof JoinCellName,
-    RGBToHSL:                    typeof RGBToHSL,
-    SplitCellName:               typeof SplitCellName,
-    ThemeColor:                  typeof ThemeColor,
-    NewFile:                     typeof NewFile;
-    OpenReader:                  typeof OpenReader;
-    CultureNameUnknown:          typeof CultureName.CultureNameUnknown;
-    CultureNameEnUS:             typeof CultureName.CultureNameEnUS;
-    CultureNameZhCN:             typeof CultureName.CultureNameZhCN;
-    FormControlNote:             typeof FormControlType.FormControlNote;
-    FormControlButton:           typeof FormControlType.FormControlButton;
-    FormControlOptionButton:     typeof FormControlType.FormControlOptionButton;
-    FormControlSpinButton:       typeof FormControlType.FormControlSpinButton;
-    FormControlCheckBox:         typeof FormControlType.FormControlCheckBox;
-    FormControlGroupBox:         typeof FormControlType.FormControlGroupBox;
-    FormControlLabel:            typeof FormControlType.FormControlLabel;
-    FormControlScrollBar:        typeof FormControlType.FormControlScrollBar;
-    Area:                        typeof ChartType.Area;
-    AreaStacked:                 typeof ChartType.AreaStacked;
-    AreaPercentStacked:          typeof ChartType.AreaPercentStacked;
-    Area3D:                      typeof ChartType.Area3D;
-    Area3DStacked:               typeof ChartType.Area3DStacked;
-    Area3DPercentStacked:        typeof ChartType.Area3DPercentStacked;
-    Bar:                         typeof ChartType.Bar;
-    BarStacked:                  typeof ChartType.BarStacked;
-    BarPercentStacked:           typeof ChartType.BarPercentStacked;
-    Bar3DClustered:              typeof ChartType.Bar3DClustered;
-    Bar3DStacked:                typeof ChartType.Bar3DStacked;
-    Bar3DPercentStacked:         typeof ChartType.Bar3DPercentStacked;
-    Bar3DConeClustered:          typeof ChartType.Bar3DConeClustered;
-    Bar3DConeStacked:            typeof ChartType.Bar3DConeStacked;
-    Bar3DConePercentStacked:     typeof ChartType.Bar3DConePercentStacked;
-    Bar3DPyramidClustered:       typeof ChartType.Bar3DPyramidClustered;
-    Bar3DPyramidStacked:         typeof ChartType.Bar3DPyramidStacked;
-    Bar3DPyramidPercentStacked:  typeof ChartType.Bar3DPyramidPercentStacked;
-    Bar3DCylinderClustered:      typeof ChartType.Bar3DCylinderClustered;
-    Bar3DCylinderStacked:        typeof ChartType.Bar3DCylinderStacked;
-    Bar3DCylinderPercentStacked: typeof ChartType.Bar3DCylinderPercentStacked;
-    Col:                         typeof ChartType.Col;
-    ColStacked:                  typeof ChartType.ColStacked;
-    ColPercentStacked:           typeof ChartType.ColPercentStacked;
-    Col3D:                       typeof ChartType.Col3D;
-    Col3DClustered:              typeof ChartType.Col3DClustered;
-    Col3DStacked:                typeof ChartType.Col3DStacked;
-    Col3DPercentStacked:         typeof ChartType.Col3DPercentStacked;
-    Col3DCone:                   typeof ChartType.Col3DCone;
-    Col3DConeClustered:          typeof ChartType.Col3DConeClustered;
-    Col3DConeStacked:            typeof ChartType.Col3DConeStacked;
-    Col3DConePercentStacked:     typeof ChartType.Col3DConePercentStacked;
-    Col3DPyramid:                typeof ChartType.Col3DPyramid;
-    Col3DPyramidClustered:       typeof ChartType.Col3DPyramidClustered;
-    Col3DPyramidStacked:         typeof ChartType.Col3DPyramidStacked;
-    Col3DPyramidPercentStacked:  typeof ChartType.Col3DPyramidPercentStacked;
-    Col3DCylinder:               typeof ChartType.Col3DCylinder;
-    Col3DCylinderClustered:      typeof ChartType.Col3DCylinderClustered;
-    Col3DCylinderStacked:        typeof ChartType.Col3DCylinderStacked;
-    Col3DCylinderPercentStacked: typeof ChartType.Col3DCylinderPercentStacked;
-    Doughnut:                    typeof ChartType.Doughnut;
-    Line:                        typeof ChartType.Line;
-    Line3D:                      typeof ChartType.Line3D;
-    Pie:                         typeof ChartType.Pie;
-    Pie3D:                       typeof ChartType.Pie3D;
-    PieOfPie:                    typeof ChartType.PieOfPie;
-    BarOfPie:                    typeof ChartType.BarOfPie;
-    Radar:                       typeof ChartType.Radar;
-    Scatter:                     typeof ChartType.Scatter;
-    Surface3D:                   typeof ChartType.Surface3D;
-    WireframeSurface3D:          typeof ChartType.WireframeSurface3D;
-    Contour:                     typeof ChartType.Contour;
-    WireframeContour:            typeof ChartType.WireframeContour;
-    Bubble:                      typeof ChartType.Bubble;
-    Bubble3D:                    typeof ChartType.Bubble3D;
-    ChartLineSolid:              typeof ChartLineType.ChartLineSolid;
-    ChartLineNone:               typeof ChartLineType.ChartLineNone;
-    ChartLineAutomatic:          typeof ChartLineType.ChartLineAutomatic;
+    CellNameToCoordinates:             typeof CellNameToCoordinates,
+    ColumnNameToNumber:                typeof ColumnNameToNumber,
+    ColumnNumberToName:                typeof ColumnNumberToName,
+    CoordinatesToCellName:             typeof CoordinatesToCellName,
+    HSLToRGB:                          typeof HSLToRGB,
+    JoinCellName:                      typeof JoinCellName,
+    RGBToHSL:                          typeof RGBToHSL,
+    SplitCellName:                     typeof SplitCellName,
+    ThemeColor:                        typeof ThemeColor,
+    NewFile:                           typeof NewFile;
+    OpenReader:                        typeof OpenReader;
+    CultureNameUnknown:                typeof CultureName.CultureNameUnknown;
+    CultureNameEnUS:                   typeof CultureName.CultureNameEnUS;
+    CultureNameZhCN:                   typeof CultureName.CultureNameZhCN;
+    FormControlNote:                   typeof FormControlType.FormControlNote;
+    FormControlButton:                 typeof FormControlType.FormControlButton;
+    FormControlOptionButton:           typeof FormControlType.FormControlOptionButton;
+    FormControlSpinButton:             typeof FormControlType.FormControlSpinButton;
+    FormControlCheckBox:               typeof FormControlType.FormControlCheckBox;
+    FormControlGroupBox:               typeof FormControlType.FormControlGroupBox;
+    FormControlLabel:                  typeof FormControlType.FormControlLabel;
+    FormControlScrollBar:              typeof FormControlType.FormControlScrollBar;
+    Area:                              typeof ChartType.Area;
+    AreaStacked:                       typeof ChartType.AreaStacked;
+    AreaPercentStacked:                typeof ChartType.AreaPercentStacked;
+    Area3D:                            typeof ChartType.Area3D;
+    Area3DStacked:                     typeof ChartType.Area3DStacked;
+    Area3DPercentStacked:              typeof ChartType.Area3DPercentStacked;
+    Bar:                               typeof ChartType.Bar;
+    BarStacked:                        typeof ChartType.BarStacked;
+    BarPercentStacked:                 typeof ChartType.BarPercentStacked;
+    Bar3DClustered:                    typeof ChartType.Bar3DClustered;
+    Bar3DStacked:                      typeof ChartType.Bar3DStacked;
+    Bar3DPercentStacked:               typeof ChartType.Bar3DPercentStacked;
+    Bar3DConeClustered:                typeof ChartType.Bar3DConeClustered;
+    Bar3DConeStacked:                  typeof ChartType.Bar3DConeStacked;
+    Bar3DConePercentStacked:           typeof ChartType.Bar3DConePercentStacked;
+    Bar3DPyramidClustered:             typeof ChartType.Bar3DPyramidClustered;
+    Bar3DPyramidStacked:               typeof ChartType.Bar3DPyramidStacked;
+    Bar3DPyramidPercentStacked:        typeof ChartType.Bar3DPyramidPercentStacked;
+    Bar3DCylinderClustered:            typeof ChartType.Bar3DCylinderClustered;
+    Bar3DCylinderStacked:              typeof ChartType.Bar3DCylinderStacked;
+    Bar3DCylinderPercentStacked:       typeof ChartType.Bar3DCylinderPercentStacked;
+    Col:                               typeof ChartType.Col;
+    ColStacked:                        typeof ChartType.ColStacked;
+    ColPercentStacked:                 typeof ChartType.ColPercentStacked;
+    Col3D:                             typeof ChartType.Col3D;
+    Col3DClustered:                    typeof ChartType.Col3DClustered;
+    Col3DStacked:                      typeof ChartType.Col3DStacked;
+    Col3DPercentStacked:               typeof ChartType.Col3DPercentStacked;
+    Col3DCone:                         typeof ChartType.Col3DCone;
+    Col3DConeClustered:                typeof ChartType.Col3DConeClustered;
+    Col3DConeStacked:                  typeof ChartType.Col3DConeStacked;
+    Col3DConePercentStacked:           typeof ChartType.Col3DConePercentStacked;
+    Col3DPyramid:                      typeof ChartType.Col3DPyramid;
+    Col3DPyramidClustered:             typeof ChartType.Col3DPyramidClustered;
+    Col3DPyramidStacked:               typeof ChartType.Col3DPyramidStacked;
+    Col3DPyramidPercentStacked:        typeof ChartType.Col3DPyramidPercentStacked;
+    Col3DCylinder:                     typeof ChartType.Col3DCylinder;
+    Col3DCylinderClustered:            typeof ChartType.Col3DCylinderClustered;
+    Col3DCylinderStacked:              typeof ChartType.Col3DCylinderStacked;
+    Col3DCylinderPercentStacked:       typeof ChartType.Col3DCylinderPercentStacked;
+    Doughnut:                          typeof ChartType.Doughnut;
+    Line:                              typeof ChartType.Line;
+    Line3D:                            typeof ChartType.Line3D;
+    Pie:                               typeof ChartType.Pie;
+    Pie3D:                             typeof ChartType.Pie3D;
+    PieOfPie:                          typeof ChartType.PieOfPie;
+    BarOfPie:                          typeof ChartType.BarOfPie;
+    Radar:                             typeof ChartType.Radar;
+    Scatter:                           typeof ChartType.Scatter;
+    Surface3D:                         typeof ChartType.Surface3D;
+    WireframeSurface3D:                typeof ChartType.WireframeSurface3D;
+    Contour:                           typeof ChartType.Contour;
+    WireframeContour:                  typeof ChartType.WireframeContour;
+    Bubble:                            typeof ChartType.Bubble;
+    Bubble3D:                          typeof ChartType.Bubble3D;
+    ChartLineSolid:                    typeof ChartLineType.ChartLineSolid;
+    ChartLineNone:                     typeof ChartLineType.ChartLineNone;
+    ChartLineAutomatic:                typeof ChartLineType.ChartLineAutomatic;
+    ChartDataLabelsPositionUnset:      typeof ChartDataLabelPositionType.ChartDataLabelsPositionUnset;
+    ChartDataLabelsPositionBestFit:    typeof ChartDataLabelPositionType.ChartDataLabelsPositionBestFit;
+    ChartDataLabelsPositionBelow:      typeof ChartDataLabelPositionType.ChartDataLabelsPositionBelow;
+    ChartDataLabelsPositionCenter:     typeof ChartDataLabelPositionType.ChartDataLabelsPositionCenter;
+    ChartDataLabelsPositionInsideBase: typeof ChartDataLabelPositionType.ChartDataLabelsPositionInsideBase;
+    ChartDataLabelsPositionInsideEnd:  typeof ChartDataLabelPositionType.ChartDataLabelsPositionInsideEnd;
+    ChartDataLabelsPositionLeft:       typeof ChartDataLabelPositionType.ChartDataLabelsPositionLeft;
+    ChartDataLabelsPositionOutsideEnd: typeof ChartDataLabelPositionType.ChartDataLabelsPositionOutsideEnd;
+    ChartDataLabelsPositionRight:      typeof ChartDataLabelPositionType.ChartDataLabelsPositionRight;
+    ChartDataLabelsPositionAbove:      typeof ChartDataLabelPositionType.ChartDataLabelsPositionAbove;
   }>;
 }
