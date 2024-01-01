@@ -573,6 +573,8 @@ declare module 'excelize-wasm' {
     Name?:              string;
     Categories?:        string;
     Values?:            string;
+    Sizes?:             string;
+    Fill?:              Fill;
     Line?:              ChartLine;
     Marker?:            ChartMarker;
     DataLabelPosition?: ChartDataLabelPositionType;
@@ -1171,7 +1173,11 @@ declare module 'excelize-wasm' {
      * mandatory option for every chart object. This option links the chart with
      * the worksheet data that it displays.
      *
-     * Fill: This set the format for the data series fill.
+     * Sizes: This sets the bubble size in a data series. The 'Sizes' property
+     * is optional and the default value was same with 'Values'.
+     *
+     * Fill: This set the format for the data series fill. The 'Fill' property
+     * is optional.
      *
      * Line: This sets the line format of the line chart. The 'Line' property is
      * optional and if it isn't supplied it will default style. The options that
@@ -2202,10 +2208,10 @@ declare module 'excelize-wasm' {
      *     |A8(x3,y4)      C8(x4,y4)|
      *     +------------------------+
      * @param sheet The worksheet name
-     * @param hCell The top-left cell reference
-     * @param vCell The right-bottom cell reference
+     * @param topLeftCell The top-left cell reference
+     * @param bottomRightCell The right-bottom cell reference
      */
-    MergeCell(sheet: string, hCell: string, vCell: string): { error: string | null }
+    MergeCell(sheet: string, topLeftCell: string, bottomRightCell: string): { error: string | null }
 
     /**
      * NewConditionalStyle provides a function to create style for conditional
@@ -2707,11 +2713,11 @@ declare module 'excelize-wasm' {
      * same range. SetCellStyle will overwrite the existing styles for the
      * cell, it won't append or merge style with existing styles.
      * @param sheet The worksheet name
-     * @param hCell The top-left cell reference
-     * @param vCell The right-bottom cell reference
+     * @param topLeftCell The top-left cell reference
+     * @param bottomRightCell The right-bottom cell reference
      * @param styleID The style ID
      */
-    SetCellStyle(sheet: string, hCell: string, vCell: string, styleID: number): { error: string | null }
+    SetCellStyle(sheet: string, topLeftCell: string, bottomRightCell: string, styleID: number): { error: string | null }
 
     /**
      * SetCellValue provides a function to set the value of a cell. The
@@ -3262,10 +3268,10 @@ declare module 'excelize-wasm' {
     /**
      * UnmergeCell provides a function to unmerge a given range reference.
      * @param sheet The worksheet name
-     * @param hCell The top-left cell reference
-     * @param vCell The right-bottom cell reference
+     * @param topLeftCell The top-left cell reference
+     * @param bottomRightCell The right-bottom cell reference
      */
-    UnmergeCell(sheet: string, hCell: string, vCell: string): { error: string | null }
+    UnmergeCell(sheet: string, topLeftCell: string, bottomRightCell: string): { error: string | null }
 
     /**
      * UnprotectSheet provides a function to remove protection for a sheet,
