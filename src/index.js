@@ -1,10 +1,11 @@
-'use strict';
+import * as fs from 'node:fs'
+import { randomFillSync } from'node:crypto'
 
 if (typeof window === 'undefined') {
-  const nodeCrypto = require("crypto");
+  // const nodeCrypto = require("crypto");
   global.crypto = {
     getRandomValues(b) {
-      nodeCrypto.randomFillSync(b);
+      randomFillSync(b);
     }
   };
   global.performance = {
@@ -570,7 +571,6 @@ export async function init(wasmPath) {
   var buffer;
   if (typeof window === 'undefined') {
     global.excelize = {};
-    const fs = require('fs');
     buffer = pako.ungzip(fs.readFileSync(wasmPath));
   } else {
     window.excelize = {};
