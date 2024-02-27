@@ -4,14 +4,17 @@
   "description": "A pure WebAssembly / Javascript port of Go Excelize library that allow you to write to and read from XLAM / XLSM / XLSX / XLTM / XLTX files",
   "author": "xuri <xuri.me@gmail.com>",
   "homepage": "https://xuri.me/excelize",
+  "scripts": {
+    "build": "rollup -c rollup.config.js"
+  },
   "bugs": {
     "url": "https://github.com/xuri/excelize-wasm/issues",
     "email": "xuri.me@gmail.com"
   },
   "license": "BSD-3-Clause",
   "type": "module",
-  "main": "main.cjs",
-  "module": "main.js",
+  "main": "./dist/main.cjs",
+  "module": "./dist/main.js",
   "exports": {
     "require": "./dist/main.cjs",
     "script": "./dist/index.js",
