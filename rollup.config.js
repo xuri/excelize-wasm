@@ -47,6 +47,7 @@ export default [
             format: 'cjs',
             generatedCode: 'es2015',
             sourcemap: false,
+            dynamicImportInCjs: false
         },
         external: ['path', 'fs'],
         plugins: [

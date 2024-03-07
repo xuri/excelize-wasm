@@ -1,10 +1,11 @@
-import * as fs from 'node:fs'
-import { randomFillSync } from'node:crypto'
+// import * as fs from 'node:fs'
+// import { randomFillSync } from'node:crypto'
 
 if (typeof window === 'undefined') {
   // const nodeCrypto = require("crypto");
   global.crypto = {
-    getRandomValues(b) {
+    async getRandomValues(b) {
+      const { randomFillSync } = await import('node:crypto')
       randomFillSync(b);
     }
   };
@@ -30,8 +31,7 @@ if (typeof window === 'undefined') {
         outputBuf += decoder.decode(buf);
         const nl = outputBuf.lastIndexOf("\n");
         if (nl != -1) {
-          console.log(outputBuf.substr(0, nl));
-          outputBuf = outputBuf.substr(nl + 1);
+          outputBuf = outputBuf.substring(nl + 1);
         }
         return buf.length;
       },
@@ -571,6 +571,7 @@ export async function init(wasmPath) {
   var buffer;
   if (typeof window === 'undefined') {
     global.excelize = {};
+    const fs = await import('node:fs')
     buffer = pako.ungzip(fs.readFileSync(wasmPath));
   } else {
     window.excelize = {};
