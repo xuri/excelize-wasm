@@ -1,5 +1,4 @@
 import commonjs from '@rollup/plugin-commonjs';
-import nodePolyfills from 'rollup-plugin-polyfill-node';
 import { nodeResolve } from '@rollup/plugin-node-resolve';
 import terser from '@rollup/plugin-terser';
 import pkg from './package.json' assert {type: 'json'};
@@ -18,7 +17,6 @@ export default [
         },
         plugins: [
             commonjs(),
-            nodePolyfills(),
             nodeResolve(),
             terser()
         ]
@@ -34,7 +32,6 @@ export default [
         },
         plugins: [
             commonjs(),
-            nodePolyfills(),
             nodeResolve(),
             terser()
         ]
