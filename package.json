@@ -13,12 +13,12 @@
   },
   "license": "BSD-3-Clause",
   "type": "module",
-  "main": "./dist/main.cjs",
-  "module": "./dist/main.js",
+  "main": "main.cjs",
+  "module": "main.js",
   "exports": {
-    "require": "./dist/main.cjs",
-    "script": "./dist/index.js",
-    "default": "./dist/main.js"
+    "require": "./main.cjs",
+    "script": "./index.js",
+    "default": "./main.js"
   },
   "files": [
     "excelize.wasm.gz",
