@@ -1,5 +1,5 @@
 name: Build
-on: 
+on:
   workflow_dispatch:
   workflow_call:
   pull_request:
@@ -10,7 +10,7 @@ jobs:
   test:
     strategy:
       matrix:
-        go-version: [1.20.x]
+        go-version: [1.22.x]
         os: [ubuntu-latest]
         targetplatform: [x64]
 
@@ -26,9 +26,10 @@ jobs:
       uses: actions/setup-go@v5
       with:
         go-version: ${{ matrix.go-version }}
+        cache: false
 
     - name: Checkout code
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4
 
     - name: Get dependencies
       working-directory: ./cmd
@@ -41,7 +42,9 @@ jobs:
         GOOS=js GOARCH=wasm GO111MODULE=on go test -exec="$(go env GOROOT)/misc/wasm/go_js_wasm_exec" -v ./... -coverprofile=coverage.txt -covermode=atomic
 
     - name: Codecov
-      uses: codecov/codecov-action@v3
+      uses: codecov/codecov-action@v4
+      env:
+        CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
       with:
         directory: ./cmd
         file: coverage.txt

@@ -1,10 +1,8 @@
-'use strict';
-
 if (typeof window === 'undefined') {
-  const nodeCrypto = require("crypto");
   global.crypto = {
-    getRandomValues(b) {
-      nodeCrypto.randomFillSync(b);
+    async getRandomValues(b) {
+      const { randomFillSync } = await import('crypto');
+      randomFillSync(b);
     }
   };
   global.performance = {
@@ -29,8 +27,7 @@ if (typeof window === 'undefined') {
         outputBuf += decoder.decode(buf);
         const nl = outputBuf.lastIndexOf("\n");
         if (nl != -1) {
-          console.log(outputBuf.substr(0, nl));
-          outputBuf = outputBuf.substr(nl + 1);
+          outputBuf = outputBuf.substring(nl + 1);
         }
         return buf.length;
       },
@@ -121,6 +118,10 @@ if (typeof window === 'undefined') {
       const setInt64 = (addr, v) => {
         this.mem.setUint32(addr + 0, v, true);
         this.mem.setUint32(addr + 4, Math.floor(v / 4294967296), true);
+      }
+
+      const setInt32 = (addr, v) => {
+        this.mem.setUint32(addr + 0, v, true);
       }
 
       const getInt64 = (addr) => {
@@ -216,7 +217,10 @@ if (typeof window === 'undefined') {
 
       const timeOrigin = Date.now() - performance.now();
       this.importObject = {
-        go: {
+        _gotest: {
+          add: (a, b) => a + b,
+        },
+        gojs: {
           // Go's SP does not change as long as no Go code is running. Some operations (e.g. calls, getters and setters)
           // may synchronously trigger a Go event handler. This makes Go code get executed in the middle of the imported
           // function. A goroutine can switch to a new stack if the current stack is too small (see morestack function).
@@ -279,7 +283,7 @@ if (typeof window === 'undefined') {
                   this._resume();
                 }
               },
-              getInt64(sp + 8) + 1, // setTimeout has been seen to fire up to 1 millisecond early
+              getInt64(sp + 8),
             ));
             this.mem.setInt32(sp + 16, id, true);
           },
@@ -570,7 +574,7 @@ export async function init(wasmPath) {
   var buffer;
   if (typeof window === 'undefined') {
     global.excelize = {};
-    const fs = require('fs');
+    const fs = await import('fs');
     buffer = pako.ungzip(fs.readFileSync(wasmPath));
   } else {
     window.excelize = {};
@@ -583,3 +587,4 @@ export async function init(wasmPath) {
   go.run(result.instance);
   return excelize;
 };
+
