@@ -1,7 +1,6 @@
 import commonjs from '@rollup/plugin-commonjs';
 import { nodeResolve } from '@rollup/plugin-node-resolve';
 import terser from '@rollup/plugin-terser';
-import pkg from './package.json' assert {type: 'json'};
 const input = 'src/index.js';
 
 export default [
@@ -9,7 +8,7 @@ export default [
         // Plain browser <script>
         input,
         output: {
-            file: pkg.exports.script,
+            file: './dist/index.js',
             format: 'iife',
             generatedCode: 'es2015',
             name: 'excelizeWASM',
@@ -24,7 +23,7 @@ export default [
         // ES6 module and <script type="module">
         input,
         output: {
-            file: pkg.exports.default,
+            file: './dist/main.js',
             format: 'esm',
             generatedCode: 'es2015',
             sourcemap: false,
@@ -38,7 +37,7 @@ export default [
         // CommonJS Node module
         input,
         output: {
-            file: pkg.exports.require,
+            file: './dist/main.cjs',
             format: 'cjs',
             generatedCode: 'es2015',
             sourcemap: false,
