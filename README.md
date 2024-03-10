@@ -29,7 +29,7 @@ Opera Mobile | &ge;64
 Samsung Internet | &ge;7.2
 UC Browser for Android | &ge;13.4
 QQ Browser | &ge;10.4
-Node.js | &ge;8.0.0
+Node.js | &ge;12.0.0
 Deno | &ge;1.0
 
 ## Basic Usage
