@@ -432,6 +432,7 @@ declare module 'excelize-wasm' {
     ShowPercent?:      boolean;
     ShowSerName?:      boolean;
     ShowVal?:          boolean;
+    Fill?:             Fill;
     NumFmt?:           ChartNumFmt;
   };
 
@@ -535,6 +536,7 @@ declare module 'excelize-wasm' {
     XAxis?:        ChartAxis;
     YAxis?:        ChartAxis;
     PlotArea?:     ChartPlotArea;
+    Fill?:         Fill;
     Border?:       ChartLine;
     ShowBlanksAs?: string;
     BubbleSize?:   number;
@@ -553,6 +555,7 @@ declare module 'excelize-wasm' {
    * ChartMarker directly maps the format settings of the chart marker.
    */
   export type ChartMarker = {
+    Fill?:   Fill;
     Symbol?: string;
     Size?:   number;
   };
@@ -1866,6 +1869,12 @@ declare module 'excelize-wasm' {
      * @return This is the document application properties.
      */
     GetAppProps(): { props?: AppProperties, error: string | null };
+
+    /**
+     * GetBaseColor returns the preferred hex color code by giving hex color
+     * code, indexed color, and theme color.
+     */
+    GetBaseColor(hexColor: string, indexedColor: number, themeColor?: number): { color?: string, error: string | null };
 
     /**
      * GetCellFormula provides a function to get formula from cell by given

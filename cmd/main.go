@@ -319,6 +319,7 @@ func regInteropFunc(f *excelize.File, fn map[string]interface{}) interface{} {
 		"DuplicateRowTo":              DuplicateRowTo(f),
 		"GetActiveSheetIndex":         GetActiveSheetIndex(f),
 		"GetAppProps":                 GetAppProps(f),
+		"GetBaseColor":                GetBaseColor(f),
 		"GetCellFormula":              GetCellFormula(f),
 		"GetCellHyperLink":            GetCellHyperLink(f),
 		"GetCellRichText":             GetCellRichText(f),
@@ -1626,6 +1627,29 @@ func GetAppProps(f *excelize.File) func(this js.Value, args []js.Value) interfac
 			p[s.Type().Field(i).Name] = s.Field(i).Interface()
 		}
 		ret["props"] = p
+		return js.ValueOf(ret)
+	}
+}
+
+// GetBaseColor returns the preferred hex color code by giving hex color code,
+// indexed color, and theme color.
+func GetBaseColor(f *excelize.File) func(this js.Value, args []js.Value) interface{} {
+	return func(this js.Value, args []js.Value) interface{} {
+		ret := map[string]interface{}{"color": "", "error": nil}
+		err := prepareArgs(args, []argsRule{
+			{types: []js.Type{js.TypeString}},
+			{types: []js.Type{js.TypeNumber}},
+			{types: []js.Type{js.TypeNumber}, opts: true},
+		})
+		if err != nil {
+			ret["error"] = err.Error()
+			return js.ValueOf(ret)
+		}
+		if len(args) == 3 {
+			themeColor := args[2].Int()
+			ret["color"] = f.GetBaseColor(args[0].String(), args[1].Int(), &themeColor)
+		}
+		ret["color"] = f.GetBaseColor(args[0].String(), args[1].Int(), nil)
 		return js.ValueOf(ret)
 	}
 }

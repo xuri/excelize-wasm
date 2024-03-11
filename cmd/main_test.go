@@ -977,6 +977,25 @@ func TestGetActiveSheetIndex(t *testing.T) {
 	assert.Equal(t, 0, ret.Get("index").Int())
 }
 
+func TestGetBaseColor(t *testing.T) {
+	f := NewFile(js.Value{}, []js.Value{})
+	assert.True(t, f.(js.Value).Get("error").IsNull())
+
+	ret := f.(js.Value).Call("GetBaseColor", js.ValueOf("FFFFFF"), js.ValueOf(0))
+	assert.True(t, ret.Get("error").IsNull())
+	assert.Equal(t, "FFFFFF", ret.Get("color").String())
+
+	ret = f.(js.Value).Call("GetBaseColor", js.ValueOf("FFFFFF"), js.ValueOf(0), js.ValueOf(0))
+	assert.True(t, ret.Get("error").IsNull())
+	assert.Equal(t, "FFFFFF", ret.Get("color").String())
+
+	ret = f.(js.Value).Call("GetBaseColor")
+	assert.EqualError(t, errArgNum, ret.Get("error").String())
+
+	ret = f.(js.Value).Call("GetBaseColor", js.ValueOf("FFFFFF"), js.ValueOf(nil))
+	assert.Equal(t, errArgType.Error(), ret.Get("error").String())
+}
+
 func TestGetAppProps(t *testing.T) {
 	f := NewFile(js.Value{}, []js.Value{})
 	assert.True(t, f.(js.Value).Get("error").IsNull())
