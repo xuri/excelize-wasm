@@ -1,10 +1,12 @@
 if (typeof window === 'undefined') {
-  global.crypto = {
-    async getRandomValues(b) {
-      const { randomFillSync } = await import('crypto');
-      randomFillSync(b);
-    }
-  };
+  if (!global.crypto) {
+    global.crypto = {
+      async getRandomValues(b) {
+        const { randomFillSync } = await import('crypto');
+        randomFillSync(b);
+      }
+    };
+  }
   global.performance = {
     now() {
       const [sec, nsec] = process.hrtime();
