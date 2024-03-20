@@ -1,18 +1,16 @@
 if (typeof window === 'undefined') {
-  if (!global.crypto) {
-    global.crypto = {
-      async getRandomValues(b) {
-        const { randomFillSync } = await import('crypto');
-        randomFillSync(b);
-      }
-    };
-  }
-  global.performance = {
+  !global.crypto && (global.crypto = {
+    async getRandomValues(b) {
+      const { randomFillSync } = await import('crypto');
+      randomFillSync(b);
+    }
+  });
+  !global.performance && (global.performance = {
     now() {
       const [sec, nsec] = process.hrtime();
       return sec * 1000 + nsec / 1000000;
     }
-  };
+  });
 }
 (() => {
   const enosys = () => {
