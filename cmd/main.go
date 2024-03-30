@@ -190,13 +190,11 @@ func regFuncs() {
 // regConstants register all exported JavaScript functions on the Window ot Global.
 func regConstants() {
 	for name, constant := range map[string]int{
+		// CultureName enumeration
 		"CultureNameUnknown": int(excelize.CultureNameUnknown),
 		"CultureNameEnUS":    int(excelize.CultureNameEnUS),
 		"CultureNameZhCN":    int(excelize.CultureNameZhCN),
-	} {
-		js.Global().Get("excelize").Set(name, constant)
-	}
-	for name, constant := range map[string]int{
+		// FormControlType enumeration
 		"FormControlNote":         int(excelize.FormControlNote),
 		"FormControlButton":       int(excelize.FormControlButton),
 		"FormControlOptionButton": int(excelize.FormControlOptionButton),
@@ -205,10 +203,7 @@ func regConstants() {
 		"FormControlGroupBox":     int(excelize.FormControlGroupBox),
 		"FormControlLabel":        int(excelize.FormControlLabel),
 		"FormControlScrollBar":    int(excelize.FormControlScrollBar),
-	} {
-		js.Global().Get("excelize").Set(name, constant)
-	}
-	for name, constant := range map[string]int{
+		// ChartType enumeration
 		"Area":                        int(excelize.Area),
 		"AreaStacked":                 int(excelize.AreaStacked),
 		"AreaPercentStacked":          int(excelize.AreaPercentStacked),
@@ -264,17 +259,11 @@ func regConstants() {
 		"WireframeContour":            int(excelize.WireframeContour),
 		"Bubble":                      int(excelize.Bubble),
 		"Bubble3D":                    int(excelize.Bubble3D),
-	} {
-		js.Global().Get("excelize").Set(name, constant)
-	}
-	for name, constant := range map[string]int{
+		// ChartLineType enumeration
 		"ChartLineSolid":     int(excelize.ChartLineSolid),
 		"ChartLineNone":      int(excelize.ChartLineNone),
 		"ChartLineAutomatic": int(excelize.ChartLineAutomatic),
-	} {
-		js.Global().Get("excelize").Set(name, constant)
-	}
-	for name, constant := range map[string]int{
+		// ChartDataLabelPositionType enumeration
 		"ChartDataLabelsPositionUnset":      int(excelize.ChartDataLabelsPositionUnset),
 		"ChartDataLabelsPositionBestFit":    int(excelize.ChartDataLabelsPositionBestFit),
 		"ChartDataLabelsPositionBelow":      int(excelize.ChartDataLabelsPositionBelow),
@@ -285,6 +274,10 @@ func regConstants() {
 		"ChartDataLabelsPositionOutsideEnd": int(excelize.ChartDataLabelsPositionOutsideEnd),
 		"ChartDataLabelsPositionRight":      int(excelize.ChartDataLabelsPositionRight),
 		"ChartDataLabelsPositionAbove":      int(excelize.ChartDataLabelsPositionAbove),
+		// PictureInsertType enumeration
+		"PictureInsertTypePlaceOverCells": int(excelize.PictureInsertTypePlaceOverCells),
+		"PictureInsertTypePlaceInCell":    int(excelize.PictureInsertTypePlaceInCell),
+		"PictureInsertTypeDISPIMG":        int(excelize.PictureInsertTypeDISPIMG),
 	} {
 		js.Global().Get("excelize").Set(name, constant)
 	}

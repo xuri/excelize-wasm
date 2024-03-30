@@ -660,12 +660,23 @@ declare module 'excelize-wasm' {
   };
 
   /**
+   * PictureInsertType defines the type of the picture has been inserted into
+   * the worksheet.
+   */
+  export enum PictureInsertType {
+    PictureInsertTypePlaceOverCells,
+    PictureInsertTypePlaceInCell,
+    PictureInsertTypeDISPIMG,
+  }
+
+  /**
    * Picture maps the format settings of the picture.
    */
   export type Picture = {
     Extension: string;
     File: Uint8Array;
     Format: GraphicOptions;
+    InsertType: PictureInsertType;
   };
 
   /**
@@ -1556,9 +1567,13 @@ declare module 'excelize-wasm' {
     AddDataValidation(sheet: string, dv: DataValidation): { error: string | null }
 
     /**
-     * AddPictureFromBytes provides the method to add picture in a sheet by
-     * given picture format set (such as offset, scale, aspect ratio setting
-     * and print settings), file base name, extension name and file bytes.
+     * AddPictureFromBytes provides the method to add picture in a sheet by given
+     * picture format set (such as offset, scale, aspect ratio setting and print
+     * settings), file base name, extension name and file bytes, supported image
+     * types: EMF, EMZ, GIF, JPEG, JPG, PNG, SVG, TIF, TIFF, WMF, and WMZ. Note
+     * that this function only supports adding pictures placed over the cells
+     * currently, and doesn't support adding pictures placed in cells or
+     * creating the Kingsoft WPS Office embedded image cells.
      * @param sheet The worksheet name
      * @param cell The cell reference
      * @param name The picture name
@@ -2027,7 +2042,10 @@ declare module 'excelize-wasm' {
 
     /**
      * GetPictures provides a function to get picture meta info and raw content
-     * embed in spreadsheet by given worksheet and cell name.
+     * embed in spreadsheet by given worksheet and cell name. This function
+     * returns the image contents as []byte data types. This function is
+     * concurrency safe. Note that, this function doesn't support getting cell
+     * image inserted by IMAGE formula function currently.
      * @param sheet The worksheet name
      * @param cell The cell reference
      */
@@ -2035,7 +2053,8 @@ declare module 'excelize-wasm' {
 
     /**
      * GetPictureCells returns all picture cell references in a worksheet by a
-     * specific worksheet name.
+     * specific worksheet name. Note that, this function doesn't support getting
+     * cell image inserted by IMAGE formula function currently.
      * @param sheet The worksheet name
      */
     GetPictureCells(sheet: string): { cells: string[], error: string | null }
