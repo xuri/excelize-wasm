@@ -58,6 +58,10 @@ const fs = require('fs');
 
 init('./node_modules/excelize-wasm/excelize.wasm.gz').then((excelize) => {
   const f = excelize.NewFile();
+  if (f.error) {
+    console.log(f.error);
+    return;
+  }
   // 创建一个工作表
   const { index } = f.NewSheet('Sheet2');
   // 设置单元格的值
@@ -100,6 +104,10 @@ init('./node_modules/excelize-wasm/excelize.wasm.gz').then((excelize) => {
       .init('https://<服务器地址>/excelize-wasm/excelize.wasm.gz')
       .then((excelize) => {
         const f = excelize.NewFile();
+        if (f.error) {
+          console.log(f.error);
+          return;
+        }
         // 创建一个工作表
         const { index } = f.NewSheet('Sheet2');
         // 设置单元格的值
@@ -139,6 +147,10 @@ const fs = require('fs');
 
 init('./node_modules/excelize-wasm/excelize.wasm.gz').then((excelize) => {
   const f = excelize.OpenReader(fs.readFileSync('Book1.xlsx'));
+  if (f.error) {
+    console.log(f.error);
+    return;
+  }
   // 设置单元格的值
   const ret1 = f.GetCellValue('Sheet1', 'B2');
   if (ret1.error) {
@@ -173,6 +185,10 @@ const fs = require('fs');
 
 init('./node_modules/excelize-wasm/excelize.wasm.gz').then((excelize) => {
   const f = excelize.NewFile();
+  if (f.error) {
+    console.log(f.error);
+    return;
+  }
   [
     [null, 'Apple', 'Orange', 'Pear'],
     ['Small', 2, 3, 3],

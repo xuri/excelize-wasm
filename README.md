@@ -58,6 +58,10 @@ const fs = require('fs');
 
 init('./node_modules/excelize-wasm/excelize.wasm.gz').then((excelize) => {
   const f = excelize.NewFile();
+  if (f.error) {
+    console.log(f.error);
+    return;
+  }
   // Create a new sheet.
   const { index } = f.NewSheet('Sheet2');
   // Set value of a cell.
@@ -100,6 +104,10 @@ Create spreadsheet in browser:
       .init('https://<your_hostname>/excelize-wasm/excelize.wasm.gz')
       .then((excelize) => {
         const f = excelize.NewFile();
+        if (f.error) {
+          console.log(f.error);
+          return;
+        }
         // Create a new sheet.
         const { index } = f.NewSheet('Sheet2');
         // Set value of a cell.
@@ -139,6 +147,10 @@ const fs = require('fs');
 
 init('./node_modules/excelize-wasm/excelize.wasm.gz').then((excelize) => {
   const f = excelize.OpenReader(fs.readFileSync('Book1.xlsx'));
+  if (f.error) {
+    console.log(f.error);
+    return;
+  }
   // Set value of a cell.
   const ret1 = f.GetCellValue('Sheet1', 'B2');
   if (ret1.error) {
@@ -173,6 +185,10 @@ const fs = require('fs');
 
 init('./node_modules/excelize-wasm/excelize.wasm.gz').then((excelize) => {
   const f = excelize.NewFile();
+  if (f.error) {
+    console.log(f.error);
+    return;
+  }
   [
     [null, 'Apple', 'Orange', 'Pear'],
     ['Small', 2, 3, 3],

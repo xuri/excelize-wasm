@@ -1042,6 +1042,10 @@ declare module 'excelize-wasm' {
      *
      *	init('./node_modules/excelize-wasm/excelize.wasm.gz').then((excelize) => {
      *	  const f = excelize.NewFile();
+     *	  if (f.error) {
+     *	    console.log(f.error);
+     *	    return;
+     *	  }
      *	  [
      *	    [null, 'Apple', 'Orange', 'Pear'],
      *	    ['Small', 2, 3, 3],
@@ -1405,6 +1409,10 @@ declare module 'excelize-wasm' {
      *
      *	init('./node_modules/excelize-wasm/excelize.wasm.gz').then((excelize) => {
      *	  const f = excelize.NewFile();
+     *	  if (f.error) {
+     *	    console.log(f.error);
+     *	    return;
+     *	  }
      *	  [
      *	    [null, 'Apple', 'Orange', 'Pear'],
      *	    ['Small', 2, 3, 3],
@@ -2044,8 +2052,34 @@ declare module 'excelize-wasm' {
      * GetPictures provides a function to get picture meta info and raw content
      * embed in spreadsheet by given worksheet and cell name. This function
      * returns the image contents as []byte data types. This function is
-     * concurrency safe. Note that, this function doesn't support getting cell
-     * image inserted by IMAGE formula function currently.
+     * concurrency safe. For example:
+     *
+     * ```typescript
+     *  const { init } = require('excelize-wasm');
+     *  const fs = require('fs');
+     *
+     *  init('./node_modules/excelize-wasm/excelize.wasm.gz').then((excelize) => {
+     *    const f = excelize.OpenReader(fs.readFileSync('Book1.xlsx'));
+     *    if (f.error) {
+     *      console.log(f.error);
+     *      return
+     *    }
+     *    const { pictures, error } = f.GetPictures("Sheet1", "A2")
+     *    if (error) {
+     *      console.log(error);
+     *      return;
+     *    }
+     *    pictures.forEach((pic, idx) => {
+     *      const name = 'image'+idx.toString()+pic.Extension;
+     *      fs.writeFile(name, pic.File, 'binary', (error) => {
+     *        if (error) {
+     *          console.log(error);
+     *        }
+     *      });
+     *    });
+     *  });
+     * ```
+     *
      * @param sheet The worksheet name
      * @param cell The cell reference
      */
@@ -2053,8 +2087,7 @@ declare module 'excelize-wasm' {
 
     /**
      * GetPictureCells returns all picture cell references in a worksheet by a
-     * specific worksheet name. Note that, this function doesn't support getting
-     * cell image inserted by IMAGE formula function currently.
+     * specific worksheet name.
      * @param sheet The worksheet name
      */
     GetPictureCells(sheet: string): { cells: string[], error: string | null }
@@ -2217,7 +2250,12 @@ declare module 'excelize-wasm' {
     /**
      * MergeCell provides a function to merge cells by given range reference
      * and sheet name. Merging cells only keeps the upper-left cell value, and
-     * discards the other values.
+     * discards the other values. For example create a merged cell of D3:E9 on
+     * Sheet1:
+     *
+     * ```typescript
+     *	const { error } = f.MergeCell("Sheet1", "D3", "E9")
+     * ```
      *
      * If you create a merged cell that overlaps with another existing merged
      * cell, those merged cells that already exist will be removed. The cell
@@ -3294,7 +3332,14 @@ declare module 'excelize-wasm' {
     UngroupSheets(): { error: string | null }
 
     /**
-     * UnmergeCell provides a function to unmerge a given range reference.
+     * UnmergeCell provides a function to unmerge a given range reference. For
+     * example unmerge range reference D3:E9 on Sheet1:
+     *
+     * ```typescript
+     *	const { error } = f.UnmergeCell("Sheet1", "D3", "E9")
+     * ```
+     *
+     * Attention: overlapped range will also be unmerged.
      * @param sheet The worksheet name
      * @param topLeftCell The top-left cell reference
      * @param bottomRightCell The right-bottom cell reference
