@@ -1037,71 +1037,71 @@ declare module 'excelize-wasm' {
      * chart with data Sheet1!$E$1:$L$15:
      *
      * ```typescript
-     *	const { init } = require('excelize-wasm');
-     *	const fs = require('fs');
+     * const { init } = require('excelize-wasm');
+     * const fs = require('fs');
      *
-     *	init('./node_modules/excelize-wasm/excelize.wasm.gz').then((excelize) => {
-     *	  const f = excelize.NewFile();
-     *	  if (f.error) {
-     *	    console.log(f.error);
-     *	    return;
-     *	  }
-     *	  [
-     *	    [null, 'Apple', 'Orange', 'Pear'],
-     *	    ['Small', 2, 3, 3],
-     *	    ['Normal', 5, 2, 4],
-     *	    ['Large', 6, 7, 8],
-     *	  ].forEach((row, idx) => {
-     *	    const ret1 = excelize.CoordinatesToCellName(1, idx + 1);
-     *	    if (ret1.error) {
-     *	      console.log(ret1.error);
-     *	      return;
-     *	    }
-     *	    const res2 = f.SetSheetRow('Sheet1', ret1.cell, row);
-     *	    if (res2.error) {
-     *	      console.log(res2.error);
-     *	      return;
-     *	    }
-     *	  });
-     *	  const ret3 = f.AddChart('Sheet1', 'E1', {
-     *	    Type: excelize.Col3DClustered,
-     *	    Series: [
-     *	      {
-     *	        Name: 'Sheet1!$A$2',
-     *	        Categories: 'Sheet1!$B$1:$D$1',
-     *	        Values: 'Sheet1!$B$2:$D$2',
-     *	      },
-     *	      {
-     *	        Name: 'Sheet1!$A$3',
-     *	        Categories: 'Sheet1!$B$1:$D$1',
-     *	        Values: 'Sheet1!$B$3:$D$3',
-     *	      },
-     *	      {
-     *	        Name: 'Sheet1!$A$4',
-     *	        Categories: 'Sheet1!$B$1:$D$1',
-     *	        Values: 'Sheet1!$B$4:$D$4',
-     *	      },
-     *	    ],
-     *	    Title: [{
-     *	      Text: 'Fruit 3D Clustered Column Chart',
-     *	    }],
-     *	  });
-     *	  if (ret3.error) {
-     *	    console.log(ret3.error);
-     *	    return;
-     *	  }
-     *	  // Save spreadsheet by the given path.
-     *	  const { buffer, error } = f.WriteToBuffer();
-     *	  if (error) {
-     *	    console.log(error);
-     *	    return;
-     *	  }
-     *	  fs.writeFile('Book1.xlsx', buffer, 'binary', (error) => {
-     *	    if (error) {
-     *	      console.log(error);
-     *	    }
-     *	  });
-     *	});
+     * init('./node_modules/excelize-wasm/excelize.wasm.gz').then((excelize) => {
+     *   const f = excelize.NewFile();
+     *   if (f.error) {
+     *     console.log(f.error);
+     *     return;
+     *   }
+     *   [
+     *     [null, 'Apple', 'Orange', 'Pear'],
+     *     ['Small', 2, 3, 3],
+     *     ['Normal', 5, 2, 4],
+     *     ['Large', 6, 7, 8],
+     *   ].forEach((row, idx) => {
+     *     const ret1 = excelize.CoordinatesToCellName(1, idx + 1);
+     *     if (ret1.error) {
+     *       console.log(ret1.error);
+     *       return;
+     *     }
+     *     const res2 = f.SetSheetRow('Sheet1', ret1.cell, row);
+     *     if (res2.error) {
+     *       console.log(res2.error);
+     *       return;
+     *     }
+     *   });
+     *   const ret3 = f.AddChart('Sheet1', 'E1', {
+     *     Type: excelize.Col3DClustered,
+     *     Series: [
+     *       {
+     *         Name: 'Sheet1!$A$2',
+     *         Categories: 'Sheet1!$B$1:$D$1',
+     *         Values: 'Sheet1!$B$2:$D$2',
+     *       },
+     *       {
+     *         Name: 'Sheet1!$A$3',
+     *         Categories: 'Sheet1!$B$1:$D$1',
+     *         Values: 'Sheet1!$B$3:$D$3',
+     *       },
+     *       {
+     *         Name: 'Sheet1!$A$4',
+     *         Categories: 'Sheet1!$B$1:$D$1',
+     *         Values: 'Sheet1!$B$4:$D$4',
+     *       },
+     *     ],
+     *     Title: [{
+     *       Text: 'Fruit 3D Clustered Column Chart',
+     *     }],
+     *   });
+     *   if (ret3.error) {
+     *     console.log(ret3.error);
+     *     return;
+     *   }
+     *   // Save spreadsheet by the given path.
+     *   const { buffer, error } = f.WriteToBuffer();
+     *   if (error) {
+     *     console.log(error);
+     *     return;
+     *   }
+     *   fs.writeFile('Book1.xlsx', buffer, 'binary', (error) => {
+     *     if (error) {
+     *       console.log(error);
+     *     }
+     *   });
+     * });
      * ```
      *
      * The following shows the type of chart supported by excelize:
@@ -1404,114 +1404,114 @@ declare module 'excelize-wasm' {
      * with data Sheet1!$E$1:$L$15:
      *
      * ```typescript
-     *	const { init } = require('excelize-wasm');
-     *	const fs = require('fs');
+     * const { init } = require('excelize-wasm');
+     * const fs = require('fs');
      *
-     *	init('./node_modules/excelize-wasm/excelize.wasm.gz').then((excelize) => {
-     *	  const f = excelize.NewFile();
-     *	  if (f.error) {
-     *	    console.log(f.error);
-     *	    return;
-     *	  }
-     *	  [
-     *	    [null, 'Apple', 'Orange', 'Pear'],
-     *	    ['Small', 2, 3, 3],
-     *	    ['Normal', 5, 2, 4],
-     *	    ['Large', 6, 7, 8],
-     *	  ].forEach((row, idx) => {
-     *	    const ret1 = excelize.CoordinatesToCellName(1, idx + 1);
-     *	    if (ret1.error) {
-     *	      console.log(ret1.error);
-     *	      return;
-     *	    }
-     *	    const res2 = f.SetSheetRow('Sheet1', ret1.cell, row);
-     *	    if (res2.error) {
-     *	      console.log(res2.error);
-     *	      return;
-     *	    }
-     *	  });
-     *	  const ret3 = f.AddChart('Sheet1', 'E1', {
-     *	    Type: excelize.Col,
-     *	    Series: [
-     *	      {
-     *	        Name: 'Sheet1!$A$2',
-     *	        Categories: 'Sheet1!$B$1:$D$1',
-     *	        Values: 'Sheet1!$B$2:$D$2',
-     *	      },
-     *	    ],
-     *	    Format: {
-     *	      ScaleX:          1,
-     *	      ScaleY:          1,
-     *	      OffsetX:         15,
-     *	      OffsetY:         10,
-     *	      PrintObject:     true,
-     *	      LockAspectRatio: false,
-     *	      Locked:          false,
-     *	    },
-     *	    Title: [{
-     *	      Text: 'Clustered Column - Line Chart',
-     *	    }],
-     *	    Legend: {
-     *	      Position:      'left',
-     *	      ShowLegendKey: false,
-     *	    },
-     *	    PlotArea: {
-     *	      ShowCatName:     false,
-     *	      ShowLeaderLines: false,
-     *	      ShowPercent:     true,
-     *	      ShowSerName:     true,
-     *	      ShowVal:         true,
-     *	    },
-     *	  }, {
-     *	    Type: excelize.Line,
-     *	    Series: [
-     *	      {
-     *	        Name: 'Sheet1!$A$4',
-     *	        Categories: 'Sheet1!$B$1:$D$1',
-     *	        Values: 'Sheet1!$B$4:$D$4',
-     *	        Marker: {
-     *	          Symbol: 'none',
-     *	          Size: 10,
-     *	        },
-     *	      },
-     *	    ],
-     *	    Format: {
-     *	      ScaleX:          1,
-     *	      ScaleY:          1,
-     *	      OffsetX:         15,
-     *	      OffsetY:         10,
-     *	      PrintObject:     true,
-     *	      LockAspectRatio: false,
-     *	      Locked:          false,
-     *	    },
-     *	    Legend: {
-     *	      Position:      'right',
-     *	      ShowLegendKey: false,
-     *	    },
-     *	    PlotArea: {
-     *	      ShowCatName:     false,
-     *	      ShowLeaderLines: false,
-     *	      ShowPercent:     true,
-     *	      ShowSerName:     true,
-     *	      ShowVal:         true,
-     *	    },
-     *	  });
-     *	  if (ret3.error) {
-     *	    console.log(ret3.error);
-     *	    return;
-     *	  }
-     *	  // Save spreadsheet by the given path.
-     *	  const { buffer, error } = f.WriteToBuffer();
-     *	  if (error) {
-     *	    console.log(error);
-     *	    return;
-     *	  }
-     *	  fs.writeFile('Book1.xlsx', buffer, 'binary', (error) => {
-     *	    if (error) {
-     *	      console.log(error);
-     *	    }
-     *	  });
-     *	});
+     * init('./node_modules/excelize-wasm/excelize.wasm.gz').then((excelize) => {
+     *   const f = excelize.NewFile();
+     *   if (f.error) {
+     *     console.log(f.error);
+     *     return;
+     *   }
+     *   [
+     *     [null, 'Apple', 'Orange', 'Pear'],
+     *     ['Small', 2, 3, 3],
+     *     ['Normal', 5, 2, 4],
+     *     ['Large', 6, 7, 8],
+     *   ].forEach((row, idx) => {
+     *     const ret1 = excelize.CoordinatesToCellName(1, idx + 1);
+     *     if (ret1.error) {
+     *       console.log(ret1.error);
+     *       return;
+     *     }
+     *     const res2 = f.SetSheetRow('Sheet1', ret1.cell, row);
+     *     if (res2.error) {
+     *       console.log(res2.error);
+     *       return;
+     *     }
+     *   });
+     *   const ret3 = f.AddChart('Sheet1', 'E1', {
+     *     Type: excelize.Col,
+     *     Series: [
+     *       {
+     *         Name: 'Sheet1!$A$2',
+     *         Categories: 'Sheet1!$B$1:$D$1',
+     *         Values: 'Sheet1!$B$2:$D$2',
+     *       },
+     *     ],
+     *     Format: {
+     *       ScaleX:          1,
+     *       ScaleY:          1,
+     *       OffsetX:         15,
+     *       OffsetY:         10,
+     *       PrintObject:     true,
+     *       LockAspectRatio: false,
+     *       Locked:          false,
+     *     },
+     *     Title: [{
+     *       Text: 'Clustered Column - Line Chart',
+     *     }],
+     *     Legend: {
+     *       Position:      'left',
+     *       ShowLegendKey: false,
+     *     },
+     *     PlotArea: {
+     *       ShowCatName:     false,
+     *       ShowLeaderLines: false,
+     *       ShowPercent:     true,
+     *       ShowSerName:     true,
+     *       ShowVal:         true,
+     *     },
+     *   }, {
+     *     Type: excelize.Line,
+     *     Series: [
+     *       {
+     *         Name: 'Sheet1!$A$4',
+     *         Categories: 'Sheet1!$B$1:$D$1',
+     *         Values: 'Sheet1!$B$4:$D$4',
+     *         Marker: {
+     *           Symbol: 'none',
+     *           Size: 10,
+     *         },
+     *       },
+     *     ],
+     *     Format: {
+     *       ScaleX:          1,
+     *       ScaleY:          1,
+     *       OffsetX:         15,
+     *       OffsetY:         10,
+     *       PrintObject:     true,
+     *       LockAspectRatio: false,
+     *       Locked:          false,
+     *     },
+     *     Legend: {
+     *       Position:      'right',
+     *       ShowLegendKey: false,
+     *     },
+     *     PlotArea: {
+     *       ShowCatName:     false,
+     *       ShowLeaderLines: false,
+     *       ShowPercent:     true,
+     *       ShowSerName:     true,
+     *       ShowVal:         true,
+     *     },
+     *   });
+     *   if (ret3.error) {
+     *     console.log(ret3.error);
+     *     return;
+     *   }
+     *   // Save spreadsheet by the given path.
+     *   const { buffer, error } = f.WriteToBuffer();
+     *   if (error) {
+     *     console.log(error);
+     *     return;
+     *   }
+     *   fs.writeFile('Book1.xlsx', buffer, 'binary', (error) => {
+     *     if (error) {
+     *       console.log(error);
+     *     }
+     *   });
+     * });
      * ```
      *
      * @param sheet The worksheet name
@@ -1542,23 +1542,23 @@ declare module 'excelize-wasm' {
      * box size in Sheet1!A5:
      *
      * ```typescript
-     *	const { error } = f.AddComment("Sheet1", {
-     *	    Cell:   "A5",
-     *	    Author: "Excelize",
-     *	    Height: 40,
-     *	    Width:  180,
-     *	    Paragraph: [
-     *	        {
-     *	            Font: {
-     *	                Bold: true,
-     *	            },
-     *	            Text: "Excelize: ",
-     *	        },
-     *	        {
-     *	            Text: "This is a comment.",
-     *	        },
-     *	    ],
-     *	})
+     * const { error } = f.AddComment('Sheet1', {
+     *   Cell:   'A5',
+     *   Author: 'Excelize',
+     *   Height: 40,
+     *   Width:  180,
+     *   Paragraph: [
+     *     {
+     *       Font: {
+     *         Bold: true,
+     *       },
+     *       Text: 'Excelize: ',
+     *     },
+     *     {
+     *       Text: 'This is a comment.',
+     *     },
+     *   ],
+     * });
      * ```
      *
      * @param sheet The worksheet name
@@ -1604,60 +1604,60 @@ declare module 'excelize-wasm' {
      * size with cells:
      *
      * ```typescript
-     *	const { error } = f.AddFormControl("Sheet1", {
-     *	    Cell:   "A2",
-     *	    Type:   excelize.FormControlButton,
-     *	    Macro:  "Button1_Click",
-     *	    Width:  140,
-     *	    Height: 60,
-     *	    Text:   "Button 1\r\n",
-     *	    Paragraph: [
-     *	        {
-     *	            Font: {
-     *	                Bold:      true,
-     *	                Italic:    true,
-     *	                Underline: "single",
-     *	                Family:    "Times New Roman",
-     *	                Size:      14,
-     *	                Color:     "777777",
-     *	            },
-     *	            Text: "C1=A1+B1",
-     *	        },
-     *	    ],
-     *	    Format: {
-     *	        PrintObject: true,
-     *	        Positioning: "absolute",
-     *	    },
-     *	})
+     * const { error } = f.AddFormControl('Sheet1', {
+     *   Cell:   'A2',
+     *   Type:   excelize.FormControlButton,
+     *   Macro:  'Button1_Click',
+     *   Width:  140,
+     *   Height: 60,
+     *   Text:   'Button 1\r\n',
+     *   Paragraph: [
+     *     {
+     *       Font: {
+     *         Bold:      true,
+     *         Italic:    true,
+     *         Underline: 'single',
+     *         Family:    'Times New Roman',
+     *         Size:      14,
+     *         Color:     '777777',
+     *       },
+     *       Text: 'C1=A1+B1',
+     *     },
+     *   ],
+     *   Format: {
+     *     PrintObject: true,
+     *     Positioning: 'absolute',
+     *   },
+     * });
      * ```
      *
      * Example 2, add option button form control with checked status and text
      * on Sheet1!A1:
      *
      * ```typescript
-     *	const { error } = f.AddFormControl("Sheet1", {
-     *	    Cell:    "A1",
-     *	    Type:    excelize.FormControlOptionButton,
-     *	    Text:    "Option Button 1",
-     *	    Checked: true,
-     *	})
+     * const { error } = f.AddFormControl('Sheet1', {
+     *   Cell:    'A1',
+     *   Type:    excelize.FormControlOptionButton,
+     *   Text:    'Option Button 1',
+     *   Checked: true,
+     * });
      * ```
      *
      * Example 3, add spin button form control on Sheet1!B1 to increase or
      * decrease the value of Sheet1!A1:
      *
      * ```typescript
-     *	const { error } = f.AddFormControl("Sheet1", {
-     *	    Cell:       "B1",
-     *	    Type:       excelize.FormControlSpinButton,
-     *	    Width:      15,
-     *	    Height:     40,
-     *	    CurrentVal: 7,
-     *	    MinVal:     5,
-     *	    MaxVal:     10,
-     *	    IncChange:  1,
-     *	    CellLink:   "A1",
-     *	})
+     * const { error } = f.AddFormControl('Sheet1', {
+     *   Cell:       'B1',
+     *   Type:       excelize.FormControlSpinButton,
+     *   Width:      15,
+     *   Height:     40,
+     *   CurrentVal: 7,
+     *   MinVal:     5,
+     *   MaxVal:     10,
+     *   IncChange:  1,
+     *   CellLink:   'A1',
+     * });
      * ```
      *
      * Example 4, add horizontally scroll bar form control on Sheet1!A2 to
@@ -1665,19 +1665,19 @@ declare module 'excelize-wasm' {
      * scroll box:
      *
      * ```typescript
-     *	const { error } = f.AddFormControl("Sheet1", {
-     *	    Cell:         "A2",
-     *	    Type:         excelize.FormControlScrollBar,
-     *	    Width:        140,
-     *	    Height:       20,
-     *	    CurrentVal:   50,
-     *	    MinVal:       10,
-     *	    MaxVal:       100,
-     *	    IncChange:    1,
-     *	    PageChange:   1,
-     *	    CellLink:     "A1",
-     *	    Horizontally: true,
-     *	})
+     * const { error } = f.AddFormControl('Sheet1', {
+     *   Cell:         'A2',
+     *   Type:         excelize.FormControlScrollBar,
+     *   Width:        140,
+     *   Height:       20,
+     *   CurrentVal:   50,
+     *   MinVal:       10,
+     *   MaxVal:       100,
+     *   IncChange:    1,
+     *   PageChange:   1,
+     *   CellLink:     'A1',
+     *   Horizontally: true,
+     * });
      * ```
      *
      * @param sheet The worksheet name
@@ -1689,6 +1689,68 @@ declare module 'excelize-wasm' {
      * AddPivotTable provides the method to add pivot table by given pivot
      * table options. Note that the same fields can not in Columns, Rows and
      * Filter fields at the same time.
+     *
+     * For example, create a pivot table on the range reference Sheet1!G2:M34
+     * with the range reference Sheet1!A1:E31 as the data source, summarize by
+     * sum for sales:
+     *
+     * ```typescript
+     * const { init } = require('excelize-wasm');
+     * const fs = require('fs');
+     *
+     * init('./node_modules/excelize-wasm/excelize.wasm.gz').then((excelize) => {
+     *   const f = excelize.NewFile();
+     *   if (f.error) {
+     *     console.log(f.error);
+     *     return;
+     *   }
+     *   // Create some data in a sheet
+     *   const month = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+     *   const year = [2017, 2018, 2019];
+     *   const types = ['Meat', 'Dairy', 'Beverages', 'Produce'];
+     *   const region = ['East', 'West', 'North', 'South'];
+     *   f.SetSheetRow('Sheet1', 'A1', ['Month', 'Year', 'Type', 'Sales', 'Region']);
+     *   const randInt = (max) => {
+     *     return Math.floor(Math.random() * max);
+     *   }
+     *   for (let row = 2; row < 32; row++) {
+     *     f.SetCellValue('Sheet1', 'A' + row.toString(), month[randInt(12)]);
+     *     f.SetCellValue('Sheet1', 'B' + row.toString(), year[randInt(3)]);
+     *     f.SetCellValue('Sheet1', 'C' + row.toString(), types[randInt(4)]);
+     *     f.SetCellValue('Sheet1', 'D' + row.toString(), randInt(5000));
+     *     f.SetCellValue('Sheet1', 'E' + row.toString(), region[randInt(4)]);
+     *   }
+     *   const ret = f.AddPivotTable({
+     *     DataRange: 'Sheet1!A1:E31',
+     *     PivotTableRange: 'Sheet1!G2:M34',
+     *     Rows: [{ Data: 'Month', DefaultSubtotal: true }, { Data: 'Year' }],
+     *     Filter: [{ Data: 'Region' }],
+     *     Columns: [{ Data: 'Type', DefaultSubtotal: true }],
+     *     Data: [{ Data: 'Sales', Name: 'Summarize', Subtotal: 'Sum' }],
+     *     RowGrandTotals: true,
+     *     ColGrandTotals: true,
+     *     ShowDrill: true,
+     *     ShowRowHeaders: true,
+     *     ShowColHeaders: true,
+     *     ShowLastColumn: true,
+     *   });
+     *   if (ret.error) {
+     *     console.log(ret.error);
+     *     return;
+     *   }
+     *   const { buffer, error } = f.WriteToBuffer();
+     *   if (error) {
+     *     console.log(error);
+     *     return;
+     *   }
+     *   fs.writeFile('Book1.xlsx', buffer, 'binary', (error) => {
+     *     if (error) {
+     *       console.log(error);
+     *     }
+     *   });
+     * });
+     * ```
+     *
      * @param opt The pivot table option
      */
     AddPivotTable(opt: PivotTableOptions): { error: string | null }
@@ -1719,11 +1781,11 @@ declare module 'excelize-wasm' {
      * sparkline. Changes are applied to all three:
      *
      * ```typescript
-     *	const { error } = f.AddSparkline("Sheet1", {
-     *	    Location: ["A1", "A2", "A3"],
-     *	    Range:    ["Sheet2!A1:J1", "Sheet2!A2:J2", "Sheet2!A3:J3"],
-     *	    Markers:  true,
-     *	})
+     * const { error } = f.AddSparkline('Sheet1', {
+     *   Location: ['A1', 'A2', 'A3'],
+     *   Range:    ['Sheet2!A1:J1', 'Sheet2!A2:J2', 'Sheet2!A3:J3'],
+     *   Markers:  true,
+     * });
      * ```
      *
      * The following shows the formatting options of sparkline supported by excelize-wasm:
@@ -2064,7 +2126,7 @@ declare module 'excelize-wasm' {
      *      console.log(f.error);
      *      return
      *    }
-     *    const { pictures, error } = f.GetPictures("Sheet1", "A2")
+     *    const { pictures, error } = f.GetPictures('Sheet1', 'A2')
      *    if (error) {
      *      console.log(error);
      *      return;
@@ -2100,7 +2162,13 @@ declare module 'excelize-wasm' {
 
     /**
      * GetRowHeight provides a function to get row height by given worksheet
-     * name and row number.
+     * name and row number. For example, get the height of the first row in
+     * Sheet1:
+     *
+     * ```typescript
+     * const { height, error } = f.GetRowHeight('Sheet1', 1);
+     * ```
+     *
      * @param sheet The worksheet name
      * @param row The row number
      */
@@ -2116,7 +2184,13 @@ declare module 'excelize-wasm' {
 
     /**
      * GetRowVisible provides a function to get visible of a single row by
-     * given worksheet name and Excel row number.
+     * given worksheet name and Excel row number. For example, get visible state
+     * of row 2 in Sheet1:
+     *
+     * ```typescript
+     * const { visible, error } = f.GetRowVisible('Sheet1', 2);
+     * ```
+     *
      * @param sheet The worksheet name
      * @param row The row number
      */
@@ -2130,6 +2204,24 @@ declare module 'excelize-wasm' {
      * be used. GetRows fetched the rows with value or formula cells, the
      * continually blank cells in the tail of each row will be skipped, so the
      * length of each row may be inconsistent.
+     *
+     * For example, get and traverse the value of all cells by rows on a
+     * worksheet named 'Sheet1':
+     *
+     * ```typescript
+     * const { result, error } = f.GetRows('Sheet1');
+     * if (error) {
+     *   console.log(error);
+     *   return;
+     * }
+     * result.forEach((row) => {
+     *   row.forEach((colCell) => {
+     *     process.stdout.write(`${colCell}\t`);
+     *   });
+     *   console.log();
+     * });
+     * ```
+     *
      * @param sheet The worksheet name
      * @param opts The options for get rows
      */
@@ -2254,7 +2346,7 @@ declare module 'excelize-wasm' {
      * Sheet1:
      *
      * ```typescript
-     *	const { error } = f.MergeCell("Sheet1", "D3", "E9")
+     * const { error } = f.MergeCell('Sheet1', 'D3', 'E9');
      * ```
      *
      * If you create a merged cell that overlaps with another existing merged
@@ -2306,13 +2398,13 @@ declare module 'excelize-wasm' {
      * default. For example, protect Sheet1 with protection settings:
      *
      * ```typescript
-     * const { error } = f.ProtectSheet("Sheet1", {
-     *   AlgorithmName:       "SHA-512",
-     *   Password:            "password",
+     * const { error } = f.ProtectSheet('Sheet1', {
+     *   AlgorithmName:       'SHA-512',
+     *   Password:            'password',
      *   SelectLockedCells:   true,
      *   SelectUnlockedCells: true,
      *   EditScenarios:       true,
-     * })
+     * });
      * ```
      *
      * @param sheet The worksheet name
@@ -2332,9 +2424,9 @@ declare module 'excelize-wasm' {
      *
      * ```typescript
      * const { error } = f.ProtectWorkbook({
-     *   Password:      "password",
+     *   Password:      'password',
      *   LockStructure: true,
-     * })
+     * });
      * ```
      *
      * @param opts The workbook protection options
@@ -2452,14 +2544,14 @@ declare module 'excelize-wasm' {
      *
      * ```typescript
      * const { error } = f.SetAppProps({
-     *   Application:       "Microsoft Excel",
+     *   Application:       'Microsoft Excel',
      *   ScaleCrop:         true,
      *   DocSecurity:       3,
-     *   Company:           "Company Name",
+     *   Company:           'Company Name',
      *   LinksUpToDate:     true,
      *   HyperlinksChanged: true,
-     *   AppVersion:        "16.0000",
-     * })
+     *   AppVersion:        '16.0000',
+     * });
      * ```
      *
      * @param props The application properties
@@ -2512,34 +2604,46 @@ declare module 'excelize-wasm' {
      *
      * Example 1, set normal formula "=SUM(A1,B1)" for the cell "A3" on "Sheet1":
      *
-     * const { error } = f.SetCellFormula("Sheet1", "A3", "=SUM(A1,B1)")
+     * ```typescript
+     * const { error } = f.SetCellFormula('Sheet1', 'A3', '=SUM(A1,B1)');
+     * ```
      *
      * Example 2, set one-dimensional vertical constant array (column array)
      * formula "1,2,3" for the cell "A3" on "Sheet1":
      *
-     * const { error } = f.SetCellFormula("Sheet1", "A3", "={1;2;3}")
+     * ```typescript
+     * const { error } = f.SetCellFormula('Sheet1', 'A3', '={1;2;3}');
+     * ```
      *
      * Example 3, set one-dimensional horizontal constant array (row array)
      * formula '"a","b","c"' for the cell "A3" on "Sheet1":
      *
-     * const { error } = f.SetCellFormula("Sheet1", "A3", "={\"a\",\"b\",\"c\"}")
+     * ```typescript
+     * const { error } = f.SetCellFormula('Sheet1', 'A3', '={"a","b","c"}');
+     * ```
      *
      * Example 4, set two-dimensional constant array formula '{1,2,"a","b"}' for
      * the cell "A3" on "Sheet1":
      *
-     * const { error } = f.SetCellFormula("Sheet1", "A3", "={1,2;\"a\",\"b\"}",
-     *     {Ref: "A3:A3", Type: "array"})
+     * ```typescript
+     * const { error } = f.SetCellFormula('Sheet1', 'A3', '={1,2;"a","b"}',
+     *     {Ref: 'A3:A3', Type: 'array'});
+     * ```
      *
      * Example 5, set range array formula "A1:A2" for the cell "A3" on "Sheet1":
      *
-     * const { error } = f.SetCellFormula("Sheet1", "A3", "=A1:A2",
-     *     {Ref: "A3:A3", Type: "array"})
+     * ```typescript
+     * const { error } = f.SetCellFormula('Sheet1', 'A3', '=A1:A2',
+     *     {Ref: 'A3:A3', Type: 'array'});
+     * ```
      *
      * Example 6, set shared formula "=A1+B1" for the cell "C1:C5"
      * on "Sheet1", "C1" is the master cell:
      *
-     * const { error } = f.SetCellFormula("Sheet1", "C1", "=A1+B1",
-     *     {Ref: "C1:C5", Type: "shared"})
+     * ```typescript
+     * const { error } = f.SetCellFormula('Sheet1', 'C1', '=A1+B1',
+     *     {Ref: 'C1:C5', Type: 'shared'});
+     * ```
      *
      * Example 7, set table formula "=SUM(Table1[[A]:[B]])" for the cell "C2"
      * on "Sheet1":
@@ -2916,22 +3020,22 @@ declare module 'excelize-wasm' {
      * For example:
      *
      * ```typescript
-     *	var { error } = f.SetDocProps({
-     *	    Category:       'category',
-     *	    ContentStatus:  'Draft',
-     *	    Created:        '2019-06-04T22:00:10Z',
-     *	    Creator:        'Go Excelize',
-     *	    Description:    'This file created by Go Excelize',
-     *	    Identifier:     'xlsx',
-     *	    Keywords:       'Spreadsheet',
-     *	    LastModifiedBy: 'Go Author',
-     *	    Modified:       '2019-06-04T22:00:10Z',
-     *	    Revision:       '0',
-     *	    Subject:        'Test Subject',
-     *	    Title:          'Test Title',
-     *	    Language:       'en-US',
-     *	    Version:        '1.0.0',
-     *	});
+     * const { error } = f.SetDocProps({
+     *   Category:       'category',
+     *   ContentStatus:  'Draft',
+     *   Created:        '2019-06-04T22:00:10Z',
+     *   Creator:        'Go Excelize',
+     *   Description:    'This file created by Go Excelize',
+     *   Identifier:     'xlsx',
+     *   Keywords:       'Spreadsheet',
+     *   LastModifiedBy: 'Go Author',
+     *   Modified:       '2019-06-04T22:00:10Z',
+     *   Revision:       '0',
+     *   Subject:        'Test Subject',
+     *   Title:          'Test Title',
+     *   Language:       'en-US',
+     *   Version:        '1.0.0',
+     * });
      * ```
      *
      * @param docProperties The document core properties
@@ -3032,15 +3136,15 @@ declare module 'excelize-wasm' {
      * For example:
      *
      * ```typescript
-     *	var { error } = f.SetHeaderFooter("Sheet1", {
-     *	    DifferentFirst:   true,
-     *	    DifferentOddEven: true,
-     *	    OddHeader:        '&R&P',
-     *	    OddFooter:        '&C&F',
-     *	    EvenHeader:       '&L&P',
-     *	    EvenFooter:       '&L&D&R&T',
-     *	    FirstHeader:      `&CCenter &"-,Bold"Bold&"-,Regular"HeaderU+000A&D`,
-     *	})
+     * const { error } = f.SetHeaderFooter('Sheet1', {
+     *   DifferentFirst:   true,
+     *   DifferentOddEven: true,
+     *   OddHeader:        '&R&P',
+     *   OddFooter:        '&C&F',
+     *   EvenHeader:       '&L&P',
+     *   EvenFooter:       '&L&D&R&T',
+     *   FirstHeader:      `&CCenter &"-,Bold"Bold&"-,Regular"HeaderU+000A&D`,
+     * });
      * ```
      *
      * This example shows:
@@ -3244,10 +3348,13 @@ declare module 'excelize-wasm' {
     SetRowStyle(sheet: string, start: number, end: number, styleID: number): { error: string | null }
 
     /**
-     * SetRowStyle provides a function to set the style of rows by given
-     * worksheet name, row range, and style ID. Note that this will overwrite
-     * the existing styles for the rows, it won't append or merge style with
-     * existing styles.
+     * SetRowVisible provides a function to set visible of a single row by given
+     * worksheet name and Excel row number. For example, hide row 2 in Sheet1:
+     *
+     * ```typescript
+     * const { error } = f.SetRowVisible('Sheet1', 2, false);
+     * ```
+     *
      * @param sheet The worksheet name
      * @param row The row number
      * @param visible The row's visibility
@@ -3336,7 +3443,7 @@ declare module 'excelize-wasm' {
      * example unmerge range reference D3:E9 on Sheet1:
      *
      * ```typescript
-     *	const { error } = f.UnmergeCell("Sheet1", "D3", "E9")
+     * const { error } = f.UnmergeCell('Sheet1', 'D3', 'E9');
      * ```
      *
      * Attention: overlapped range will also be unmerged.
