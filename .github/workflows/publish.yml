@@ -36,7 +36,7 @@ jobs:
     - name: Test
       run: |
         cd cmd
-        GOOS=js GOARCH=wasm GO111MODULE=on go test -exec="$(go env GOROOT)/misc/wasm/go_js_wasm_exec" -v ./... -coverprofile=coverage.txt -covermode=atomic
+        GOOS=js GOARCH=wasm GO111MODULE=on go test -exec="$(go env GOROOT)/misc/wasm/go_js_wasm_exec" -v ./... -coverprofile="coverage.txt" -covermode=atomic
 
     - name: Codecov
       uses: codecov/codecov-action@v4
@@ -53,9 +53,9 @@ jobs:
         gzip -f --best ../dist/excelize.wasm
 
     - name: Setup Node.js
-      uses: actions/setup-node@v3
+      uses: actions/setup-node@v4
       with:
-        node-version: 18
+        node-version: 20
 
     - name: NPM Build
       run: |
