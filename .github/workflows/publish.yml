@@ -24,6 +24,7 @@ jobs:
       uses: actions/setup-go@v5
       with:
         go-version: ${{ matrix.go-version }}
+        cache: false
 
     - name: Checkout code
       uses: actions/checkout@v4
@@ -40,6 +41,8 @@ jobs:
 
     - name: Codecov
       uses: codecov/codecov-action@v4
+      env:
+        CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
       with:
         directory: ./cmd
         file: coverage.txt
@@ -67,7 +70,7 @@ jobs:
         cp src/index.d.ts ./dist
 
     - name: NPM Publish
-      uses: JS-DevTools/npm-publish@v2
+      uses: JS-DevTools/npm-publish@v3
       with:
-        token: ${{secrets.NPM_TOKEN}}
+        token: ${{ secrets.NPM_TOKEN }}
         package: ./dist/package.json
