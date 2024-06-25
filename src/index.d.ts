@@ -1,4 +1,4 @@
-// Copyright 2022 - 2023 The excelize-wasm Authors. All rights reserved. Use of
+// Copyright 2022 - 2024 The excelize-wasm Authors. All rights reserved. Use of
 // this source code is governed by a BSD-style license that can be found in
 // the LICENSE file.
 //
@@ -329,18 +329,19 @@ declare module 'excelize-wasm' {
    * GraphicOptions directly maps the format settings of the picture.
    */
   export type GraphicOptions = {
-    AltText?:         string;
-    PrintObject?:     boolean;
-    Locked?:          boolean;
-    LockAspectRatio?: boolean;
-    AutoFit?:         boolean;
-    OffsetX?:         number;
-    OffsetY?:         number;
-    ScaleX?:          number;
-    ScaleY?:          number;
-    Hyperlink?:       string;
-    HyperlinkType?:   string;
-    Positioning?:     string;
+    AltText?:             string;
+    PrintObject?:         boolean;
+    Locked?:              boolean;
+    LockAspectRatio?:     boolean;
+    AutoFit?:             boolean;
+    AutoFitIgnoreAspect?: boolean;
+    OffsetX?:             number;
+    OffsetY?:             number;
+    ScaleX?:              number;
+    ScaleY?:              number;
+    Hyperlink?:           string;
+    HyperlinkType?:       string;
+    Positioning?:         string;
   };
 
   /**
@@ -1582,12 +1583,55 @@ declare module 'excelize-wasm' {
      * that this function only supports adding pictures placed over the cells
      * currently, and doesn't support adding pictures placed in cells or
      * creating the Kingsoft WPS Office embedded image cells.
+     *
+     * The optional parameter "AltText" is used to add alternative text to a
+     * graph object.
+     *
+     * The optional parameter "PrintObject" indicates whether the graph object
+     * is printed when the worksheet is printed, the default value of that is
+     * 'true'.
+     *
+     * The optional parameter "Locked" indicates whether lock the graph object.
+     * Locking an object has no effect unless the sheet is protected.
+     *
+     * The optional parameter "LockAspectRatio" indicates whether lock aspect
+     * ratio for the graph object, the default value of that is 'false'.
+     *
+     * The optional parameter "AutoFit" specifies if you make graph object size
+     * auto-fits the cell, the default value of that is 'false'.
+     *
+     * The optional parameter "AutoFitIgnoreAspect" specifies if fill the cell
+     * with the image and ignore its aspect ratio, the default value of that is
+     * 'false'. This option only works when the "AutoFit" is enabled.
+     *
+     * The optional parameter "OffsetX" specifies the horizontal offset of the
+     * graph object with the cell, the default value of that is 0.
+     *
+     * The optional parameter "OffsetY" specifies the vertical offset of the
+     * graph object with the cell, the default value of that is 0.
+     *
+     * The optional parameter "ScaleX" specifies the horizontal scale of graph
+     * object, the default value of that is 1.0 which presents 100%.
+     *
+     * The optional parameter "ScaleY" specifies the vertical scale of graph
+     * object, the default value of that is 1.0 which presents 100%.
+     *
+     * The optional parameter "Hyperlink" specifies the hyperlink of the graph
+     * object.
+     *
+     * The optional parameter "HyperlinkType" defines two types of
+     * hyperlink "External" for website or "Location" for moving to one of the
+     * cells in this workbook. When the "HyperlinkType" is "Location",
+     * coordinates need to start with "#".
+     *
+     * The optional parameter "Positioning" defines 3 types of the position of a
+     * graph object in a spreadsheet: "oneCell" (Move but don't size with
+     * cells), "twoCell" (Move and size with cells), and "absolute" (Don't move
+     * or size with cells). If you don't set this parameter, the default
+     * positioning is to move and size with cells.
      * @param sheet The worksheet name
      * @param cell The cell reference
-     * @param name The picture name
-     * @param extension The extension name
-     * @param file The contents buffer of the file
-     * @param opts The graphic options
+     * @param pic The picture format options
      */
     AddPictureFromBytes(sheet: string, cell: string, pic: Picture): { error: string | null }
 
