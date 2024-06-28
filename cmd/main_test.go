@@ -16,6 +16,8 @@ import (
 	"github.com/xuri/excelize/v2"
 )
 
+var MacintoshCyrillicCharset = []byte{0x8F, 0xF0, 0xE8, 0xE2, 0xE5, 0xF2, 0x20, 0xEC, 0xE8, 0xF0}
+
 func TestRegInteropFunc(t *testing.T) {
 	js.Global().Set("excelize", map[string]interface{}{})
 	regFuncs()
@@ -2571,6 +2573,22 @@ func TestUpdateLinkedValue(t *testing.T) {
 
 	ret = f.(js.Value).Call("UpdateLinkedValue", js.ValueOf("Sheet1"))
 	assert.EqualError(t, errArgNum, ret.Get("error").String())
+
+	// Test unsupported charset
+	wb := excelize.NewFile()
+	wb.Sheet.Delete("xl/worksheets/sheet1.xml")
+	wb.Pkg.Store("xl/worksheets/sheet1.xml", MacintoshCyrillicCharset)
+	buf, err := wb.WriteToBuffer()
+	assert.NoError(t, err)
+
+	uint8Array := js.Global().Get("Uint8Array").New(js.ValueOf(buf.Len()))
+	for k, v := range buf.Bytes() {
+		uint8Array.SetIndex(k, v)
+	}
+	f = OpenReader(js.Value{}, []js.Value{uint8Array})
+	assert.True(t, f.(js.Value).Get("error").IsNull())
+	ret = f.(js.Value).Call("UpdateLinkedValue")
+	assert.Equal(t, ret.Get("error").String(), "XML syntax error on line 1: invalid UTF-8")
 }
 
 func TestWriteToBuffer(t *testing.T) {

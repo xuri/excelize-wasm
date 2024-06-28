@@ -3197,9 +3197,8 @@ func SetCellValue(f *excelize.File) func(this js.Value, args []js.Value) interfa
 			value = args[2].Bool()
 		case js.TypeNumber:
 			value = args[2].Float()
-		case js.TypeString:
+		default: // js.TypeString:
 			value = args[2].String()
-		default:
 		}
 		if err := f.SetCellValue(args[0].String(), args[1].String(), value); err != nil {
 			ret["error"] = err.Error()
