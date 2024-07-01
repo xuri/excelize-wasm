@@ -330,6 +330,7 @@ func regInteropFunc(f *excelize.File, fn map[string]interface{}) interface{} {
 		"GetDocProps":                 GetDocProps(f),
 		"GetFormControls":             GetFormControls(f),
 		"GetHeaderFooter":             GetHeaderFooter(f),
+		"GetMergeCells":               GetMergeCells(f),
 		"GetPageLayout":               GetPageLayout(f),
 		"GetPageMargins":              GetPageMargins(f),
 		"GetPanes":                    GetPanes(f),
@@ -408,6 +409,24 @@ func regInteropFunc(f *excelize.File, fn map[string]interface{}) interface{} {
 		"UnsetConditionalFormat":      UnsetConditionalFormat(f),
 		"UpdateLinkedValue":           UpdateLinkedValue(f),
 		"WriteToBuffer":               WriteToBuffer(f),
+	} {
+		fn[name] = js.FuncOf(impl)
+	}
+	return js.ValueOf(fn)
+}
+
+// regMergeCellFunc register functions that implemented MergeCell interface.
+func regMergeCellFunc(mergeCell *excelize.MergeCell, fn map[string]interface{}) interface{} {
+	for name, impl := range map[string]func(this js.Value, args []js.Value) interface{}{
+		"GetCellValue": func(this js.Value, args []js.Value) interface{} {
+			return js.ValueOf(mergeCell.GetCellValue())
+		},
+		"GetStartAxis": func(this js.Value, args []js.Value) interface{} {
+			return js.ValueOf(mergeCell.GetStartAxis())
+		},
+		"GetEndAxis": func(this js.Value, args []js.Value) interface{} {
+			return js.ValueOf(mergeCell.GetEndAxis())
+		},
 	} {
 		fn[name] = js.FuncOf(impl)
 	}
@@ -2057,6 +2076,32 @@ func GetHeaderFooter(f *excelize.File) func(this js.Value, args []js.Value) inte
 			reflect.TypeOf(excelize.HeaderFooterOptions{})); err == nil {
 			ret["opts"] = jsVal
 		}
+		return js.ValueOf(ret)
+	}
+}
+
+// GetMergeCells provides a function to get all merged cells from a specific
+// worksheet.
+func GetMergeCells(f *excelize.File) func(this js.Value, args []js.Value) interface{} {
+	return func(this js.Value, args []js.Value) interface{} {
+		ret := map[string]interface{}{"mergeCells": []interface{}{}, "error": nil}
+		if err := prepareArgs(args, []argsRule{
+			{types: []js.Type{js.TypeString}},
+		}); err != nil {
+			ret["error"] = err.Error()
+			return js.ValueOf(ret)
+		}
+		mergeCells, err := f.GetMergeCells(args[0].String())
+		if err != nil {
+			ret["error"] = err.Error()
+			return js.ValueOf(ret)
+		}
+		fn := map[string]interface{}{"error": nil}
+		result := make([]interface{}, len(mergeCells))
+		for i, mergeCell := range mergeCells {
+			result[i] = regMergeCellFunc(&mergeCell, fn)
+		}
+		ret["mergeCells"] = js.ValueOf(result)
 		return js.ValueOf(ret)
 	}
 }

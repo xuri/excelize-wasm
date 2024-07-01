@@ -797,6 +797,15 @@ declare module 'excelize-wasm' {
   };
 
   /**
+   * MergeCell define a merged cell data.
+   */
+  export interface MergeCell {
+    GetCellValue: () => string;
+    GetStartAxis: () => string;
+    GetEndAxis: () => string;
+  };
+
+  /**
    * PageLayoutOptions directly maps the settings of page layout.
    */
   export type PageLayoutOptions = {
@@ -2140,6 +2149,13 @@ declare module 'excelize-wasm' {
      * @param sheet The worksheet name
      */
     GetHeaderFooter(sheet: string): { opts: HeaderFooterOptions, error: string | null }
+
+    /**
+     * GetMergeCells provides a function to get all merged cells from a specific
+     * worksheet.
+     * @param sheet The worksheet name
+     */
+    GetMergeCells(sheet: string): { mergeCells: MergeCell[], error: string | null }
 
     /**
      * GetPageLayout provides a function to gets worksheet page layout.

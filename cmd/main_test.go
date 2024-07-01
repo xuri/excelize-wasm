@@ -1186,6 +1186,35 @@ func TestGetDefaultFont(t *testing.T) {
 	assert.EqualError(t, errArgNum, ret.Get("error").String())
 }
 
+func TestGetMergeCells(t *testing.T) {
+	f := NewFile(js.Value{}, []js.Value{})
+	assert.True(t, f.(js.Value).Get("error").IsNull())
+
+	ret := f.(js.Value).Call("SetCellValue", js.ValueOf("Sheet1"), js.ValueOf("A1"), js.ValueOf("value"))
+	assert.True(t, ret.Get("error").IsNull())
+
+	ret = f.(js.Value).Call("MergeCell", js.ValueOf("Sheet1"), js.ValueOf("A1"), js.ValueOf("C3"))
+	assert.True(t, ret.Get("error").IsNull())
+
+	ret = f.(js.Value).Call("GetMergeCells", js.ValueOf("Sheet1"))
+	assert.True(t, ret.Get("error").IsNull())
+
+	mergeCell := ret.Get("mergeCells").Index(0)
+	assert.Equal(t, "value", mergeCell.Call("GetCellValue").String())
+	assert.Equal(t, "A1", mergeCell.Call("GetStartAxis").String())
+	assert.Equal(t, "C3", mergeCell.Call("GetEndAxis").String())
+
+	ret = f.(js.Value).Call("GetMergeCells", js.ValueOf(1))
+	assert.EqualError(t, errArgType, ret.Get("error").String())
+
+	ret = f.(js.Value).Call("GetMergeCells")
+	assert.EqualError(t, errArgNum, ret.Get("error").String())
+
+	ret = f.(js.Value).Call("GetMergeCells", js.ValueOf("SheetN"))
+	assert.Equal(t, "sheet SheetN does not exist", ret.Get("error").String())
+	assert.Equal(t, 0, ret.Get("mergeCells").Length())
+}
+
 func TestGetRowHeight(t *testing.T) {
 	f := NewFile(js.Value{}, []js.Value{})
 	assert.True(t, f.(js.Value).Get("error").IsNull())
