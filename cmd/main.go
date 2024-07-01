@@ -415,11 +415,18 @@ func regInteropFunc(f *excelize.File, fn map[string]interface{}) interface{} {
 	return js.ValueOf(fn)
 }
 
+// regMergeCellFunc register functions that implemented MergeCell interface.
 func regMergeCellFunc(mergeCell *excelize.MergeCell, fn map[string]interface{}) interface{} {
 	for name, impl := range map[string]func(this js.Value, args []js.Value) interface{}{
-		"GetCellValue": GetCellValueFromMergeCell(mergeCell),
-		"GetStartAxis": GetStartAxisFromMergeCell(mergeCell),
-		"GetEndAxis":   GetEndAxisFromMergeCell(mergeCell),
+		"GetCellValue": func(this js.Value, args []js.Value) interface{} {
+			return js.ValueOf(mergeCell.GetCellValue())
+		},
+		"GetStartAxis": func(this js.Value, args []js.Value) interface{} {
+			return js.ValueOf(mergeCell.GetStartAxis())
+		},
+		"GetEndAxis": func(this js.Value, args []js.Value) interface{} {
+			return js.ValueOf(mergeCell.GetEndAxis())
+		},
 	} {
 		fn[name] = js.FuncOf(impl)
 	}
@@ -2073,7 +2080,8 @@ func GetHeaderFooter(f *excelize.File) func(this js.Value, args []js.Value) inte
 	}
 }
 
-// GetMergeCells provides a function to get all merged cells from a specific worksheet.
+// GetMergeCells provides a function to get all merged cells from a specific
+// worksheet.
 func GetMergeCells(f *excelize.File) func(this js.Value, args []js.Value) interface{} {
 	return func(this js.Value, args []js.Value) interface{} {
 		ret := map[string]interface{}{"mergeCells": []interface{}{}, "error": nil}
@@ -2491,27 +2499,6 @@ func GetSheetVisible(f *excelize.File) func(this js.Value, args []js.Value) inte
 			ret["error"] = err.Error()
 		}
 		return js.ValueOf(ret)
-	}
-}
-
-// GetCellValueFromMergeCell provides a function to get cell value from merge cell.
-func GetCellValueFromMergeCell(mergeCell *excelize.MergeCell) func(this js.Value, args []js.Value) interface{} {
-	return func(this js.Value, args []js.Value) interface{} {
-		return js.ValueOf(mergeCell.GetCellValue())
-	}
-}
-
-// GetStartAxisFromMergeCell provides a function to get start axis from merge cell.
-func GetStartAxisFromMergeCell(mergeCell *excelize.MergeCell) func(this js.Value, args []js.Value) interface{} {
-	return func(this js.Value, args []js.Value) interface{} {
-		return js.ValueOf(mergeCell.GetStartAxis())
-	}
-}
-
-// GetEndAxisFromMergeCell provides a function to get end axis from merge cell.
-func GetEndAxisFromMergeCell(mergeCell *excelize.MergeCell) func(this js.Value, args []js.Value) interface{} {
-	return func(this js.Value, args []js.Value) interface{} {
-		return js.ValueOf(mergeCell.GetEndAxis())
 	}
 }
 
