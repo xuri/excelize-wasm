@@ -399,19 +399,20 @@ declare module 'excelize-wasm' {
    * ChartAxis directly maps the format settings of the chart axis.
    */
   export type ChartAxis = {
-    None?:           boolean;
-    MajorGridLines?: boolean;
-    MinorGridLines?: boolean;
-    MajorUnit?:      number;
-    TickLabelSkip?:  number;
-    ReverseOrder?:   boolean;
-    Secondary?:      boolean;
-    Maximum?:        number;
-    Minimum?:        number;
-    Font?:           Font;
-    LogBase?:        number;
-    NumFmt?:         ChartNumFmt;
-    Title?:          RichTextRun[];
+    None?:              boolean;
+    MajorGridLines?:    boolean;
+    MinorGridLines?:    boolean;
+    MajorUnit?:         number;
+    TickLabelPosition?: ChartTickLabelPositionType;
+    TickLabelSkip?:     number;
+    ReverseOrder?:      boolean;
+    Secondary?:         boolean;
+    Maximum?:           number;
+    Minimum?:           number;
+    Font?:              Font;
+    LogBase?:           number;
+    NumFmt?:            ChartNumFmt;
+    Title?:             RichTextRun[];
   };
 
   /**
@@ -521,6 +522,17 @@ declare module 'excelize-wasm' {
     ChartDataLabelsPositionOutsideEnd,
     ChartDataLabelsPositionRight,
     ChartDataLabelsPositionAbove,
+  }
+
+  /**
+   * ChartTickLabelPositionType is the type of supported chart tick label
+   * position types.
+   */
+  export enum ChartTickLabelPositionType {
+    ChartTickLabelNextToAxis,
+    ChartTickLabelHigh,
+    ChartTickLabelLow,
+    ChartTickLabelNone,
   }
 
   /**
@@ -800,10 +812,21 @@ declare module 'excelize-wasm' {
    * MergeCell define a merged cell data.
    */
   export interface MergeCell {
+    /**
+     * GetCellValue returns merged cell value.
+     */
     GetCellValue: () => string;
+    /**
+     * GetStartAxis returns the top left cell reference of merged range, for
+     * example: "C2".
+     */
     GetStartAxis: () => string;
+    /**
+     * GetEndAxis returns the bottom right cell reference of merged range, for
+     * example: "D4".
+     */
     GetEndAxis: () => string;
-  };
+  }
 
   /**
    * PageLayoutOptions directly maps the settings of page layout.
@@ -2762,12 +2785,13 @@ declare module 'excelize-wasm' {
 
     /**
      * SetCellHyperLink provides a function to set cell hyperlink by given
-     * worksheet name and link URL address. LinkType defines two types of
+     * worksheet name and link URL address. LinkType defines three types of
      * hyperlink "External" for website or "Location" for moving to one of cell
-     * in this workbook. Maximum limit hyperlinks in a worksheet is 65530. This
-     * function is only used to set the hyperlink of the cell and doesn't
-     * affect the value of the cell. If you need to set the value of the cell,
-     * please use the other functions such as `SetCellStyle` or `SetSheetRow`.
+     * in this workbook or "None" for remove hyperlink. Maximum limit hyperlinks
+     * in a worksheet is 65530. This function is only used to set the hyperlink
+     * of the cell and doesn't affect the value of the cell. If you need to set
+     * the value of the cell, please use the other functions such as
+     * `SetCellStyle` or `SetSheetRow`.
      * @param sheet The worksheet name
      * @param cell The cell reference
      * @param link The hyperlink
@@ -3655,5 +3679,9 @@ declare module 'excelize-wasm' {
     ChartDataLabelsPositionOutsideEnd: typeof ChartDataLabelPositionType.ChartDataLabelsPositionOutsideEnd;
     ChartDataLabelsPositionRight:      typeof ChartDataLabelPositionType.ChartDataLabelsPositionRight;
     ChartDataLabelsPositionAbove:      typeof ChartDataLabelPositionType.ChartDataLabelsPositionAbove;
+    ChartTickLabelNextToAxis:          typeof ChartTickLabelPositionType.ChartTickLabelNextToAxis;
+		ChartTickLabelHigh:                typeof ChartTickLabelPositionType.ChartTickLabelHigh;
+		ChartTickLabelLow:                 typeof ChartTickLabelPositionType.ChartTickLabelLow;
+		ChartTickLabelNone:                typeof ChartTickLabelPositionType.ChartTickLabelNone;
   }>;
 }
