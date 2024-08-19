@@ -631,6 +631,10 @@ declare module 'excelize-wasm' {
 
   /**
    * PivotTableField directly maps the field settings of the pivot table.
+   *
+   * Name specifies the name of the data field. Maximum 255 characters
+   * are allowed in data field name, excess characters will be truncated.
+   *
    * Subtotal specifies the aggregation function that applies to this data
    * field. The default value is sum. The possible values for this attribute
    * are:
@@ -647,8 +651,9 @@ declare module 'excelize-wasm' {
    *	Var
    *	Varp
    *
-   * Name specifies the name of the data field. Maximum 255 characters
-   * are allowed in data field name, excess characters will be truncated.
+   * NumFmt specifies the number format ID of the data field, this filed only
+   * accepts built-in number format ID and does not support custom number format
+   * expression currently.
    */
   export type PivotTableField = {
     Compact?:         boolean;
@@ -657,6 +662,7 @@ declare module 'excelize-wasm' {
     Outline?:         boolean;
     Subtotal?:        string;
     DefaultSubtotal?: boolean;
+    NumFmt?:          number;
   };
 
   /**
@@ -851,7 +857,9 @@ declare module 'excelize-wasm' {
     BlackAndWhite?: boolean;
   };
 
-  // PageLayoutMarginsOptions directly maps the settings of page layout margins.
+  /**
+   * PageLayoutMarginsOptions directly maps the settings of page layout margins.
+   */
   export type PageLayoutMarginsOptions = {
     Bottom?:       number;
     Footer?:       number;
@@ -863,7 +871,9 @@ declare module 'excelize-wasm' {
     Vertically?:   boolean;
   };
 
-  // SheetPropsOptions directly maps the settings of sheet view.
+  /*
+   * SheetPropsOptions directly maps the settings of sheet view.
+   */
   export type SheetPropsOptions = {
     // Specifies a stable name of the sheet, which should not change over time,
     // and does not change from user input. This name should be used by code
@@ -3680,8 +3690,8 @@ declare module 'excelize-wasm' {
     ChartDataLabelsPositionRight:      typeof ChartDataLabelPositionType.ChartDataLabelsPositionRight;
     ChartDataLabelsPositionAbove:      typeof ChartDataLabelPositionType.ChartDataLabelsPositionAbove;
     ChartTickLabelNextToAxis:          typeof ChartTickLabelPositionType.ChartTickLabelNextToAxis;
-		ChartTickLabelHigh:                typeof ChartTickLabelPositionType.ChartTickLabelHigh;
-		ChartTickLabelLow:                 typeof ChartTickLabelPositionType.ChartTickLabelLow;
-		ChartTickLabelNone:                typeof ChartTickLabelPositionType.ChartTickLabelNone;
+    ChartTickLabelHigh:                typeof ChartTickLabelPositionType.ChartTickLabelHigh;
+    ChartTickLabelLow:                 typeof ChartTickLabelPositionType.ChartTickLabelLow;
+    ChartTickLabelNone:                typeof ChartTickLabelPositionType.ChartTickLabelNone;
   }>;
 }

@@ -4,8 +4,8 @@ go 1.18
 
 require (
 	github.com/stretchr/testify v1.8.4
-	github.com/xuri/excelize/v2 v2.8.2-0.20240713024157-9c278365f213
-	golang.org/x/image v0.18.0
+	github.com/xuri/excelize/v2 v2.8.2-0.20240817161802-9a386575152d
+	golang.org/x/image v0.19.0
 )
 
 require (
@@ -16,8 +16,8 @@ require (
 	github.com/richardlehane/msoleps v1.0.3 // indirect
 	github.com/xuri/efp v0.0.0-20240408161823-9ad904a10d6d // indirect
 	github.com/xuri/nfp v0.0.0-20240318013403-ab9948c2c4a7 // indirect
-	golang.org/x/crypto v0.25.0 // indirect
-	golang.org/x/net v0.27.0 // indirect
-	golang.org/x/text v0.16.0 // indirect
+	golang.org/x/crypto v0.26.0 // indirect
+	golang.org/x/net v0.28.0 // indirect
+	golang.org/x/text v0.17.0 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 )
