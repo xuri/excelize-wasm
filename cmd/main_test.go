@@ -675,6 +675,9 @@ func TestSlicer(t *testing.T) {
 		}))
 	assert.True(t, ret.Get("error").IsNull())
 
+	ret = f.(js.Value).Call("DeleteSlicer", js.ValueOf("Column1"))
+	assert.True(t, ret.Get("error").IsNull())
+
 	ret = f.(js.Value).Call("AddSlicer")
 	assert.EqualError(t, errArgNum, ret.Get("error").String())
 
@@ -694,6 +697,15 @@ func TestSlicer(t *testing.T) {
 			"Caption":    "Column1",
 		}))
 	assert.Equal(t, "sheet SheetN does not exist", ret.Get("error").String())
+
+	ret = f.(js.Value).Call("DeleteSlicer", js.ValueOf("X"))
+	assert.Equal(t, "slicer X does not exist", ret.Get("error").String())
+
+	ret = f.(js.Value).Call("DeleteSlicer")
+	assert.EqualError(t, errArgNum, ret.Get("error").String())
+
+	ret = f.(js.Value).Call("DeleteSlicer", js.ValueOf(nil))
+	assert.Equal(t, errArgType, ret.Get("error").String())
 }
 
 func TestAddSparkline(t *testing.T) {
