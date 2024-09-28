@@ -1999,6 +1999,13 @@ declare module 'excelize-wasm' {
     DeleteSheet(sheet: string): { error: string | null }
 
     /**
+     * DeleteSlicer provides the method to delete a slicer by a given slicer 
+     * name.
+     * @param name The slicer name
+     */
+    DeleteSlicer(name: string): { error: string | null }
+
+    /**
      * DeleteTable provides the method to delete table by given table name.
      * @param name The table name
      */

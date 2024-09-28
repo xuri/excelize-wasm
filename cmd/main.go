@@ -312,6 +312,7 @@ func regInteropFunc(f *excelize.File, fn map[string]interface{}) interface{} {
 		"DeleteFormControl":           DeleteFormControl(f),
 		"DeletePicture":               DeletePicture(f),
 		"DeleteSheet":                 DeleteSheet(f),
+		"DeleteSlicer":                DeleteSlicer(f),
 		"DeleteTable":                 DeleteTable(f),
 		"DuplicateRow":                DuplicateRow(f),
 		"DuplicateRowTo":              DuplicateRowTo(f),
@@ -1535,6 +1536,23 @@ func DeleteSheet(f *excelize.File) func(this js.Value, args []js.Value) interfac
 			return js.ValueOf(ret)
 		}
 		if err := f.DeleteSheet(args[0].String()); err != nil {
+			ret["error"] = err.Error()
+		}
+		return js.ValueOf(ret)
+	}
+}
+
+// DeleteSlicer provides the method to delete a slicer by a given slicer name.
+func DeleteSlicer(f *excelize.File) func(this js.Value, args []js.Value) interface{} {
+	return func(this js.Value, args []js.Value) interface{} {
+		ret := map[string]interface{}{"error": nil}
+		if err := prepareArgs(args, []argsRule{
+			{types: []js.Type{js.TypeString}},
+		}); err != nil {
+			ret["error"] = err.Error()
+			return js.ValueOf(ret)
+		}
+		if err := f.DeleteSlicer(args[0].String()); err != nil {
 			ret["error"] = err.Error()
 		}
 		return js.ValueOf(ret)
