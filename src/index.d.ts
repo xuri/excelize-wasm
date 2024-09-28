@@ -2004,13 +2004,13 @@ declare module 'excelize-wasm' {
      * @param name The slicer name
      */
     DeleteSlicer(name: string): { error: string | null }
-    
+
     /**
      * DeleteTable provides the method to delete table by given table name.
      * @param name The table name
      */
     DeleteTable(name: string): { error: string | null }
-    
+
     /**
      * DuplicateRow inserts a copy of specified row (by its Excel row number)
      * below. Use this method with caution, which will affect changes in
