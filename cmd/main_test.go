@@ -705,7 +705,7 @@ func TestSlicer(t *testing.T) {
 	assert.EqualError(t, errArgNum, ret.Get("error").String())
 
 	ret = f.(js.Value).Call("DeleteSlicer", js.ValueOf(nil))
-	assert.Equal(t, errArgType, ret.Get("error").String())
+	assert.EqualError(t, errArgType, ret.Get("error").String())
 }
 
 func TestAddSparkline(t *testing.T) {
