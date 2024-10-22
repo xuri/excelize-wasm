@@ -675,6 +675,11 @@ func TestSlicer(t *testing.T) {
 		}))
 	assert.True(t, ret.Get("error").IsNull())
 
+	ret = f.(js.Value).Call("GetSlicers", js.ValueOf("Sheet1"))
+	assert.True(t, ret.Get("error").IsNull())
+	assert.Equal(t, 1, ret.Get("slicers").Length())
+	assert.Equal(t, "Column1", ret.Get("slicers").Index(0).Get("Name").String())
+
 	ret = f.(js.Value).Call("DeleteSlicer", js.ValueOf("Column1"))
 	assert.True(t, ret.Get("error").IsNull())
 
@@ -696,6 +701,24 @@ func TestSlicer(t *testing.T) {
 			"TableName":  "Table1",
 			"Caption":    "Column1",
 		}))
+	assert.Equal(t, "sheet SheetN does not exist", ret.Get("error").String())
+
+	ret = f.(js.Value).Call("DeleteSlicer", js.ValueOf("X"))
+	assert.Equal(t, "slicer X does not exist", ret.Get("error").String())
+
+	ret = f.(js.Value).Call("DeleteSlicer")
+	assert.EqualError(t, errArgNum, ret.Get("error").String())
+
+	ret = f.(js.Value).Call("DeleteSlicer", js.ValueOf(nil))
+	assert.EqualError(t, errArgType, ret.Get("error").String())
+
+	ret = f.(js.Value).Call("GetSlicers")
+	assert.EqualError(t, errArgNum, ret.Get("error").String())
+
+	ret = f.(js.Value).Call("GetSlicers", js.ValueOf(nil))
+	assert.EqualError(t, errArgType, ret.Get("error").String())
+
+	ret = f.(js.Value).Call("GetSlicers", js.ValueOf("SheetN"))
 	assert.Equal(t, "sheet SheetN does not exist", ret.Get("error").String())
 
 	ret = f.(js.Value).Call("DeleteSlicer", js.ValueOf("X"))

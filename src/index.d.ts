@@ -31,7 +31,10 @@ declare module 'excelize-wasm' {
   export enum CultureName {
     CultureNameUnknown,
     CultureNameEnUS,
+    CultureNameJaJP,
+    CultureNameKoKR,
     CultureNameZhCN,
+    CultureNameZhTW,
   }
 
   /**
@@ -442,6 +445,7 @@ declare module 'excelize-wasm' {
    * ChartLineType defines the currently supported chart line types enumeration.
    */
   export enum ChartLineType {
+    ChartLineUnset,
     ChartLineSolid,
     ChartLineNone,
     ChartLineAutomatic,
@@ -619,6 +623,7 @@ declare module 'excelize-wasm' {
     UseAutoFormatting?:   boolean;
     PageOverThenDown?:    boolean;
     MergeItem?:           boolean;
+    ClassicLayout?:       boolean;
     CompactData ?:        boolean;
     ShowError?:           boolean;
     ShowRowHeaders?:      boolean;
@@ -626,6 +631,8 @@ declare module 'excelize-wasm' {
     ShowRowStripes?:      boolean;
     ShowColStripes?:      boolean;
     ShowLastColumn?:      boolean;
+    FieldPrintTitles?:    boolean;
+    ItemPrintTitles?:     boolean;
     PivotTableStyleName?: string;
   };
 
@@ -660,6 +667,8 @@ declare module 'excelize-wasm' {
     Data?:            string;
     Name?:            string;
     Outline?:         boolean;
+    ShowAll?:         boolean;
+    InsertBlankRow?:  boolean;
     Subtotal?:        string;
     DefaultSubtotal?: boolean;
     NumFmt?:          number;
@@ -1999,7 +2008,7 @@ declare module 'excelize-wasm' {
     DeleteSheet(sheet: string): { error: string | null }
 
     /**
-     * DeleteSlicer provides the method to delete a slicer by a given slicer 
+     * DeleteSlicer provides the method to delete a slicer by a given slicer
      * name.
      * @param name The slicer name
      */
@@ -2375,6 +2384,14 @@ declare module 'excelize-wasm' {
      * @param sheet The worksheet name
      */
     GetSheetVisible(sheet: string): { visible: boolean, error: string | null }
+
+    /**
+     * GetSlicers provides the method to get all slicers in a worksheet by a
+     * given worksheet name. Note that, this function does not support getting
+     * the height, width, and graphic options of the slicer shape currently.
+     * @param sheet The worksheet name
+     */
+    GetSlicers(sheet: number): { slicers: SlicerOptions[], error: string | null }
 
     /**
      * GetStyle provides a function to get style definition by given style index.
@@ -3619,7 +3636,10 @@ declare module 'excelize-wasm' {
     OpenReader:                        typeof OpenReader;
     CultureNameUnknown:                typeof CultureName.CultureNameUnknown;
     CultureNameEnUS:                   typeof CultureName.CultureNameEnUS;
+    CultureNameJaJP:                   typeof CultureName.CultureNameJaJP;
+    CultureNameKoKR:                   typeof CultureName.CultureNameKoKR;
     CultureNameZhCN:                   typeof CultureName.CultureNameZhCN;
+    CultureNameZhTW:                   typeof CultureName.CultureNameZhTW;
     FormControlNote:                   typeof FormControlType.FormControlNote;
     FormControlButton:                 typeof FormControlType.FormControlButton;
     FormControlOptionButton:           typeof FormControlType.FormControlOptionButton;

@@ -193,7 +193,10 @@ func regConstants() {
 		// CultureName enumeration
 		"CultureNameUnknown": int(excelize.CultureNameUnknown),
 		"CultureNameEnUS":    int(excelize.CultureNameEnUS),
+		"CultureNameJaJP":    int(excelize.CultureNameJaJP),
+		"CultureNameKoKR":    int(excelize.CultureNameKoKR),
 		"CultureNameZhCN":    int(excelize.CultureNameZhCN),
+		"CultureNameZhTW":    int(excelize.CultureNameZhTW),
 		// FormControlType enumeration
 		"FormControlNote":         int(excelize.FormControlNote),
 		"FormControlButton":       int(excelize.FormControlButton),
@@ -260,6 +263,7 @@ func regConstants() {
 		"Bubble":                      int(excelize.Bubble),
 		"Bubble3D":                    int(excelize.Bubble3D),
 		// ChartLineType enumeration
+		"ChartLineUnset":     int(excelize.ChartLineUnset),
 		"ChartLineSolid":     int(excelize.ChartLineSolid),
 		"ChartLineNone":      int(excelize.ChartLineNone),
 		"ChartLineAutomatic": int(excelize.ChartLineAutomatic),
@@ -354,6 +358,7 @@ func regInteropFunc(f *excelize.File, fn map[string]interface{}) interface{} {
 		"GetSheetProps":               GetSheetProps(f),
 		"GetSheetView":                GetSheetView(f),
 		"GetSheetVisible":             GetSheetVisible(f),
+		"GetSlicers":                  GetSlicers(f),
 		"GetStyle":                    GetStyle(f),
 		"GetTables":                   GetTables(f),
 		"GetWorkbookProps":            GetWorkbookProps(f),
@@ -2520,6 +2525,35 @@ func GetSheetVisible(f *excelize.File) func(this js.Value, args []js.Value) inte
 		}
 		if ret["visible"], err = f.GetSheetVisible(args[0].String()); err != nil {
 			ret["error"] = err.Error()
+		}
+		return js.ValueOf(ret)
+	}
+}
+
+// GetSlicers provides the method to get all slicers in a worksheet by a given
+// worksheet name. Note that, this function does not support getting the height,
+// width, and graphic options of the slicer shape currently.
+func GetSlicers(f *excelize.File) func(this js.Value, args []js.Value) interface{} {
+	return func(this js.Value, args []js.Value) interface{} {
+		ret := map[string]interface{}{"slicers": []interface{}{}, "error": nil}
+		if err := prepareArgs(args, []argsRule{
+			{types: []js.Type{js.TypeString}},
+		}); err != nil {
+			ret["error"] = err.Error()
+			return js.ValueOf(ret)
+		}
+		slicers, err := f.GetSlicers(args[0].String())
+		if err != nil {
+			ret["error"] = err.Error()
+			return js.ValueOf(ret)
+		}
+		for _, slicer := range slicers {
+			if jsVal, err := goValueToJS(reflect.ValueOf(slicer),
+				reflect.TypeOf(excelize.SlicerOptions{})); err == nil {
+				x := ret["slicers"].([]interface{})
+				x = append(x, jsVal)
+				ret["slicers"] = x
+			}
 		}
 		return js.ValueOf(ret)
 	}
