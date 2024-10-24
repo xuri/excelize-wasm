@@ -367,6 +367,7 @@ func regInteropFunc(f *excelize.File, fn map[string]interface{}) interface{} {
 		"InsertPageBreak":             InsertPageBreak(f),
 		"InsertRows":                  InsertRows(f),
 		"MergeCell":                   MergeCell(f),
+		"MoveSheet":                   MoveSheet(f),
 		"NewConditionalStyle":         NewConditionalStyle(f),
 		"NewSheet":                    NewSheet(f),
 		"NewStyle":                    NewStyle(f),
@@ -2762,6 +2763,28 @@ func MergeCell(f *excelize.File) func(this js.Value, args []js.Value) interface{
 			return js.ValueOf(ret)
 		}
 		if err := f.MergeCell(args[0].String(), args[1].String(), args[2].String()); err != nil {
+			ret["error"] = err.Error()
+		}
+		return js.ValueOf(ret)
+	}
+}
+
+// MoveSheet moves a sheet to a specified position in the workbook. The function
+// moves the source sheet before the target sheet. After moving, other sheets
+// will be shifted to the left or right. If the sheet is already at the target
+// position, the function will not perform any action. Not that this function
+// will be ungroup all sheets after moving.
+func MoveSheet(f *excelize.File) func(this js.Value, args []js.Value) interface{} {
+	return func(this js.Value, args []js.Value) interface{} {
+		ret := map[string]interface{}{"error": nil}
+		if err := prepareArgs(args, []argsRule{
+			{types: []js.Type{js.TypeString}},
+			{types: []js.Type{js.TypeString}},
+		}); err != nil {
+			ret["error"] = err.Error()
+			return js.ValueOf(ret)
+		}
+		if err := f.MoveSheet(args[0].String(), args[1].String()); err != nil {
 			ret["error"] = err.Error()
 		}
 		return js.ValueOf(ret)

@@ -1482,6 +1482,26 @@ func TestMergeCell(t *testing.T) {
 	assert.Equal(t, "sheet SheetN does not exist", ret.Get("error").String())
 }
 
+func TestMoveSheet(t *testing.T) {
+	f := NewFile(js.Value{}, []js.Value{})
+	assert.True(t, f.(js.Value).Get("error").IsNull())
+
+	ret := f.(js.Value).Call("NewSheet", js.ValueOf("Sheet2"))
+	assert.True(t, ret.Get("error").IsNull())
+
+	ret = f.(js.Value).Call("MoveSheet", js.ValueOf("Sheet2"), js.ValueOf("Sheet1"))
+	assert.True(t, ret.Get("error").IsNull())
+
+	ret = f.(js.Value).Call("MoveSheet", js.ValueOf("Sheet1"), js.ValueOf("SheetN"))
+	assert.Equal(t, "sheet SheetN does not exist", ret.Get("error").String())
+
+	ret = f.(js.Value).Call("MoveSheet")
+	assert.EqualError(t, errArgNum, ret.Get("error").String())
+
+	ret = f.(js.Value).Call("MoveSheet", js.ValueOf("Sheet1"), js.ValueOf(nil))
+	assert.EqualError(t, errArgType, ret.Get("error").String())
+}
+
 func TestNewConditionalStyle(t *testing.T) {
 	f := NewFile(js.Value{}, []js.Value{})
 	assert.True(t, f.(js.Value).Get("error").IsNull())

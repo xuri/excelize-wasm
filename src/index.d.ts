@@ -2489,6 +2489,23 @@ declare module 'excelize-wasm' {
     MergeCell(sheet: string, topLeftCell: string, bottomRightCell: string): { error: string | null }
 
     /**
+     * MoveSheet moves a sheet to a specified position in the workbook. The
+     * function moves the source sheet before the target sheet. After moving,
+     * other sheets will be shifted to the left or right. If the sheet is
+     * already at the target position, the function will not perform any action.
+     * Not that this function will be ungroup all sheets after moving. For
+     * example, move Sheet2 before Sheet1:
+     *
+     * ```typescript
+     * const { error } = f.MoveSheet('Sheet2', 'Sheet1');
+     * ```
+     *
+     * @param source The source sheet name
+     * @param target The target sheet name
+     */
+    MoveSheet(source: string, target: string): { error: string | null }
+
+    /**
      * NewConditionalStyle provides a function to create style for conditional
      * format by given style format. The parameters are the same with the
      * NewStyle function. Note that the color field uses RGB color code and
