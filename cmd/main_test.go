@@ -1094,6 +1094,29 @@ func TestGetCellStyle(t *testing.T) {
 	assert.Equal(t, 0, ret.Get("style").Int())
 }
 
+func TestGetCellType(t *testing.T) {
+	f := NewFile(js.Value{}, []js.Value{})
+	assert.True(t, f.(js.Value).Get("error").IsNull())
+
+	ret := f.(js.Value).Call("GetCellType", js.ValueOf("Sheet1"), js.ValueOf("A1"))
+	assert.True(t, ret.Get("error").IsNull())
+	assert.Equal(t, 0, ret.Get("cellType").Int())
+
+	ret = f.(js.Value).Call("SetCellValue", js.ValueOf("Sheet1"), js.ValueOf("A1"), js.ValueOf(true))
+	assert.True(t, ret.Get("error").IsNull())
+
+	ret = f.(js.Value).Call("GetCellType", js.ValueOf("Sheet1"), js.ValueOf("A1"))
+	assert.True(t, ret.Get("error").IsNull())
+	assert.Equal(t, 1, ret.Get("cellType").Int())
+
+	ret = f.(js.Value).Call("GetCellType")
+	assert.EqualError(t, errArgNum, ret.Get("error").String())
+
+	ret = f.(js.Value).Call("GetCellType", js.ValueOf("SheetN"), js.ValueOf("A1"))
+	assert.Equal(t, "sheet SheetN does not exist", ret.Get("error").String())
+	assert.Equal(t, 0, ret.Get("cellType").Int())
+}
+
 func TestGetCellValue(t *testing.T) {
 	f := NewFile(js.Value{}, []js.Value{})
 	assert.True(t, f.(js.Value).Get("error").IsNull())

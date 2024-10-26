@@ -38,6 +38,20 @@ declare module 'excelize-wasm' {
   }
 
   /**
+   * This section defines the cell value types enumeration.
+   */
+  export enum CellType {
+    CellTypeUnset,
+    CellTypeBool,
+    CellTypeDate,
+    CellTypeError,
+    CellTypeFormula,
+    CellTypeInlineString,
+    CellTypeNumber,
+    CellTypeSharedString,
+  }
+
+  /**
    * FormControlType is the type of supported form controls.
    */
   export enum FormControlType {
@@ -2098,6 +2112,14 @@ declare module 'excelize-wasm' {
     GetCellStyle(sheet: string, cell: string): { style: number, error: string | null }
 
     /**
+     * GetCellType provides a function to get the cell's data type by given
+     * worksheet name and cell reference in spreadsheet file.
+     * @param sheet The worksheet name
+     * @param cell The cell reference
+     */
+    GetCellStyle(sheet: string, cell: string): { cellType: CellType, error: string | null }
+
+    /**
      * GetCellValue provides a function to get formatted value from cell by
      * given worksheet name and cell reference in spreadsheet. The return value
      * is converted to the 'string' data type. If the cell format can be
@@ -3651,6 +3673,14 @@ declare module 'excelize-wasm' {
     ThemeColor:                        typeof ThemeColor,
     NewFile:                           typeof NewFile;
     OpenReader:                        typeof OpenReader;
+    CellTypeUnset:                     typeof CellType.CellTypeUnset;
+    CellTypeBool:                      typeof CellType.CellTypeBool;
+    CellTypeDate:                      typeof CellType.CellTypeDate;
+    CellTypeError:                     typeof CellType.CellTypeError;
+    CellTypeFormula:                   typeof CellType.CellTypeFormula;
+    CellTypeInlineString:              typeof CellType.CellTypeInlineString;
+    CellTypeNumber:                    typeof CellType.CellTypeNumber;
+    CellTypeSharedString:              typeof CellType.CellTypeSharedString;
     CultureNameUnknown:                typeof CultureName.CultureNameUnknown;
     CultureNameEnUS:                   typeof CultureName.CultureNameEnUS;
     CultureNameJaJP:                   typeof CultureName.CultureNameJaJP;

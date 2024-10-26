@@ -197,6 +197,15 @@ func regConstants() {
 		"CultureNameKoKR":    int(excelize.CultureNameKoKR),
 		"CultureNameZhCN":    int(excelize.CultureNameZhCN),
 		"CultureNameZhTW":    int(excelize.CultureNameZhTW),
+		// CellType enumeration
+		"CellTypeUnset":        int(excelize.CellTypeUnset),
+		"CellTypeBool":         int(excelize.CellTypeBool),
+		"CellTypeDate":         int(excelize.CellTypeDate),
+		"CellTypeError":        int(excelize.CellTypeError),
+		"CellTypeFormula":      int(excelize.CellTypeFormula),
+		"CellTypeInlineString": int(excelize.CellTypeInlineString),
+		"CellTypeNumber":       int(excelize.CellTypeNumber),
+		"CellTypeSharedString": int(excelize.CellTypeSharedString),
 		// FormControlType enumeration
 		"FormControlNote":         int(excelize.FormControlNote),
 		"FormControlButton":       int(excelize.FormControlButton),
@@ -327,6 +336,7 @@ func regInteropFunc(f *excelize.File, fn map[string]interface{}) interface{} {
 		"GetCellHyperLink":            GetCellHyperLink(f),
 		"GetCellRichText":             GetCellRichText(f),
 		"GetCellStyle":                GetCellStyle(f),
+		"GetCellType":                 GetCellType(f),
 		"GetCellValue":                GetCellValue(f),
 		"GetColOutlineLevel":          GetColOutlineLevel(f),
 		"GetCols":                     GetCols(f),
@@ -1784,6 +1794,29 @@ func GetCellStyle(f *excelize.File) func(this js.Value, args []js.Value) interfa
 		if err != nil {
 			ret["error"] = err.Error()
 		}
+		return js.ValueOf(ret)
+	}
+}
+
+// GetCellType provides a function to get the cell's data type by given
+// worksheet name and cell reference in spreadsheet file.
+func GetCellType(f *excelize.File) func(this js.Value, args []js.Value) interface{} {
+	return func(this js.Value, args []js.Value) interface{} {
+		ret := map[string]interface{}{"cellType": 0, "error": nil}
+		err := prepareArgs(args, []argsRule{
+			{types: []js.Type{js.TypeString}},
+			{types: []js.Type{js.TypeString}},
+		})
+		if err != nil {
+			ret["error"] = err.Error()
+			return js.ValueOf(ret)
+		}
+		var cellType excelize.CellType
+		cellType, err = f.GetCellType(args[0].String(), args[1].String())
+		if err != nil {
+			ret["error"] = err.Error()
+		}
+		ret["cellType"] = int(cellType)
 		return js.ValueOf(ret)
 	}
 }
