@@ -615,6 +615,30 @@ declare module 'excelize-wasm' {
   };
 
   /**
+   * HeaderFooterImagePositionType is the type of header and footer image
+   * position.
+   */
+  export enum HeaderFooterImagePositionType {
+    HeaderFooterImagePositionLeft,
+    HeaderFooterImagePositionCenter,
+    HeaderFooterImagePositionRight,
+  }
+
+  /**
+   * HeaderFooterImageOptions defines the settings for an image to be accessible
+   * from the worksheet header and footer options.
+   */
+  export type HeaderFooterImageOptions = {
+    Position?:  HeaderFooterImagePositionType;
+    File:      Uint8Array;
+    IsFooter?:  boolean;
+    FirstPage?: boolean;
+    Extension: string;
+    Width?:     string;
+    Height?:    string;
+  };
+
+  /**
    * PivotTableOptions directly maps the format settings of the pivot table.
    *
    *  PivotTableStyleName: The built-in pivot table style names
@@ -878,6 +902,9 @@ declare module 'excelize-wasm' {
     FitToWidth?: number;
     // BlackAndWhite specified print black and white.
     BlackAndWhite?: boolean;
+    // PageOrder specifies the ordering of multiple pages. Values
+	  // accepted: overThenDown, downThenOver
+	  PageOrder?: string;
   };
 
   /**
@@ -1793,6 +1820,19 @@ declare module 'excelize-wasm' {
      * @param opts The form control options
      */
     AddFormControl(sheet: string, opts: FormControl): { error: string | null }
+
+    /**
+     * AddHeaderFooterImage provides a mechanism to set the graphics that can be
+     * referenced in the header and footer definitions via &G, supported image
+     * types: EMF, EMZ, GIF, JPEG, JPG, PNG, SVG, TIF, TIFF, WMF, and WMZ.
+     *
+     * The extension should be provided with a "." in front, e.g. ".png".
+     * The width and height should have units in them, e.g. "100pt".
+     *
+     * @param sheet The worksheet name
+     * @param opts The header footer image options
+     */
+    AddHeaderFooterImage(sheet: string, opts: HeaderFooterImageOptions): { error: string | null }
 
     /**
      * AddPivotTable provides the method to add pivot table by given pivot
@@ -3249,7 +3289,7 @@ declare module 'excelize-wasm' {
      *                             |
      *      &F                     | Current workbook's file name
      *                             |
-     *      &G                     | Drawing object as background (Not support currently)
+     *      &G                     | Drawing object as background (Use AddHeaderFooterImage)
      *                             |
      *      &H                     | Shadow text format
      *                             |
@@ -3767,5 +3807,8 @@ declare module 'excelize-wasm' {
     ChartTickLabelHigh:                typeof ChartTickLabelPositionType.ChartTickLabelHigh;
     ChartTickLabelLow:                 typeof ChartTickLabelPositionType.ChartTickLabelLow;
     ChartTickLabelNone:                typeof ChartTickLabelPositionType.ChartTickLabelNone;
+    HeaderFooterImagePositionLeft:     typeof HeaderFooterImagePositionType.HeaderFooterImagePositionLeft;
+    HeaderFooterImagePositionCenter:   typeof HeaderFooterImagePositionType.HeaderFooterImagePositionCenter;
+    HeaderFooterImagePositionRight:    typeof HeaderFooterImagePositionType.HeaderFooterImagePositionRight;
   }>;
 }

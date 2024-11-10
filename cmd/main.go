@@ -292,6 +292,10 @@ func regConstants() {
 		"ChartTickLabelHigh":       int(excelize.ChartTickLabelHigh),
 		"ChartTickLabelLow":        int(excelize.ChartTickLabelLow),
 		"ChartTickLabelNone":       int(excelize.ChartTickLabelNone),
+		// HeaderFooterImagePositionType enumeration
+		"HeaderFooterImagePositionLeft":   int(excelize.HeaderFooterImagePositionLeft),
+		"HeaderFooterImagePositionCenter": int(excelize.HeaderFooterImagePositionCenter),
+		"HeaderFooterImagePositionRight":  int(excelize.HeaderFooterImagePositionRight),
 		// PictureInsertType enumeration
 		"PictureInsertTypePlaceOverCells": int(excelize.PictureInsertTypePlaceOverCells),
 		"PictureInsertTypePlaceInCell":    int(excelize.PictureInsertTypePlaceInCell),
@@ -309,6 +313,7 @@ func regInteropFunc(f *excelize.File, fn map[string]interface{}) interface{} {
 		"AddComment":                  AddComment(f),
 		"AddDataValidation":           AddDataValidation(f),
 		"AddFormControl":              AddFormControl(f),
+		"AddHeaderFooterImage":        AddHeaderFooterImage(f),
 		"AddPictureFromBytes":         AddPictureFromBytes(f),
 		"AddPivotTable":               AddPivotTable(f),
 		"AddShape":                    AddShape(f),
@@ -1156,6 +1161,36 @@ func AddFormControl(f *excelize.File) func(this js.Value, args []js.Value) inter
 		}
 		opts = goVal.Elem().Interface().(excelize.FormControl)
 		if err := f.AddFormControl(args[0].String(), opts); err != nil {
+			ret["error"] = err.Error()
+		}
+		return js.ValueOf(ret)
+	}
+}
+
+// AddHeaderFooterImage provides a mechanism to set the graphics that can be
+// referenced in the header and footer definitions via &G, supported image
+// types: EMF, EMZ, GIF, JPEG, JPG, PNG, SVG, TIF, TIFF, WMF, and WMZ.
+//
+// The extension should be provided with a "." in front, e.g. ".png".
+// The width and height should have units in them, e.g. "100pt".
+func AddHeaderFooterImage(f *excelize.File) func(this js.Value, args []js.Value) interface{} {
+	return func(this js.Value, args []js.Value) interface{} {
+		ret := map[string]interface{}{"error": nil}
+		if err := prepareArgs(args, []argsRule{
+			{types: []js.Type{js.TypeString}},
+			{types: []js.Type{js.TypeObject}},
+		}); err != nil {
+			ret["error"] = err.Error()
+			return js.ValueOf(ret)
+		}
+		var opts excelize.HeaderFooterImageOptions
+		goVal, err := jsValueToGo(args[1], reflect.TypeOf(excelize.HeaderFooterImageOptions{}))
+		if err != nil {
+			ret["error"] = err.Error()
+			return js.ValueOf(ret)
+		}
+		opts = goVal.Elem().Interface().(excelize.HeaderFooterImageOptions)
+		if err := f.AddHeaderFooterImage(args[0].String(), &opts); err != nil {
 			ret["error"] = err.Error()
 		}
 		return js.ValueOf(ret)

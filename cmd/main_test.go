@@ -492,6 +492,49 @@ func TestFormControl(t *testing.T) {
 	assert.Equal(t, "sheet SheetN does not exist", ret.Get("error").String())
 }
 
+func TestAddHeaderFooterImage(t *testing.T) {
+	buf, err := os.ReadFile(filepath.Join("..", "chart.png"))
+	assert.NoError(t, err)
+
+	uint8Array := js.Global().Get("Uint8Array").New(js.ValueOf(len(buf)))
+	for k, v := range buf {
+		uint8Array.SetIndex(k, v)
+	}
+
+	f := NewFile(js.Value{}, []js.Value{})
+	assert.True(t, f.(js.Value).Get("error").IsNull())
+
+	opts := js.ValueOf(map[string]interface{}{
+		"File":      js.ValueOf(uint8Array),
+		"IsFooter":  true,
+		"FirstPage": true,
+		"Extension": ".png",
+		"Width":     "50pt",
+		"Height":    "32pt",
+	})
+	ret := f.(js.Value).Call("AddHeaderFooterImage", js.ValueOf("Sheet1"), opts)
+	assert.True(t, ret.Get("error").IsNull(), ret.Get("error").String())
+
+	ret = f.(js.Value).Call("AddHeaderFooterImage", js.ValueOf("Sheet1"),
+		js.ValueOf(map[string]interface{}{"File": js.ValueOf(uint8Array), "Extension": "png"}),
+	)
+	assert.Equal(t, "unsupported image extension", ret.Get("error").String())
+
+	ret = f.(js.Value).Call("AddHeaderFooterImage")
+	assert.EqualError(t, errArgNum, ret.Get("error").String())
+
+	ret = f.(js.Value).Call("AddHeaderFooterImage", js.ValueOf("Sheet1"), js.ValueOf(true))
+	assert.EqualError(t, errArgType, ret.Get("error").String())
+
+	ret = f.(js.Value).Call("AddHeaderFooterImage", js.ValueOf("Sheet1"),
+		js.ValueOf(map[string]interface{}{"Extension": true}),
+	)
+	assert.EqualError(t, errArgType, ret.Get("error").String())
+
+	ret = f.(js.Value).Call("AddHeaderFooterImage", js.ValueOf("SheetN"), opts)
+	assert.Equal(t, "sheet SheetN does not exist", ret.Get("error").String())
+}
+
 func TestAddPictureFromBytes(t *testing.T) {
 	buf, err := os.ReadFile(filepath.Join("..", "chart.png"))
 	assert.NoError(t, err)
@@ -2241,6 +2284,7 @@ func TestPageLayout(t *testing.T) {
 			"FitToHeight":     2,
 			"FitToWidth":      2,
 			"BlackAndWhite":   true,
+			"PageOrder":       "overThenDown",
 		}),
 	)
 	assert.True(t, ret.Get("error").IsNull())
