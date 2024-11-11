@@ -1364,6 +1364,36 @@ func TestGetRowVisible(t *testing.T) {
 	assert.False(t, ret.Get("visible").Bool())
 }
 
+func TestSheetDimension(t *testing.T) {
+	f := NewFile(js.Value{}, []js.Value{})
+	assert.True(t, f.(js.Value).Get("error").IsNull())
+
+	ret := f.(js.Value).Call("SetSheetDimension", js.ValueOf("Sheet1"), js.ValueOf("A1:D5"))
+	assert.True(t, ret.Get("error").IsNull())
+
+	ret = f.(js.Value).Call("GetSheetDimension", js.ValueOf("Sheet1"))
+	assert.Equal(t, "A1:D5", ret.Get("dimension").String())
+	assert.True(t, ret.Get("error").IsNull())
+
+	ret = f.(js.Value).Call("SetSheetDimension", js.ValueOf("Sheet1"), js.ValueOf(true))
+	assert.EqualError(t, errArgType, ret.Get("error").String())
+
+	ret = f.(js.Value).Call("SetSheetDimension")
+	assert.EqualError(t, errArgNum, ret.Get("error").String())
+
+	ret = f.(js.Value).Call("SetSheetDimension", js.ValueOf("SheetN"), js.ValueOf("A1:D5"))
+	assert.Equal(t, "sheet SheetN does not exist", ret.Get("error").String())
+
+	ret = f.(js.Value).Call("GetSheetDimension", js.ValueOf(true))
+	assert.EqualError(t, errArgType, ret.Get("error").String())
+
+	ret = f.(js.Value).Call("GetSheetDimension")
+	assert.EqualError(t, errArgNum, ret.Get("error").String())
+
+	ret = f.(js.Value).Call("GetSheetDimension", js.ValueOf("SheetN"))
+	assert.Equal(t, "sheet SheetN does not exist", ret.Get("error").String())
+}
+
 func TestGetRows(t *testing.T) {
 	f := NewFile(js.Value{}, []js.Value{})
 	assert.True(t, f.(js.Value).Get("error").IsNull())

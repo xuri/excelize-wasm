@@ -366,6 +366,7 @@ func regInteropFunc(f *excelize.File, fn map[string]interface{}) interface{} {
 		"GetRowOutlineLevel":          GetRowOutlineLevel(f),
 		"GetRows":                     GetRows(f),
 		"GetRowVisible":               GetRowVisible(f),
+		"GetSheetDimension":           GetSheetDimension(f),
 		"GetSheetIndex":               GetSheetIndex(f),
 		"GetSheetList":                GetSheetList(f),
 		"GetSheetMap":                 GetSheetMap(f),
@@ -423,6 +424,7 @@ func regInteropFunc(f *excelize.File, fn map[string]interface{}) interface{} {
 		"SetRowVisible":               SetRowVisible(f),
 		"SetSheetBackgroundFromBytes": SetSheetBackgroundFromBytes(f),
 		"SetSheetCol":                 SetSheetCol(f),
+		"SetSheetDimension":           SetSheetDimension(f),
 		"SetSheetName":                SetSheetName(f),
 		"SetSheetProps":               SetSheetProps(f),
 		"SetSheetRow":                 SetSheetRow(f),
@@ -2412,6 +2414,24 @@ func GetRowVisible(f *excelize.File) func(this js.Value, args []js.Value) interf
 	}
 }
 
+// GetSheetDimension provides the method to get the used range of the worksheet.
+func GetSheetDimension(f *excelize.File) func(this js.Value, args []js.Value) interface{} {
+	return func(this js.Value, args []js.Value) interface{} {
+		ret := map[string]interface{}{"dimension": false, "error": nil}
+		err := prepareArgs(args, []argsRule{
+			{types: []js.Type{js.TypeString}},
+		})
+		if err != nil {
+			ret["error"] = err.Error()
+			return js.ValueOf(ret)
+		}
+		if ret["dimension"], err = f.GetSheetDimension(args[0].String()); err != nil {
+			ret["error"] = err.Error()
+		}
+		return js.ValueOf(ret)
+	}
+}
+
 // GetRows return all the rows in a sheet by given worksheet name, returned as
 // a two-dimensional array, where the value of the cell is converted to the
 // string type. If the cell format can be applied to the value of the cell,
@@ -3828,6 +3848,28 @@ func SetSheetCol(f *excelize.File) func(this js.Value, args []js.Value) interfac
 			}
 		}
 		if err := f.SetSheetCol(args[0].String(), args[1].String(), &slice); err != nil {
+			ret["error"] = err.Error()
+		}
+		return js.ValueOf(ret)
+	}
+}
+
+// SetSheetDimension provides the method to set or remove the used range of the
+// worksheet by a given range reference. It specifies the row and column bounds
+// of used cells in the worksheet. The range reference is set using the A1
+// reference style(e.g., "A1:D5"). Passing an empty range reference will remove
+// the used range of the worksheet.
+func SetSheetDimension(f *excelize.File) func(this js.Value, args []js.Value) interface{} {
+	return func(this js.Value, args []js.Value) interface{} {
+		ret := map[string]interface{}{"error": nil}
+		if err := prepareArgs(args, []argsRule{
+			{types: []js.Type{js.TypeString}},
+			{types: []js.Type{js.TypeString}},
+		}); err != nil {
+			ret["error"] = err.Error()
+			return js.ValueOf(ret)
+		}
+		if err := f.SetSheetDimension(args[0].String(), args[1].String()); err != nil {
 			ret["error"] = err.Error()
 		}
 		return js.ValueOf(ret)

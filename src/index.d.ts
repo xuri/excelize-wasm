@@ -2368,6 +2368,12 @@ declare module 'excelize-wasm' {
     GetRowVisible(sheet: string, row: number): { visible: boolean, error: string | null }
 
     /**
+     * GetSheetDimension provides the method to get the used range of the worksheet.
+     * @param sheet The worksheet name
+     */
+    GetSheetDimension(sheet: string): { dimension: string, error: string | null }
+
+    /**
      * GetRows return all the rows in a sheet by given worksheet name, returned
      * as a two-dimensional array, where the value of the cell is converted to
      * the string type. If the cell format can be applied to the value of the
@@ -3576,6 +3582,17 @@ declare module 'excelize-wasm' {
      * @param picture The contents buffer of the file
      */
     SetSheetBackgroundFromBytes(sheet: string, extension: string, picture: Uint8Array): { error: string | null }
+
+    /**
+     * SetSheetDimension provides the method to set or remove the used range of
+     * the worksheet by a given range reference. It specifies the row and column
+     * bounds of used cells in the worksheet. The range reference is set using
+     * the A1 reference style(e.g., "A1:D5"). Passing an empty range reference
+     * will remove the used range of the worksheet.
+     * @param sheet The worksheet name
+     * @param rangeRef The top-left and right-bottom cell range reference
+     */
+    SetSheetDimension(sheet: string, rangeRef: string): { error: string | null }
 
     /**
      * SetSheetName provides a function to set the worksheet name by given
