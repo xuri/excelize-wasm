@@ -62,7 +62,7 @@ init('./node_modules/excelize-wasm/excelize.wasm.gz').then((excelize) => {
     console.log(f.error);
     return;
   }
-  // 创建一个工作表
+  // 新建一张工作表
   const { index } = f.NewSheet('Sheet2');
   // 设置单元格的值
   f.SetCellValue('Sheet2', 'A2', 'Hello world.');

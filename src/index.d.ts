@@ -426,6 +426,7 @@ declare module 'excelize-wasm' {
     Secondary?:         boolean;
     Maximum?:           number;
     Minimum?:           number;
+    Alignment?:         Alignment;
     Font?:              Font;
     LogBase?:           number;
     NumFmt?:            ChartNumFmt;
@@ -572,6 +573,8 @@ declare module 'excelize-wasm' {
     ShowBlanksAs?: string;
     BubbleSize?:   number;
     HoleSize?:     number;
+    GapWidth?:     number;
+    Overlap?:      number;
   };
 
   /**
@@ -892,9 +895,9 @@ declare module 'excelize-wasm' {
     // FirstPageNumber specified the first printed page number. If no value is
     // specified, then 'automatic' is assumed.
     FirstPageNumber?: number;
-    // AdjustTo defines the print scaling. This attribute is restricted to
-    // value ranging from 10 (10%) to 400 (400%). This setting is overridden
-    // when fitToWidth and/or fitToHeight are in use.
+    // AdjustTo defines the print scaling. This attribute is restricted to value
+    // ranging from 10 (10%) to 400 (400%). This setting is overridden when
+    // fitToWidth and/or fitToHeight are in use.
     AdjustTo?: number;
     // FitToHeight specified the number of vertical pages to fit on.
     FitToHeight?: number;
@@ -902,8 +905,8 @@ declare module 'excelize-wasm' {
     FitToWidth?: number;
     // BlackAndWhite specified print black and white.
     BlackAndWhite?: boolean;
-    // PageOrder specifies the ordering of multiple pages. Values
-	  // accepted: overThenDown, downThenOver
+    // PageOrder specifies the ordering of multiple pages. Values accepted:
+    // overThenDown and downThenOver
 	  PageOrder?: string;
   };
 
@@ -1411,6 +1414,7 @@ declare module 'excelize-wasm' {
      *      ReverseOrder
      *      Maximum
      *      Minimum
+     *      Alignment
      *      Font
      *      NumFmt
      *      Title
@@ -1425,6 +1429,7 @@ declare module 'excelize-wasm' {
      *      ReverseOrder
      *      Maximum
      *      Minimum
+     *      Alignment
      *      Font
      *      LogBase
      *      NumFmt
@@ -1457,6 +1462,24 @@ declare module 'excelize-wasm' {
      *
      * Minimum: Specifies that the fixed minimum, 0 is auto. The 'Minimum'
      * property is optional. The default value is auto.
+     *
+     * Alignment: Specifies that the alignment of the horizontal and vertical
+     * axis. The properties of alignment that can be set are:
+     *
+     *      TextRotation
+     *      Vertical
+     *
+     * The value of 'TextRotation' that can be set from -90 to 90:
+     *
+     * The value of 'Vertical' that can be set are:
+     *
+     *      horz
+     *      vert
+     *      vert270
+     *      wordArtVert
+     *      eaVert
+     *      mongolianVert
+     *      wordArtVertRtl
      *
      * Font: Specifies that the font of the horizontal and vertical axis. The
      * properties of font that can be set are:
@@ -1491,6 +1514,14 @@ declare module 'excelize-wasm' {
      * 'HoleSize' property. The 'HoleSize' property is optional. The default
      * width is 75, and the value should be great than 0 and less or equal than
      * 90.
+     *
+     * Set the gap with of the column and bar series chart by 'GapWidth'
+     * property. The 'GapWidth' property is optional. The default width is 150,
+     * and the value should be great or equal than 0 and less or equal than 500.
+     *
+     * Set series overlap of the column and bar series chart by 'Overlap'
+     * property. The 'Overlap' property is optional. The default width is 0, and
+     * the value should be great or equal than -100 and less or equal than 100.
      *
      * combo: Specifies the create a chart that combines two or more chart types
      * in a single chart. For example, create a clustered column - line chart
