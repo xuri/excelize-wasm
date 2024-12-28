@@ -296,6 +296,16 @@ func regConstants() {
 		"HeaderFooterImagePositionLeft":   int(excelize.HeaderFooterImagePositionLeft),
 		"HeaderFooterImagePositionCenter": int(excelize.HeaderFooterImagePositionCenter),
 		"HeaderFooterImagePositionRight":  int(excelize.HeaderFooterImagePositionRight),
+		// IgnoredErrorsType enumeration
+		"IgnoredErrorsEvalError":          int(excelize.IgnoredErrorsEvalError),
+		"IgnoredErrorsTwoDigitTextYear":   int(excelize.IgnoredErrorsTwoDigitTextYear),
+		"IgnoredErrorsNumberStoredAsText": int(excelize.IgnoredErrorsNumberStoredAsText),
+		"IgnoredErrorsFormula":            int(excelize.IgnoredErrorsFormula),
+		"IgnoredErrorsFormulaRange":       int(excelize.IgnoredErrorsFormulaRange),
+		"IgnoredErrorsUnlockedFormula":    int(excelize.IgnoredErrorsUnlockedFormula),
+		"IgnoredErrorsEmptyCellReference": int(excelize.IgnoredErrorsEmptyCellReference),
+		"IgnoredErrorsListDataValidation": int(excelize.IgnoredErrorsListDataValidation),
+		"IgnoredErrorsCalculatedColumn":   int(excelize.IgnoredErrorsCalculatedColumn),
 		// PictureInsertType enumeration
 		"PictureInsertTypePlaceOverCells": int(excelize.PictureInsertTypePlaceOverCells),
 		"PictureInsertTypePlaceInCell":    int(excelize.PictureInsertTypePlaceInCell),
@@ -314,12 +324,14 @@ func regInteropFunc(f *excelize.File, fn map[string]interface{}) interface{} {
 		"AddDataValidation":           AddDataValidation(f),
 		"AddFormControl":              AddFormControl(f),
 		"AddHeaderFooterImage":        AddHeaderFooterImage(f),
+		"AddIgnoredErrors":            AddIgnoredErrors(f),
 		"AddPictureFromBytes":         AddPictureFromBytes(f),
 		"AddPivotTable":               AddPivotTable(f),
 		"AddShape":                    AddShape(f),
 		"AddSlicer":                   AddSlicer(f),
 		"AddSparkline":                AddSparkline(f),
 		"AddTable":                    AddTable(f),
+		"AddVBAProject":               AddVBAProject(f),
 		"AutoFilter":                  AutoFilter(f),
 		"CalcCellValue":               CalcCellValue(f),
 		"CopySheet":                   CopySheet(f),
@@ -1199,6 +1211,25 @@ func AddHeaderFooterImage(f *excelize.File) func(this js.Value, args []js.Value)
 	}
 }
 
+// AddIgnoredErrors provides the method to ignored error for a range of cells.
+func AddIgnoredErrors(f *excelize.File) func(this js.Value, args []js.Value) interface{} {
+	return func(this js.Value, args []js.Value) interface{} {
+		ret := map[string]interface{}{"error": nil}
+		if err := prepareArgs(args, []argsRule{
+			{types: []js.Type{js.TypeString}},
+			{types: []js.Type{js.TypeString}},
+			{types: []js.Type{js.TypeNumber}},
+		}); err != nil {
+			ret["error"] = err.Error()
+			return js.ValueOf(ret)
+		}
+		if err := f.AddIgnoredErrors(args[0].String(), args[1].String(), excelize.IgnoredErrorsType(args[2].Int())); err != nil {
+			ret["error"] = err.Error()
+		}
+		return js.ValueOf(ret)
+	}
+}
+
 // AddPictureFromBytes provides the method to add picture in a sheet by given
 // picture format set (such as offset, scale, aspect ratio setting and print
 // settings), file base name, extension name and file bytes.
@@ -1355,6 +1386,26 @@ func AddTable(f *excelize.File) func(this js.Value, args []js.Value) interface{}
 		}
 		opts = goVal.Elem().Interface().(excelize.Table)
 		if err := f.AddTable(args[0].String(), &opts); err != nil {
+			ret["error"] = err.Error()
+		}
+		return js.ValueOf(ret)
+	}
+}
+
+// AddVBAProject provides the method to add vbaProject.bin file which contains
+// functions and/or macros. The file extension should be XLSM or XLTM.
+func AddVBAProject(f *excelize.File) func(this js.Value, args []js.Value) interface{} {
+	return func(this js.Value, args []js.Value) interface{} {
+		ret := map[string]interface{}{"error": nil}
+		if err := prepareArgs(args, []argsRule{
+			{types: []js.Type{js.TypeObject}},
+		}); err != nil {
+			ret["error"] = err.Error()
+			return js.ValueOf(ret)
+		}
+		buf := make([]byte, args[0].Get("length").Int())
+		js.CopyBytesToGo(buf, args[0])
+		if err := f.AddVBAProject(buf); err != nil {
 			ret["error"] = err.Error()
 		}
 		return js.ValueOf(ret)
@@ -3314,7 +3365,7 @@ func SetCellInt(f *excelize.File) func(this js.Value, args []js.Value) interface
 }
 
 // SetCellRichText provides a function to set cell with rich text by given
-// worksheet.
+// worksheet name, cell reference and rich text runs.
 func SetCellRichText(f *excelize.File) func(this js.Value, args []js.Value) interface{} {
 	return func(this js.Value, args []js.Value) interface{} {
 		ret := map[string]interface{}{"error": nil}

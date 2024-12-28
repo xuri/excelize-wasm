@@ -628,6 +628,21 @@ declare module 'excelize-wasm' {
   }
 
   /**
+   * IgnoredErrorsType is the type of ignored errors.
+   */
+  export enum IgnoredErrorsType {
+    IgnoredErrorsEvalError,
+    IgnoredErrorsTwoDigitTextYear,
+    IgnoredErrorsNumberStoredAsText,
+    IgnoredErrorsFormula,
+    IgnoredErrorsFormulaRange,
+    IgnoredErrorsUnlockedFormula,
+    IgnoredErrorsEmptyCellReference,
+    IgnoredErrorsListDataValidation,
+    IgnoredErrorsCalculatedColumn,
+  }
+
+  /**
    * HeaderFooterImageOptions defines the settings for an image to be accessible
    * from the worksheet header and footer options.
    */
@@ -1699,6 +1714,15 @@ declare module 'excelize-wasm' {
     AddDataValidation(sheet: string, dv: DataValidation): { error: string | null }
 
     /**
+     * AddDataValidation provides the method to ignored error for a range of
+     * cells.
+     * @param sheet The worksheet name
+     * @param rangeRef The top-left and right-bottom cell range reference
+     * @param ignoredErrorsType The enumeration value of ignored errors type
+     */
+    AddIgnoredErrors(sheet: string, rangeRef: string, ignoredErrorsType: IgnoredErrorsType): { error: string | null }
+
+    /**
      * AddPictureFromBytes provides the method to add picture in a sheet by given
      * picture format set (such as offset, scale, aspect ratio setting and print
      * settings), file base name, extension name and file bytes, supported image
@@ -1999,6 +2023,14 @@ declare module 'excelize-wasm' {
      * @param opts The table options
      */
     AddTable(sheet: string, opts: TableOptions): { error: string | null }
+
+    /**
+     * AddVBAProject provides the method to add vbaProject.bin file which
+     * contains functions and/or macros. The file extension should be XLSM or
+     * XLTM.
+     * @param file The contents buffer of the vbaProject.bin file
+     */
+    AddVBAProject(file: Uint8Array): { error: string | null }
 
     /**
      * AutoFilter provides the method to add auto filter in a worksheet by
@@ -2970,8 +3002,8 @@ declare module 'excelize-wasm' {
 
     /**
      * SetCellRichText provides a function to set cell with rich text by given
-     * worksheet. For example, set rich text on the A1 cell of the worksheet
-     * named Sheet1:
+     * worksheet name, cell reference and rich text runs. For example, set rich
+     * text on the A1 cell of the worksheet named Sheet1:
      *
      * ```typescript
      * const { init } = require('excelize-wasm');
@@ -3858,5 +3890,14 @@ declare module 'excelize-wasm' {
     HeaderFooterImagePositionLeft:     typeof HeaderFooterImagePositionType.HeaderFooterImagePositionLeft;
     HeaderFooterImagePositionCenter:   typeof HeaderFooterImagePositionType.HeaderFooterImagePositionCenter;
     HeaderFooterImagePositionRight:    typeof HeaderFooterImagePositionType.HeaderFooterImagePositionRight;
+    IgnoredErrorsEvalError:            typeof IgnoredErrorsType.IgnoredErrorsEvalError;
+    IgnoredErrorsTwoDigitTextYear:     typeof IgnoredErrorsType.IgnoredErrorsTwoDigitTextYear;
+    IgnoredErrorsNumberStoredAsText:   typeof IgnoredErrorsType.IgnoredErrorsNumberStoredAsText;
+    IgnoredErrorsFormula:              typeof IgnoredErrorsType.IgnoredErrorsFormula;
+    IgnoredErrorsFormulaRange:         typeof IgnoredErrorsType.IgnoredErrorsFormulaRange;
+    IgnoredErrorsUnlockedFormula:      typeof IgnoredErrorsType.IgnoredErrorsUnlockedFormula;
+    IgnoredErrorsEmptyCellReference:   typeof IgnoredErrorsType.IgnoredErrorsEmptyCellReference;
+    IgnoredErrorsListDataValidation:   typeof IgnoredErrorsType.IgnoredErrorsListDataValidation;
+    IgnoredErrorsCalculatedColumn:     typeof IgnoredErrorsType.IgnoredErrorsCalculatedColumn;
   }>;
 }

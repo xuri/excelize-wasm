@@ -535,6 +535,23 @@ func TestAddHeaderFooterImage(t *testing.T) {
 	assert.Equal(t, "sheet SheetN does not exist", ret.Get("error").String())
 }
 
+func TestAddIgnoredErrors(t *testing.T) {
+	f := NewFile(js.Value{}, []js.Value{})
+	assert.True(t, f.(js.Value).Get("error").IsNull())
+
+	ret := f.(js.Value).Call("AddIgnoredErrors", js.ValueOf("Sheet1"), js.ValueOf("A1"), js.ValueOf(int(excelize.IgnoredErrorsEvalError)))
+	assert.True(t, ret.Get("error").IsNull(), ret.Get("error").String())
+
+	ret = f.(js.Value).Call("AddIgnoredErrors", js.ValueOf("SheetN"), js.ValueOf("A1"), js.ValueOf(int(excelize.IgnoredErrorsEvalError)))
+	assert.Equal(t, "sheet SheetN does not exist", ret.Get("error").String())
+
+	ret = f.(js.Value).Call("AddIgnoredErrors", js.ValueOf("Sheet1"), js.ValueOf("A1"))
+	assert.EqualError(t, errArgNum, ret.Get("error").String())
+
+	ret = f.(js.Value).Call("AddIgnoredErrors", js.ValueOf("SheetN"), js.ValueOf("A1"), js.ValueOf(true))
+	assert.EqualError(t, errArgType, ret.Get("error").String())
+}
+
 func TestAddPictureFromBytes(t *testing.T) {
 	buf, err := os.ReadFile(filepath.Join("..", "chart.png"))
 	assert.NoError(t, err)
@@ -852,6 +869,29 @@ func TestTable(t *testing.T) {
 
 	ret = f.(js.Value).Call("DeleteTable", js.ValueOf("X"))
 	assert.Equal(t, "table X does not exist", ret.Get("error").String())
+}
+
+func TestAddVBAProject(t *testing.T) {
+	f := NewFile(js.Value{}, []js.Value{})
+	assert.True(t, f.(js.Value).Get("error").IsNull())
+
+	oleIdentifier := []byte{0xd0, 0xcf, 0x11, 0xe0, 0xa1, 0xb1, 0x1a, 0xe1}
+	uint8Array := js.Global().Get("Uint8Array").New(js.ValueOf(len(oleIdentifier)))
+	for k, v := range oleIdentifier {
+		uint8Array.SetIndex(k, v)
+	}
+	ret := f.(js.Value).Call("AddVBAProject", js.ValueOf(uint8Array))
+	assert.True(t, ret.Get("error").IsNull())
+
+	uint8Array = js.Global().Get("Uint8Array").New(js.ValueOf(1))
+	ret = f.(js.Value).Call("AddVBAProject", js.ValueOf(uint8Array))
+	assert.Equal(t, excelize.ErrAddVBAProject.Error(), ret.Get("error").String())
+
+	ret = f.(js.Value).Call("AddVBAProject")
+	assert.EqualError(t, errArgNum, ret.Get("error").String())
+
+	ret = f.(js.Value).Call("AddVBAProject", js.ValueOf(true))
+	assert.EqualError(t, errArgType, ret.Get("error").String())
 }
 
 func TestAutoFilter(t *testing.T) {
