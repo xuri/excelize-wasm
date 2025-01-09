@@ -1,17 +1,15 @@
-if (typeof window === 'undefined') {
-  !globalThis.crypto && (globalThis.crypto = {
-    async getRandomValues(b) {
-      const { randomFillSync } = await import('crypto');
-      randomFillSync(b);
-    }
-  });
-  !globalThis.performance && (globalThis.performance = {
-    now() {
-      const [sec, nsec] = process.hrtime();
-      return sec * 1000 + nsec / 1000000;
-    }
-  });
-}
+!globalThis.crypto && (globalThis.crypto = {
+  async getRandomValues(b) {
+    const { randomFillSync } = await import('crypto');
+    randomFillSync(b);
+  }
+});
+!globalThis.performance && (globalThis.performance = {
+  now() {
+    const [sec, nsec] = process.hrtime();
+    return sec * 1000 + nsec / 1000000;
+  }
+});
 (() => {
   const enosys = () => {
     const err = new Error("not implemented");
@@ -581,7 +579,7 @@ export async function init(wasmPath) {
     buffer = pako.ungzip(await (await fetch(wasmPath)).arrayBuffer());
   }
   if (buffer[0] === 0x1f && buffer[1] === 0x8b) {
-      buffer = pako.ungzip(buffer);
+    buffer = pako.ungzip(buffer);
   }
   const result = await WebAssembly.instantiate(buffer, go.importObject);
   go.run(result.instance);
