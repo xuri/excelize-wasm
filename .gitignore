@@ -5,4 +5,3 @@ node_modules/
 
 # Intermediate and distribution artifacts
 dist/
-.devcontainer/devcontainer.json

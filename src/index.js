@@ -1,15 +1,17 @@
-!globalThis.crypto && (globalThis.crypto = {
-  async getRandomValues(b) {
-    const { randomFillSync } = await import('crypto');
-    randomFillSync(b);
-  }
-});
-!globalThis.performance && (globalThis.performance = {
-  now() {
-    const [sec, nsec] = process.hrtime();
-    return sec * 1000 + nsec / 1000000;
-  }
-});
+if (typeof globalThis.navigator === 'undefined') {
+  !globalThis.crypto && (globalThis.crypto = {
+    async getRandomValues(b) {
+      const { randomFillSync } = await import('crypto');
+      randomFillSync(b);
+    }
+  });
+  !globalThis.performance && (globalThis.performance = {
+    now() {
+      const [sec, nsec] = process.hrtime();
+      return sec * 1000 + nsec / 1000000;
+    }
+  });
+}
 (() => {
   const enosys = () => {
     const err = new Error("not implemented");
@@ -570,7 +572,7 @@ import pako from 'pako';
 export async function init(wasmPath) {
   const go = new Go();
   var buffer;
-  if (fs && fs.readFileSync) {
+  if (typeof globalThis.navigator === 'undefined') {
     globalThis.excelize = {};
     const fs = await import('fs');
     buffer = pako.ungzip(fs.readFileSync(wasmPath));
@@ -585,4 +587,3 @@ export async function init(wasmPath) {
   go.run(result.instance);
   return excelize;
 };
-
