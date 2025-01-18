@@ -2233,7 +2233,7 @@ declare module 'excelize-wasm' {
      * @param sheet The worksheet name
      * @param cell The cell reference
      */
-    GetCellStyle(sheet: string, cell: string): { cellType: CellType, error: string | null }
+    GetCellType(sheet: string, cell: string): { cellType: CellType, error: string | null }
 
     /**
      * GetCellValue provides a function to get formatted value from cell by
