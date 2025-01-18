@@ -1,4 +1,4 @@
-// Copyright 2022 - 2024 The excelize-wasm Authors. All rights reserved. Use of
+// Copyright 2022 - 2025 The excelize-wasm Authors. All rights reserved. Use of
 // this source code is governed by a BSD-style license that can be found in
 // the LICENSE file.
 //
@@ -603,6 +603,15 @@ declare module 'excelize-wasm' {
     Width?:  number;
   };
 
+  /*
+   * ChartDataLabel directly maps the format settings of the chart labels.
+   */
+  export type ChartDataLabel = {
+    Alignment?: Alignment;
+    Font?:      Font;
+    Fill?:      Fill;
+  };
+
   /**
    * ChartSeries directly maps the format settings of the chart series.
    */
@@ -614,6 +623,7 @@ declare module 'excelize-wasm' {
     Fill?:              Fill;
     Line?:              ChartLine;
     Marker?:            ChartMarker;
+    DataLabel?:         ChartDataLabel;
     DataLabelPosition?: ChartDataLabelPositionType;
   };
 
@@ -1286,6 +1296,7 @@ declare module 'excelize-wasm' {
      *      Fill
      *      Line
      *      Marker
+     *      DataLabel
      *      DataLabelPosition
      *
      * Name: Set the name for the series. The name is displayed in the chart
@@ -1331,6 +1342,8 @@ declare module 'excelize-wasm' {
      *      triangle
      *      x
      *      auto
+     *
+     * DataLabel: This sets the format of the chart series data label.
      *
      * DataLabelPosition: This sets the position of the chart series data label.
      *
