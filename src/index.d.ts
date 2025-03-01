@@ -3912,5 +3912,8 @@ declare module 'excelize-wasm' {
     IgnoredErrorsEmptyCellReference:   typeof IgnoredErrorsType.IgnoredErrorsEmptyCellReference;
     IgnoredErrorsListDataValidation:   typeof IgnoredErrorsType.IgnoredErrorsListDataValidation;
     IgnoredErrorsCalculatedColumn:     typeof IgnoredErrorsType.IgnoredErrorsCalculatedColumn;
+    PictureInsertTypePlaceOverCells:   typeof PictureInsertType.PictureInsertTypePlaceOverCells,
+    PictureInsertTypePlaceInCell:      typeof PictureInsertType.PictureInsertTypePlaceInCell,
+    PictureInsertTypeDISPIMG:          typeof PictureInsertType.PictureInsertTypeDISPIMG,
   }>;
 }

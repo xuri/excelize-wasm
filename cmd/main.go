@@ -3357,7 +3357,7 @@ func SetCellInt(f *excelize.File) func(this js.Value, args []js.Value) interface
 			ret["error"] = err.Error()
 			return js.ValueOf(ret)
 		}
-		if err := f.SetCellInt(args[0].String(), args[1].String(), args[2].Int()); err != nil {
+		if err := f.SetCellInt(args[0].String(), args[1].String(), int64(args[2].Int())); err != nil {
 			ret["error"] = err.Error()
 		}
 		return js.ValueOf(ret)
