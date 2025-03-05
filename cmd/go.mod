@@ -1,11 +1,13 @@
 module github.com/xuri/excelize-wasm/cmd
 
-go 1.20
+go 1.23.0
+
+toolchain go1.24.0
 
 require (
 	github.com/stretchr/testify v1.9.0
-	github.com/xuri/excelize/v2 v2.9.1-0.20250219061259-52642854413f
-	golang.org/x/image v0.23.0
+	github.com/xuri/excelize/v2 v2.9.1-0.20250302032449-c6d161fc76e6
+	golang.org/x/image v0.24.0
 )
 
 require (

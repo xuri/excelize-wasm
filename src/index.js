@@ -22,7 +22,7 @@ if (typeof globalThis.navigator === 'undefined') {
   if (!globalThis.fs) {
     let outputBuf = "";
     globalThis.fs = {
-      constants: { O_WRONLY: -1, O_RDWR: -1, O_CREAT: -1, O_TRUNC: -1, O_APPEND: -1, O_EXCL: -1 }, // unused
+      constants: { O_WRONLY: -1, O_RDWR: -1, O_CREAT: -1, O_TRUNC: -1, O_APPEND: -1, O_EXCL: -1, O_DIRECTORY: -1 }, // unused
       writeSync(fd, buf) {
         outputBuf += decoder.decode(buf);
         const nl = outputBuf.lastIndexOf("\n");
@@ -77,6 +77,14 @@ if (typeof globalThis.navigator === 'undefined') {
       umask() { throw enosys(); },
       cwd() { throw enosys(); },
       chdir() { throw enosys(); },
+    }
+  }
+
+  if (!globalThis.path) {
+    globalThis.path = {
+      resolve(...pathSegments) {
+        return pathSegments.join("/");
+      }
     }
   }
 
@@ -215,10 +223,16 @@ if (typeof globalThis.navigator === 'undefined') {
         return decoder.decode(new DataView(this._inst.exports.mem.buffer, saddr, len));
       }
 
+      const testCallExport = (a, b) => {
+        this._inst.exports.testExport0();
+        return this._inst.exports.testExport(a, b);
+      }
+
       const timeOrigin = Date.now() - performance.now();
       this.importObject = {
         _gotest: {
           add: (a, b) => a + b,
+          callExport: testCallExport,
         },
         gojs: {
           // Go's SP does not change as long as no Go code is running. Some operations (e.g. calls, getters and setters)
