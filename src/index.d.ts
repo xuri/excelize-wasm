@@ -1047,6 +1047,26 @@ declare module 'excelize-wasm' {
   };
 
   /**
+   * CalcPropsOptions defines the collection of properties the application uses
+   * to record calculation status and details.
+   */
+  export type CalcPropsOptions = {
+    CalcID?:                number;
+    CalcMode?:              string;
+    FullCalcOnLoad?:        boolean;
+    RefMode?:               string;
+    Iterate?:               boolean;
+    IterateCount?:          number;
+    IterateDelta?:          number;
+    FullPrecision?:         boolean;
+    CalcCompleted?:         boolean;
+    CalcOnSave?:            boolean;
+    ConcurrentCalc?:        boolean;
+    ConcurrentManualCount?: number;
+    ForceFullCalc?:         boolean;
+  };
+
+  /**
    * WorkbookPropsOptions directly maps the settings of workbook proprieties.
    */
   export type WorkbookPropsOptions = {
@@ -2835,6 +2855,14 @@ declare module 'excelize-wasm' {
      * @param props The application properties
      */
     SetAppProps(props: AppProperties): { error: string | null }
+
+    /**
+     * SetCalcProps provides a function to sets calculation properties. Optional
+     * value of "CalcMode" property is: "manual", "auto" or "autoNoTable".
+     * Optional value of "RefMode" property is: "A1" or "R1C1".
+     * @param props The application properties
+     */
+    SetCalcProps(opts: CalcPropsOptions): { error: string | null }
 
     /**
      * SetCellBool provides a function to set bool type value of a cell by

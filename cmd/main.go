@@ -407,6 +407,7 @@ func regInteropFunc(f *excelize.File, fn map[string]interface{}) interface{} {
 		"SearchSheet":                 SearchSheet(f),
 		"SetActiveSheet":              SetActiveSheet(f),
 		"SetAppProps":                 SetAppProps(f),
+		"SetCalcProps":                SetCalcProps(f),
 		"SetCellBool":                 SetCellBool(f),
 		"SetCellDefault":              SetCellDefault(f),
 		"SetCellFloat":                SetCellFloat(f),
@@ -3201,6 +3202,32 @@ func SetAppProps(f *excelize.File) func(this js.Value, args []js.Value) interfac
 		}
 		props = goVal.Elem().Interface().(excelize.AppProperties)
 		if err := f.SetAppProps(&props); err != nil {
+			ret["error"] = err.Error()
+		}
+		return js.ValueOf(ret)
+	}
+}
+
+// SetCalcProps provides a function to sets calculation properties. Optional
+// value of "CalcMode" property is: "manual", "auto" or "autoNoTable". Optional
+// value of "RefMode" property is: "A1" or "R1C1".
+func SetCalcProps(f *excelize.File) func(this js.Value, args []js.Value) interface{} {
+	return func(this js.Value, args []js.Value) interface{} {
+		ret := map[string]interface{}{"error": nil}
+		if err := prepareArgs(args, []argsRule{
+			{types: []js.Type{js.TypeObject}},
+		}); err != nil {
+			ret["error"] = err.Error()
+			return js.ValueOf(ret)
+		}
+		var opts excelize.CalcPropsOptions
+		goVal, err := jsValueToGo(args[0], reflect.TypeOf(excelize.CalcPropsOptions{}))
+		if err != nil {
+			ret["error"] = err.Error()
+			return js.ValueOf(ret)
+		}
+		opts = goVal.Elem().Interface().(excelize.CalcPropsOptions)
+		if err := f.SetCalcProps(&opts); err != nil {
 			ret["error"] = err.Error()
 		}
 		return js.ValueOf(ret)

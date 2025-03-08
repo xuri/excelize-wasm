@@ -933,6 +933,35 @@ func TestCalcCellValue(t *testing.T) {
 	assert.Equal(t, "sheet SheetN does not exist", ret.Get("error").String())
 }
 
+func TestCalcProps(t *testing.T) {
+	f := NewFile(js.Value{}, []js.Value{})
+	assert.True(t, f.(js.Value).Get("error").IsNull())
+
+	ret := f.(js.Value).Call("SetCalcProps",
+		js.ValueOf(map[string]interface{}{
+			"FullCalcOnLoad":        true,
+			"CalcID":                122211,
+			"ConcurrentManualCount": 5,
+			"IterateCount":          10,
+			"ConcurrentCalc":        true,
+		}),
+	)
+	assert.True(t, ret.Get("error").IsNull())
+
+	ret = f.(js.Value).Call("SetCalcProps", js.ValueOf(map[string]interface{}{"RefMode": "a1"}))
+	assert.Equal(t, "invalid RefMode value \"a1\", acceptable value should be one of A1, R1C1", ret.Get("error").String())
+
+	ret = f.(js.Value).Call("SetCalcProps")
+	assert.EqualError(t, errArgNum, ret.Get("error").String())
+
+	ret = f.(js.Value).Call("SetCalcProps",
+		js.ValueOf(map[string]interface{}{
+			"CalcMode": true,
+		}),
+	)
+	assert.EqualError(t, errArgType, ret.Get("error").String())
+}
+
 func TestCopySheet(t *testing.T) {
 	f := NewFile(js.Value{}, []js.Value{})
 	assert.True(t, f.(js.Value).Get("error").IsNull())
