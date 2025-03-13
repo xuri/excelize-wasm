@@ -2214,6 +2214,11 @@ declare module 'excelize-wasm' {
     GetBaseColor(hexColor: string, indexedColor: number, themeColor?: number): { color?: string, error: string | null };
 
     /**
+     * GetCalcProps provides a function to gets calculation properties.
+     */
+    GetCalcProps(): { props: CalcPropsOptions, error: string | null }
+
+    /**
      * GetCellFormula provides a function to get formula from cell by given
      * worksheet name and cell reference in spreadsheet.
      * @param sheet The worksheet name

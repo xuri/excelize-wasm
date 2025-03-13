@@ -349,6 +349,7 @@ func regInteropFunc(f *excelize.File, fn map[string]interface{}) interface{} {
 		"GetActiveSheetIndex":         GetActiveSheetIndex(f),
 		"GetAppProps":                 GetAppProps(f),
 		"GetBaseColor":                GetBaseColor(f),
+		"GetCalcProps":                GetCalcProps(f),
 		"GetCellFormula":              GetCellFormula(f),
 		"GetCellHyperLink":            GetCellHyperLink(f),
 		"GetCellRichText":             GetCellRichText(f),
@@ -1790,6 +1791,27 @@ func GetBaseColor(f *excelize.File) func(this js.Value, args []js.Value) interfa
 			ret["color"] = f.GetBaseColor(args[0].String(), args[1].Int(), &themeColor)
 		}
 		ret["color"] = f.GetBaseColor(args[0].String(), args[1].Int(), nil)
+		return js.ValueOf(ret)
+	}
+}
+
+// GetCalcProps provides a function to gets calculation properties.
+func GetCalcProps(f *excelize.File) func(this js.Value, args []js.Value) interface{} {
+	return func(this js.Value, args []js.Value) interface{} {
+		ret := map[string]interface{}{"props": map[string]interface{}{}, "error": nil}
+		if err := prepareArgs(args, []argsRule{}); err != nil {
+			ret["error"] = err.Error()
+			return js.ValueOf(ret)
+		}
+		props, err := f.GetCalcProps()
+		if err != nil {
+			ret["error"] = err.Error()
+			return js.ValueOf(ret)
+		}
+		if jsVal, err := goValueToJS(reflect.ValueOf(props),
+			reflect.TypeOf(excelize.CalcPropsOptions{})); err == nil {
+			ret["props"] = jsVal
+		}
 		return js.ValueOf(ret)
 	}
 }

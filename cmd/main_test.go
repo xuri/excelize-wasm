@@ -948,6 +948,18 @@ func TestCalcProps(t *testing.T) {
 	)
 	assert.True(t, ret.Get("error").IsNull())
 
+	ret = f.(js.Value).Call("GetCalcProps")
+	assert.True(t, ret.Get("error").IsNull(), ret.Get("error").String())
+	assert.True(t, ret.Get("props").Get("FullCalcOnLoad").Bool())
+	assert.Equal(t, 122211, ret.Get("props").Get("CalcID").Int())
+	assert.Equal(t, 5, ret.Get("props").Get("ConcurrentManualCount").Int())
+	assert.Equal(t, 10, ret.Get("props").Get("IterateCount").Int())
+	assert.True(t, ret.Get("props").Get("ConcurrentCalc").Bool())
+	assert.True(t, ret.Get("props").Get("ForceFullCalc").IsUndefined())
+
+	ret = f.(js.Value).Call("GetCalcProps", js.ValueOf(map[string]interface{}{"CalcMode": true}))
+	assert.EqualError(t, errArgNum, ret.Get("error").String())
+
 	ret = f.(js.Value).Call("SetCalcProps", js.ValueOf(map[string]interface{}{"RefMode": "a1"}))
 	assert.Equal(t, "invalid RefMode value \"a1\", acceptable value should be one of A1, R1C1", ret.Get("error").String())
 
@@ -955,9 +967,7 @@ func TestCalcProps(t *testing.T) {
 	assert.EqualError(t, errArgNum, ret.Get("error").String())
 
 	ret = f.(js.Value).Call("SetCalcProps",
-		js.ValueOf(map[string]interface{}{
-			"CalcMode": true,
-		}),
+		js.ValueOf(map[string]interface{}{"CalcMode": true}),
 	)
 	assert.EqualError(t, errArgType, ret.Get("error").String())
 }
