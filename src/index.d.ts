@@ -445,15 +445,17 @@ declare module 'excelize-wasm' {
    * ChartPlotArea directly maps the format settings of the plot area.
    */
   export type ChartPlotArea = {
-    SecondPlotValues?: number;
-    ShowBubbleSize?:   boolean;
-    ShowCatName?:      boolean;
-    ShowLeaderLines?:  boolean;
-    ShowPercent?:      boolean;
-    ShowSerName?:      boolean;
-    ShowVal?:          boolean;
-    Fill?:             Fill;
-    NumFmt?:           ChartNumFmt;
+    SecondPlotValues?:  number;
+    ShowBubbleSize?:    boolean;
+    ShowCatName?:       boolean;
+    ShowDataTable?:     boolean;
+    ShowDataTableKeys?: boolean;
+    ShowLeaderLines?:   boolean;
+    ShowPercent?:       boolean;
+    ShowSerName?:       boolean;
+    ShowVal?:           boolean;
+    Fill?:              Fill;
+    NumFmt?:            ChartNumFmt;
   };
 
   /**
@@ -1434,6 +1436,15 @@ declare module 'excelize-wasm' {
      * ShowCatName: Specifies that the category name shall be shown in the data
      * label. The 'ShowCatName' property is optional. The default value is true.
      *
+     * ShowDataTable: Used for add data table under chart, depending on the
+     * chart type, only available for area, bar, column and line series type
+     * charts. The 'ShowDataTable' property is optional. The default value is
+     * false.
+     *
+     * ShowDataTableKeys: Used for add legend key in data table, only works on
+     * 'ShowDataTable' is enabled. The 'ShowDataTableKeys' property is optional.
+     * The default value is false.
+     *
      * ShowLeaderLines: Specifies leader lines shall be shown for data labels.
      * The 'ShowLeaderLines' property is optional. The default value is false.
      *
@@ -1821,7 +1832,10 @@ declare module 'excelize-wasm' {
      * form control type: button, check box, group box, label, option button,
      * scroll bar and spinner. If set macro for the form control, the workbook
      * extension should be XLSM or XLTM. Scroll value must be between 0 and
-     * 30000.
+     * 30000. Please note that if a cell link is set for a checkbox form
+     * control, Excelize will not assign a value to the linked cell when the
+     * checkbox is checked. To reflect the checkbox state, please use the
+     * 'SetCellValue' function to manually set the linked cell's value to true.
      *
      * Example 1, add button form control with macro, rich-text, custom button
      * size, print property on Sheet1!A2, and let the button do not move or
