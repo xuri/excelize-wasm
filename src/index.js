@@ -586,7 +586,7 @@ import pako from 'pako';
 export async function init(wasmPath) {
   const go = new Go();
   var buffer;
-  if (typeof globalThis.navigator === 'undefined') {
+  if (typeof process !== 'undefined' && process.versions && process.versions.node) {
     globalThis.excelize = {};
     const fs = await import('fs');
     buffer = pako.ungzip(fs.readFileSync(wasmPath));

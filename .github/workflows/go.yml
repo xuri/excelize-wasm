@@ -13,6 +13,7 @@ jobs:
         go-version: [1.24.x]
         os: [ubuntu-24.04]
         targetplatform: [x64]
+        node-version: ['20.x', '21.x', '22.x', '23.x', '24.x']
 
     runs-on: ${{ matrix.os }}
     environment: production
@@ -57,10 +58,10 @@ jobs:
         GOOS=js GOARCH=wasm GO111MODULE=on CGO_ENABLED=0 go build -v -a -ldflags="-w -s" -gcflags=-trimpath="$(go env GOPATH)" -asmflags=-trimpath="$(go env GOPATH)" -o ../dist/excelize.wasm main.go
         gzip -f --best ../dist/excelize.wasm
 
-    - name: Setup Node.js
+    - name: Setup Node.js ${{ matrix.node-version }}
       uses: actions/setup-node@v4
       with:
-        node-version: 20.18.1
+        node-version: ${{ matrix.node-version }}
 
     - name: NPM Build
       run: |
