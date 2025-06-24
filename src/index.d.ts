@@ -241,6 +241,15 @@ declare module 'excelize-wasm' {
   };
 
   /**
+   * CustomProperty directly maps the custom property of the workbook. The value
+   * date type may be one of the following: number, boolean, string or null.
+   */
+  export type CustomProperty = {
+    Name:   string;
+    Value?: boolean | number | string | null;
+  };
+
+  /**
    * Shape directly maps the format settings of the shape.
    */
   export type Shape = {
@@ -1827,7 +1836,7 @@ declare module 'excelize-wasm' {
     AddPictureFromBytes(sheet: string, cell: string, pic: Picture): { error: string | null }
 
     /**
-     * AddFormControl provides the method to add form control button in a
+     * AddFormControl provides the method to add form control object in a
      * worksheet by given worksheet name and form control options. Supported
      * form control type: button, check box, group box, label, option button,
      * scroll bar and spinner. If set macro for the form control, the workbook
@@ -3282,6 +3291,17 @@ declare module 'excelize-wasm' {
      * @param opts The conditional options
      */
     SetConditionalFormat(sheet: string, reference: string, opts: ConditionalFormatOptions[]): { error: string | null }
+
+    /**
+     * SetCustomProps provides a function to set custom file properties by given
+     * property name and value. If the property name already exists, it will be
+     * updated, otherwise a new property will be added. The value can be of type
+     * number, boolean, string, null. The property will be delete if the value
+     * is null. The function returns an error if the property value is not of
+     * the correct type.
+     * @param prop Custom property of the workbook
+     */
+    SetCustomProps(prop: CustomProperty): { error: string | null }
 
     /**
      * SetDefaultFont changes the default font in the workbook.

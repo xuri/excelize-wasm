@@ -425,6 +425,7 @@ func regInteropFunc(f *excelize.File, fn map[string]interface{}) interface{} {
 		"SetColVisible":               SetColVisible(f),
 		"SetColWidth":                 SetColWidth(f),
 		"SetConditionalFormat":        SetConditionalFormat(f),
+		"SetCustomProps":              SetCustomProps(f),
 		"SetDefaultFont":              SetDefaultFont(f),
 		"SetDefinedName":              SetDefinedName(f),
 		"SetDocProps":                 SetDocProps(f),
@@ -1154,7 +1155,7 @@ func AddDataValidation(f *excelize.File) func(this js.Value, args []js.Value) in
 	}
 }
 
-// AddFormControl provides the method to add form control button in a worksheet
+// AddFormControl provides the method to add form control object in a worksheet
 // by given worksheet name and form control options. Supported form control
 // type: button, check box, group box, label, option button, scroll bar and
 // spinner. If set macro for the form control, the workbook extension should be
@@ -3631,6 +3632,45 @@ func SetConditionalFormat(f *excelize.File) func(this js.Value, args []js.Value)
 		}
 		if err := f.SetConditionalFormat(args[0].String(), args[1].String(), opts); err != nil {
 			ret["error"] = err.Error()
+		}
+		return js.ValueOf(ret)
+	}
+}
+
+// SetCustomProps provides a function to set custom file properties by given
+// property name and value. If the property name already exists, it will be
+// updated, otherwise a new property will be added. The value can be of type
+// int32, float64, bool, string, time.Time or nil. The property will be delete
+// if the value is nil. The function returns an error if the property value is
+// not of the correct type.
+func SetCustomProps(f *excelize.File) func(this js.Value, args []js.Value) interface{} {
+	return func(this js.Value, args []js.Value) interface{} {
+		ret := map[string]interface{}{"error": nil}
+		if err := prepareArgs(args, []argsRule{
+			{types: []js.Type{js.TypeObject}},
+		}); err != nil {
+			ret["error"] = err.Error()
+			return js.ValueOf(ret)
+		}
+		if _, err := jsValueToGo(args[0], reflect.TypeOf(excelize.CustomProperty{})); err != nil {
+			ret["error"] = err.Error()
+			return js.ValueOf(ret)
+		}
+		prop := excelize.CustomProperty{Name: args[0].Get("Name").String()}
+		val := args[0].Get("Value")
+		switch val.Type() {
+		case js.TypeNull:
+			prop.Value = nil
+		case js.TypeBoolean:
+			prop.Value = val.Bool()
+		case js.TypeNumber:
+			prop.Value = val.Float()
+		default: // js.TypeString:
+			prop.Value = val.String()
+		}
+		if err := f.SetCustomProps(prop); err != nil {
+			ret["error"] = err.Error()
+			return js.ValueOf(ret)
 		}
 		return js.ValueOf(ret)
 	}

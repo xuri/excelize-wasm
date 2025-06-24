@@ -2272,6 +2272,32 @@ func TestSetConditionalFormat(t *testing.T) {
 	assert.Equal(t, "sheet SheetN does not exist", ret.Get("error").String())
 }
 
+func TestCustomProps(t *testing.T) {
+	f := NewFile(js.Value{}, []js.Value{})
+	assert.True(t, f.(js.Value).Get("error").IsNull())
+
+	for _, prop := range []interface{}{
+		map[string]interface{}{"Name": "Text Prop", "Value": "text"},
+		map[string]interface{}{"Name": "Boolean Prop 1", "Value": true},
+		map[string]interface{}{"Name": "Boolean Prop 2", "Value": false},
+		map[string]interface{}{"Name": "Number Prop 1", "Value": -123.456},
+		map[string]interface{}{"Name": "Number Prop 2", "Value": 1},
+		map[string]interface{}{"Name": "Number Prop 2", "Value": nil},
+	} {
+		ret := f.(js.Value).Call("SetCustomProps", js.ValueOf(prop))
+		assert.True(t, ret.Get("error").IsNull())
+	}
+
+	ret := f.(js.Value).Call("SetCustomProps")
+	assert.EqualError(t, errArgNum, ret.Get("error").String())
+
+	ret = f.(js.Value).Call("SetCustomProps", js.ValueOf(1))
+	assert.EqualError(t, errArgType, ret.Get("error").String())
+
+	ret = f.(js.Value).Call("SetCustomProps", js.ValueOf(map[string]interface{}{"Name": 1}))
+	assert.EqualError(t, errArgType, ret.Get("error").String())
+}
+
 func TestSetDefaultFont(t *testing.T) {
 	f := NewFile(js.Value{}, []js.Value{})
 	assert.True(t, f.(js.Value).Get("error").IsNull())
