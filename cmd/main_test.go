@@ -2288,7 +2288,14 @@ func TestCustomProps(t *testing.T) {
 		assert.True(t, ret.Get("error").IsNull())
 	}
 
-	ret := f.(js.Value).Call("SetCustomProps")
+	ret := f.(js.Value).Call("GetCustomProps")
+	assert.Equal(t, ret.Get("props").Length(), 4)
+	assert.Equal(t, ret.Get("props").Index(0).Get("Value").String(), "text")
+	assert.True(t, ret.Get("props").Index(1).Get("Value").Bool())
+	assert.False(t, ret.Get("props").Index(2).Get("Value").Bool())
+	assert.Equal(t, ret.Get("props").Index(3).Get("Value").Float(), -123.456)
+
+	ret = f.(js.Value).Call("SetCustomProps")
 	assert.EqualError(t, errArgNum, ret.Get("error").String())
 
 	ret = f.(js.Value).Call("SetCustomProps", js.ValueOf(1))
@@ -2296,6 +2303,29 @@ func TestCustomProps(t *testing.T) {
 
 	ret = f.(js.Value).Call("SetCustomProps", js.ValueOf(map[string]interface{}{"Name": 1}))
 	assert.EqualError(t, errArgType, ret.Get("error").String())
+
+	ret = f.(js.Value).Call("GetCustomProps", js.ValueOf(1))
+	assert.EqualError(t, errArgNum, ret.Get("error").String())
+
+	// Test get custom property with unsupported charset
+	wb := excelize.NewFile()
+	wb.Sheet.Delete("docProps/custom.xml")
+	wb.Pkg.Store("docProps/custom.xml", MacintoshCyrillicCharset)
+	buf, err := wb.WriteToBuffer()
+	assert.NoError(t, err)
+
+	uint8Array := js.Global().Get("Uint8Array").New(js.ValueOf(buf.Len()))
+	for k, v := range buf.Bytes() {
+		uint8Array.SetIndex(k, v)
+	}
+	f = OpenReader(js.Value{}, []js.Value{uint8Array})
+	assert.True(t, f.(js.Value).Get("error").IsNull())
+	ret = f.(js.Value).Call("GetCustomProps")
+	assert.Equal(t, ret.Get("error").String(), "XML syntax error on line 1: invalid UTF-8")
+
+	// Test set custom property with unsupported charset
+	ret = f.(js.Value).Call("SetCustomProps", js.ValueOf(map[string]interface{}{"Name": "Text Prop", "Value": "text"}))
+	assert.Equal(t, ret.Get("error").String(), "XML syntax error on line 1: invalid UTF-8")
 }
 
 func TestSetDefaultFont(t *testing.T) {

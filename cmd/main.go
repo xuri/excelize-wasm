@@ -363,6 +363,7 @@ func regInteropFunc(f *excelize.File, fn map[string]interface{}) interface{} {
 		"GetColWidth":                 GetColWidth(f),
 		"GetComments":                 GetComments(f),
 		"GetConditionalStyle":         GetConditionalStyle(f),
+		"GetCustomProps":              GetCustomProps(f),
 		"GetDefaultFont":              GetDefaultFont(f),
 		"GetDefinedName":              GetDefinedName(f),
 		"GetDocProps":                 GetDocProps(f),
@@ -2137,6 +2138,28 @@ func GetConditionalStyle(f *excelize.File) func(this js.Value, args []js.Value) 
 		if jsVal, err := goValueToJS(reflect.ValueOf(*style),
 			reflect.TypeOf(excelize.Style{})); err == nil {
 			ret["style"] = jsVal
+		}
+		return js.ValueOf(ret)
+	}
+}
+
+// GetCustomProps provides a function to get custom file properties.
+func GetCustomProps(f *excelize.File) func(this js.Value, args []js.Value) interface{} {
+	return func(this js.Value, args []js.Value) interface{} {
+		ret := map[string]interface{}{"props": []interface{}{}, "error": nil}
+		if err := prepareArgs(args, []argsRule{}); err != nil {
+			ret["error"] = err.Error()
+			return js.ValueOf(ret)
+		}
+		props, err := f.GetCustomProps()
+		if err != nil {
+			ret["error"] = err.Error()
+			return js.ValueOf(ret)
+		}
+		for _, prop := range props {
+			x := ret["props"].([]interface{})
+			x = append(x, js.ValueOf(map[string]interface{}{"Name": prop.Name, "Value": prop.Value}))
+			ret["props"] = x
 		}
 		return js.ValueOf(ret)
 	}

@@ -100,6 +100,9 @@ declare module 'excelize-wasm' {
    *
    * CultureInfo specifies the country code for applying built-in language
    * number format code these effect by the system's local language settings.
+   *
+   * TmpDir specifies the temporary directory for creating temporary files, if
+   * the value is empty, the system default temporary directory will be used.
    */
   export type Options = {
     MaxCalcIterations?: number;
@@ -107,6 +110,7 @@ declare module 'excelize-wasm' {
     RawCellValue?:      boolean;
     UnzipSizeLimit?:    number;
     UnzipXMLSizeLimit?: number;
+    TmpDir?:            string;
     ShortDatePattern?:  string;
     LongDatePattern?:   string;
     LongTimePattern?:   string;
@@ -2352,6 +2356,11 @@ declare module 'excelize-wasm' {
      * @param styleID The style ID
      */
     GetConditionalStyle(styleID: number): { style: Style, error: string | null }
+
+    /**
+     * GetCustomProps provides a function to get custom file properties.
+     */
+    GetCustomProps(): { props: CustomProperty[], error: string | null }
 
     /**
      * GetDefaultFont provides the default font name currently set in the
