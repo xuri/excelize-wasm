@@ -86,6 +86,9 @@ declare module 'excelize-wasm' {
    * should be less than or equal to UnzipSizeLimit, the default value is
    * 16MB.
    *
+   * TmpDir specifies the temporary directory for creating temporary files, if
+   * the value is empty, the system default temporary directory will be used.
+   *
    * ShortDatePattern specifies the short date number format code. In the
    * spreadsheet applications, date formats display date and time serial numbers
    * as date values. Date formats that begin with an asterisk (*) respond to
@@ -100,9 +103,6 @@ declare module 'excelize-wasm' {
    *
    * CultureInfo specifies the country code for applying built-in language
    * number format code these effect by the system's local language settings.
-   *
-   * TmpDir specifies the temporary directory for creating temporary files, if
-   * the value is empty, the system default temporary directory will be used.
    */
   export type Options = {
     MaxCalcIterations?: number;
@@ -472,6 +472,24 @@ declare module 'excelize-wasm' {
   };
 
   /**
+   * ChartDashType defines the currently supported chart dash types enumeration.
+   */
+  export enum ChartDashType {
+    ChartDashUnset,
+    ChartDashSolid,
+    ChartDashDot,
+    ChartDashDash,
+    ChartDashLgDash,
+    ChartDashSashDot,
+    ChartDashLgDashDot,
+    ChartDashLgDashDotDot,
+    ChartDashSysDash,
+    ChartDashSysDot,
+    ChartDashSysDashDot,
+    ChartDashSysDashDotDot,
+  }
+
+  /**
    * ChartLineType defines the currently supported chart line types enumeration.
    */
   export enum ChartLineType {
@@ -598,12 +616,14 @@ declare module 'excelize-wasm' {
   export type ChartLegend = {
     Position?:      string
     ShowLegendKey?: boolean;
+    Font?:          Font;
   };
 
   /**
    * ChartMarker directly maps the format settings of the chart marker.
    */
   export type ChartMarker = {
+    Border?: ChartLine;
     Fill?:   Fill;
     Symbol?: string;
     Size?:   number;
@@ -614,6 +634,8 @@ declare module 'excelize-wasm' {
    */
   export type ChartLine = {
     Type?:   ChartLineType;
+    Dash?:   ChartDashType;
+	  Fill?:   Fill;
     Smooth?: boolean;
     Width?:  number;
   };
@@ -636,6 +658,7 @@ declare module 'excelize-wasm' {
     Values?:            string;
     Sizes?:             string;
     Fill?:              Fill;
+    Legend?:            ChartLegend;
     Line?:              ChartLine;
     Marker?:            ChartMarker;
     DataLabel?:         ChartDataLabel;
@@ -1329,6 +1352,7 @@ declare module 'excelize-wasm' {
      *      Categories
      *      Values
      *      Fill
+     *      Legend
      *      Line
      *      Marker
      *      DataLabel
@@ -1353,6 +1377,9 @@ declare module 'excelize-wasm' {
      *
      * Fill: This set the format for the data series fill. The 'Fill' property
      * is optional.
+     *
+     * Legend: This set the font of legend text for a data series. The 'Legend'
+     * property is optional.
      *
      * Line: This sets the line format of the line chart. The 'Line' property is
      * optional and if it isn't supplied it will default style. The options that
@@ -1386,6 +1413,7 @@ declare module 'excelize-wasm' {
      *
      *      Position
      *      ShowLegendKey
+     *      Font
      *
      * Position: Set the position of the chart legend. The default legend
      * position is bottom. The available positions are:
@@ -1399,6 +1427,11 @@ declare module 'excelize-wasm' {
      *
      * ShowLegendKey: Set the legend keys shall be shown in data labels. The
      * default value is false.
+     *
+     * Font: Set the font properties of the chart legend text. The properties
+     * that can be set are the same as the font object that is used for cell
+     * formatting. The font family, size, color, bold, italic, underline, and
+     * strike properties can be set.
      *
      * Set properties of the chart title. The properties that can be set are:
      *
@@ -1434,14 +1467,16 @@ declare module 'excelize-wasm' {
      *      SecondPlotValues
      *      ShowBubbleSize
      *      ShowCatName
+     *      ShowDataTable
+     *      ShowDataTableKeys
      *      ShowLeaderLines
      *      ShowPercent
      *      ShowSerName
      *      ShowVal
      *      NumFmt
      *
-     * SecondPlotValues: Specifies the values in second plot for the 'pieOfPie'
-     * and 'barOfPie' chart.
+     * SecondPlotValues: Specifies the values in second plot for the 'PieOfPie'
+     * and 'BarOfPie' chart.
      *
      * ShowBubbleSize: Specifies the bubble size shall be shown in a data label.
      * The 'ShowBubbleSize' property is optional. The default value is false.
@@ -1576,6 +1611,9 @@ declare module 'excelize-wasm' {
      *
      * Set chart size by 'Dimension' property. The 'Dimension' property is
      * optional. The default width is 480, and height is 260.
+     *
+     * Set chart legend for all data series by 'Legend' property. The 'Legend'
+     * property is optional.
      *
      * Set the bubble size in all data series for the bubble chart or 3D bubble
      * chart by 'BubbleSizes' property. The 'BubbleSizes' property is optional.
@@ -3959,6 +3997,18 @@ declare module 'excelize-wasm' {
     WireframeContour:                  typeof ChartType.WireframeContour;
     Bubble:                            typeof ChartType.Bubble;
     Bubble3D:                          typeof ChartType.Bubble3D;
+    ChartDashUnset:                    typeof ChartDashType.ChartDashUnset;
+    ChartDashSolid:                    typeof ChartDashType.ChartDashSolid;
+    ChartDashDot:                      typeof ChartDashType.ChartDashDot;
+    ChartDashDash:                     typeof ChartDashType.ChartDashDash;
+    ChartDashLgDash:                   typeof ChartDashType.ChartDashLgDash;
+    ChartDashSashDot:                  typeof ChartDashType.ChartDashSashDot;
+    ChartDashLgDashDot:                typeof ChartDashType.ChartDashLgDashDot;
+    ChartDashLgDashDotDot:             typeof ChartDashType.ChartDashLgDashDotDot;
+    ChartDashSysDash:                  typeof ChartDashType.ChartDashSysDash;
+    ChartDashSysDot:                   typeof ChartDashType.ChartDashSysDot;
+    ChartDashSysDashDot:               typeof ChartDashType.ChartDashSysDashDot;
+    ChartDashSysDashDotDot:            typeof ChartDashType.ChartDashSysDashDotDot;
     ChartLineSolid:                    typeof ChartLineType.ChartLineSolid;
     ChartLineNone:                     typeof ChartLineType.ChartLineNone;
     ChartLineAutomatic:                typeof ChartLineType.ChartLineAutomatic;
