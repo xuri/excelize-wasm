@@ -2297,11 +2297,16 @@ func GetMergeCells(f *excelize.File) func(this js.Value, args []js.Value) interf
 		ret := map[string]interface{}{"mergeCells": []interface{}{}, "error": nil}
 		if err := prepareArgs(args, []argsRule{
 			{types: []js.Type{js.TypeString}},
+			{types: []js.Type{js.TypeBoolean}, opts: true},
 		}); err != nil {
 			ret["error"] = err.Error()
 			return js.ValueOf(ret)
 		}
-		mergeCells, err := f.GetMergeCells(args[0].String())
+		var withoutValues bool
+		if len(args) == 2 {
+			withoutValues = args[1].Bool()
+		}
+		mergeCells, err := f.GetMergeCells(args[0].String(), withoutValues)
 		if err != nil {
 			ret["error"] = err.Error()
 			return js.ValueOf(ret)

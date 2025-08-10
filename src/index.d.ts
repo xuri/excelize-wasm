@@ -130,10 +130,11 @@ declare module 'excelize-wasm' {
    * Fill directly maps the fill settings of the cells.
    */
   export type Fill = {
-    Type?:    string;
-    Pattern?: number;
-    Color?:   string[];
-    Shading?: number;
+    Type?:         string;
+    Pattern?:      number;
+    Color?:        string[];
+    Shading?:      number;
+    Transparency?: number;
   };
 
   /**
@@ -635,7 +636,7 @@ declare module 'excelize-wasm' {
   export type ChartLine = {
     Type?:   ChartLineType;
     Dash?:   ChartDashType;
-	  Fill?:   Fill;
+    Fill?:   Fill;
     Smooth?: boolean;
     Width?:  number;
   };
@@ -2434,10 +2435,23 @@ declare module 'excelize-wasm' {
 
     /**
      * GetMergeCells provides a function to get all merged cells from a specific
-     * worksheet.
+     * worksheet. If the `withoutValues` parameter is set to `true`, it will not
+     * return the cell values of merged cells, only the range reference will be
+     * returned. For example get all merged cells on Sheet1:
+     *
+     * ```typescript
+     * const { mergeCells, error } = f.GetMergeCells("Sheet1")
+     * ```
+     *
+     * If you want to get merged cells without cell values, you can use the
+     * following code:
+     *
+     * ```typescript
+     * const { mergeCells, error } = f.GetMergeCells("Sheet1", true)
+     * ```
      * @param sheet The worksheet name
      */
-    GetMergeCells(sheet: string): { mergeCells: MergeCell[], error: string | null }
+    GetMergeCells(sheet: string, withoutValues?: boolean): { mergeCells: MergeCell[], error: string | null }
 
     /**
      * GetPageLayout provides a function to gets worksheet page layout.

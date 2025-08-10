@@ -817,7 +817,7 @@ func TestAddSparkline(t *testing.T) {
 			"Style":    -1,
 		}),
 	)
-	assert.Equal(t, "parameter 'Style' must between 0-35", ret.Get("error").String(), ret.Get("error").String())
+	assert.Equal(t, "parameter 'Style' value must be an integer from 0 to 35", ret.Get("error").String(), ret.Get("error").String())
 
 	ret = f.(js.Value).Call("AddSparkline", js.ValueOf("SheetN"),
 		js.ValueOf(map[string]interface{}{
@@ -1381,6 +1381,15 @@ func TestGetMergeCells(t *testing.T) {
 
 	mergeCell := ret.Get("mergeCells").Index(0)
 	assert.Equal(t, "value", mergeCell.Call("GetCellValue").String())
+	assert.Equal(t, "A1", mergeCell.Call("GetStartAxis").String())
+	assert.Equal(t, "C3", mergeCell.Call("GetEndAxis").String())
+
+	// Test get merged cells without cell values
+	ret = f.(js.Value).Call("GetMergeCells", js.ValueOf("Sheet1"), js.ValueOf(true))
+	assert.True(t, ret.Get("error").IsNull())
+
+	mergeCell = ret.Get("mergeCells").Index(0)
+	assert.Empty(t, mergeCell.Call("GetCellValue").String())
 	assert.Equal(t, "A1", mergeCell.Call("GetStartAxis").String())
 	assert.Equal(t, "C3", mergeCell.Call("GetEndAxis").String())
 
