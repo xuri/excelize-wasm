@@ -271,6 +271,8 @@ func regConstants() {
 		"WireframeContour":            int(excelize.WireframeContour),
 		"Bubble":                      int(excelize.Bubble),
 		"Bubble3D":                    int(excelize.Bubble3D),
+		"StockHighLowClose":           int(excelize.StockHighLowClose),
+		"StockOpenHighLowClose":       int(excelize.StockOpenHighLowClose),
 		// ChartDashType enumeration
 		"ChartDashUnset":         int(excelize.ChartDashUnset),
 		"ChartDashSolid":         int(excelize.ChartDashSolid),

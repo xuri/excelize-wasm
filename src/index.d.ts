@@ -456,6 +456,15 @@ declare module 'excelize-wasm' {
   };
 
   /**
+   * ChartUpDownBar directly maps the format settings of the stock chart up bars
+   * and down bars.
+   */
+  export type ChartUpDownBar = {
+    Fill?:   Fill;
+	  Border?: ChartLine;
+  };
+
+  /**
    * ChartPlotArea directly maps the format settings of the plot area.
    */
   export type ChartPlotArea = {
@@ -469,6 +478,8 @@ declare module 'excelize-wasm' {
     ShowSerName?:       boolean;
     ShowVal?:           boolean;
     Fill?:              Fill;
+    UpBars?:            ChartUpDownBar;
+	  DownBars?:          ChartUpDownBar;
     NumFmt?:            ChartNumFmt;
   };
 
@@ -559,6 +570,8 @@ declare module 'excelize-wasm' {
     WireframeContour,
     Bubble,
     Bubble3D,
+    StockHighLowClose,
+    StockOpenHighLowClose,
   }
 
   /**
@@ -1343,6 +1356,8 @@ declare module 'excelize-wasm' {
      *       52 | WireframeContour            | wireframe contour chart
      *       53 | Bubble                      | bubble chart
      *       54 | Bubble3D                    | 3D bubble chart
+     *       55 | StockHighLowClose           | High-Low-Close stock chart
+     *       56 | StockOpenHighLowClose       | Open-High-Low-Close stock chart
      *
      * In Excel a chart series is a collection of information that defines which
      * data is plotted such as values, axis labels and formatting.
@@ -4010,7 +4025,8 @@ declare module 'excelize-wasm' {
     Contour:                           typeof ChartType.Contour;
     WireframeContour:                  typeof ChartType.WireframeContour;
     Bubble:                            typeof ChartType.Bubble;
-    Bubble3D:                          typeof ChartType.Bubble3D;
+    StockHighLowClose:                 typeof ChartType.StockHighLowClose;
+    StockOpenHighLowClose:             typeof ChartType.StockOpenHighLowClose;
     ChartDashUnset:                    typeof ChartDashType.ChartDashUnset;
     ChartDashSolid:                    typeof ChartDashType.ChartDashSolid;
     ChartDashDot:                      typeof ChartDashType.ChartDashDot;

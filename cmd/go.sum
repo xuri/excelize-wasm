@@ -13,8 +13,8 @@ github.com/tiendc/go-deepcopy v1.6.1 h1:uVRTItFeNHkMcLueHS7OCsxgxT9P8MzGB/taUa2Y
 github.com/tiendc/go-deepcopy v1.6.1/go.mod h1:toXoeQoUqXOOS/X4sKuiAoSk6elIdqc0pN7MTgOOo2I=
 github.com/xuri/efp v0.0.1 h1:fws5Rv3myXyYni8uwj2qKjVaRP30PdjeYe2Y6FDsCL8=
 github.com/xuri/efp v0.0.1/go.mod h1:ybY/Jr0T0GTCnYjKqmdwxyxn2BQf2RcQIIvex5QldPI=
-github.com/xuri/excelize/v2 v2.9.2-0.20250809060300-b372bd3d2e71 h1:aE3CI3bJsGABxX6whWhUg1kX82rU+kSR+JQR4TbM16A=
-github.com/xuri/excelize/v2 v2.9.2-0.20250809060300-b372bd3d2e71/go.mod h1:kJNWyr0LiVxr4LZiOJiN9w8t177/VpVsR4GIXvgzoAc=
+github.com/xuri/excelize/v2 v2.9.2-0.20250904030645-aca295923b09 h1:DJYS6eCwMDWmqyUBqSr5zEvMUy+SLXMT9r2H9k7J15U=
+github.com/xuri/excelize/v2 v2.9.2-0.20250904030645-aca295923b09/go.mod h1:kJNWyr0LiVxr4LZiOJiN9w8t177/VpVsR4GIXvgzoAc=
 github.com/xuri/nfp v0.0.2-0.20250530014748-2ddeb826f9a9 h1:+C0TIdyyYmzadGaL/HBLbf3WdLgC29pgyhTjAT/0nuE=
 github.com/xuri/nfp v0.0.2-0.20250530014748-2ddeb826f9a9/go.mod h1:WwHg+CVyzlv/TX9xqBFXEZAuxOPxn2k1GNHwG41IIUQ=
 golang.org/x/crypto v0.41.0 h1:WKYxWedPGCTVVl5+WHSSrOBT0O8lx32+zxmHxijgXp4=

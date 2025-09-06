@@ -10,7 +10,7 @@ jobs:
   test:
     strategy:
       matrix:
-        go-version: [1.24.x]
+        go-version: [1.25.x]
         os: [ubuntu-24.04]
         targetplatform: [x64]
         node-version: ['20.x', '21.x', '22.x', '23.x', '24.x']
@@ -30,7 +30,7 @@ jobs:
         cache: false
 
     - name: Checkout code
-      uses: actions/checkout@v4
+      uses: actions/checkout@v5
 
     - name: Get dependencies
       working-directory: ./cmd
@@ -59,7 +59,7 @@ jobs:
         gzip -f --best ../dist/excelize.wasm
 
     - name: Setup Node.js ${{ matrix.node-version }}
-      uses: actions/setup-node@v4
+      uses: actions/setup-node@v5
       with:
         node-version: ${{ matrix.node-version }}
 
