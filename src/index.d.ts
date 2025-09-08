@@ -461,7 +461,7 @@ declare module 'excelize-wasm' {
    */
   export type ChartUpDownBar = {
     Fill?:   Fill;
-	  Border?: ChartLine;
+    Border?: ChartLine;
   };
 
   /**
@@ -479,7 +479,7 @@ declare module 'excelize-wasm' {
     ShowVal?:           boolean;
     Fill?:              Fill;
     UpBars?:            ChartUpDownBar;
-	  DownBars?:          ChartUpDownBar;
+    DownBars?:          ChartUpDownBar;
     NumFmt?:            ChartNumFmt;
   };
 
@@ -723,9 +723,9 @@ declare module 'excelize-wasm' {
    *
    *  PivotTableStyleName: The built-in pivot table style names
    *
-   * 	PivotStyleLight1 - PivotStyleLight28
-   * 	PivotStyleMedium1 - PivotStyleMedium28
-   * 	PivotStyleDark1 - PivotStyleDark28
+   *  PivotStyleLight1 - PivotStyleLight28
+   *  PivotStyleMedium1 - PivotStyleMedium28
+   *  PivotStyleDark1 - PivotStyleDark28
    */
   export type PivotTableOptions = {
     DataRange?:           string;
@@ -764,17 +764,17 @@ declare module 'excelize-wasm' {
    * field. The default value is sum. The possible values for this attribute
    * are:
    *
-   *	Average
-   *	Count
-   *	CountNums
-   *	Max
-   *	Min
-   *	Product
-   *	StdDev
-   *	StdDevp
-   *	Sum
-   *	Var
-   *	Varp
+   *  Average
+   *  Count
+   *  CountNums
+   *  Max
+   *  Min
+   *  Product
+   *  StdDev
+   *  StdDevp
+   *  Sum
+   *  Var
+   *  Varp
    *
    * NumFmt specifies the number format ID of the data field, this filed only
    * accepts built-in number format ID and does not support custom number format
@@ -984,7 +984,7 @@ declare module 'excelize-wasm' {
     BlackAndWhite?: boolean;
     // PageOrder specifies the ordering of multiple pages. Values accepted:
     // overThenDown and downThenOver
-	  PageOrder?: string;
+    PageOrder?: string;
   };
 
   /**
@@ -4025,6 +4025,7 @@ declare module 'excelize-wasm' {
     Contour:                           typeof ChartType.Contour;
     WireframeContour:                  typeof ChartType.WireframeContour;
     Bubble:                            typeof ChartType.Bubble;
+    Bubble3D:                          typeof ChartType.Bubble3D;
     StockHighLowClose:                 typeof ChartType.StockHighLowClose;
     StockOpenHighLowClose:             typeof ChartType.StockOpenHighLowClose;
     ChartDashUnset:                    typeof ChartDashType.ChartDashUnset;
