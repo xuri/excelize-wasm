@@ -1803,11 +1803,12 @@ func GetBaseColor(f *excelize.File) func(this js.Value, args []js.Value) interfa
 			ret["error"] = err.Error()
 			return js.ValueOf(ret)
 		}
+		var themeColor *int
 		if len(args) == 3 {
-			themeColor := args[2].Int()
-			ret["color"] = f.GetBaseColor(args[0].String(), args[1].Int(), &themeColor)
+			i := args[2].Int()
+			themeColor = &i
 		}
-		ret["color"] = f.GetBaseColor(args[0].String(), args[1].Int(), nil)
+		ret["color"] = f.GetBaseColor(args[0].String(), args[1].Int(), themeColor)
 		return js.ValueOf(ret)
 	}
 }

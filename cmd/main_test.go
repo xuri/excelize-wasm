@@ -1148,6 +1148,10 @@ func TestGetBaseColor(t *testing.T) {
 	assert.True(t, ret.Get("error").IsNull())
 	assert.Equal(t, "FFFFFF", ret.Get("color").String())
 
+	ret = f.(js.Value).Call("GetBaseColor", js.ValueOf("FFFFFF"), js.ValueOf(0), js.ValueOf(1))
+	assert.True(t, ret.Get("error").IsNull())
+	assert.Equal(t, "000000", ret.Get("color").String())
+
 	ret = f.(js.Value).Call("GetBaseColor")
 	assert.EqualError(t, errArgNum, ret.Get("error").String())
 

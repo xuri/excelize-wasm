@@ -1,7 +1,11 @@
-if (typeof globalThis.navigator === 'undefined') {
+const node = typeof process !== 'undefined' && process.versions && process.versions.node;
+const dynamicImport = (name) => Function('m', 'return import(m)')(name);
+
+if (node && typeof globalThis.navigator === 'undefined') {
   !globalThis.crypto && (globalThis.crypto = {
     async getRandomValues(b) {
-      const { randomFillSync } = await import('crypto');
+      const mod = await dynamicImport('node:crypto').catch(() => dynamicImport('crypto'));
+      const { randomFillSync } = mod;
       randomFillSync(b);
     }
   });
@@ -585,13 +589,13 @@ import pako from 'pako';
 
 export async function init(wasmPath) {
   const go = new Go();
-  var buffer;
-  if (typeof process !== 'undefined' && process.versions && process.versions.node) {
-    globalThis.excelize = {};
-    const fs = await import('fs');
+  let buffer;
+  globalThis.excelize = {};
+  if (node) {
+    const mod = await dynamicImport('node:fs').catch(() => dynamicImport('fs'));
+    const fs = mod.default || mod;
     buffer = pako.ungzip(fs.readFileSync(wasmPath));
   } else {
-    globalThis.excelize = {};
     buffer = pako.ungzip(await (await fetch(wasmPath)).arrayBuffer());
   }
   if (buffer[0] === 0x1f && buffer[1] === 0x8b) {

@@ -764,17 +764,17 @@ declare module 'excelize-wasm' {
    * field. The default value is sum. The possible values for this attribute
    * are:
    *
-   *  Average
-   *  Count
-   *  CountNums
-   *  Max
-   *  Min
-   *  Product
-   *  StdDev
-   *  StdDevp
-   *  Sum
-   *  Var
-   *  Varp
+   *     Average
+   *     Count
+   *     CountNums
+   *     Max
+   *     Min
+   *     Product
+   *     StdDev
+   *     StdDevp
+   *     Sum
+   *     Var
+   *     Varp
    *
    * NumFmt specifies the number format ID of the data field, this filed only
    * accepts built-in number format ID and does not support custom number format
