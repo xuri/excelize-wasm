@@ -320,4 +320,4 @@ This program is under the terms of the BSD 3-Clause License. See [https://openso
 
 The Excel logo is a trademark of [Microsoft Corporation](https://aka.ms/trademarks-usage). This artwork is an adaptation.
 
-gopher.{ai,svg,png} was created by [Takuya Ueda](https://x.com/tenntenn). Licensed under the [Creative Commons 3.0 Attributions license](http://creativecommons.org/licenses/by/3.0/).
+The Go gopher was created by [Renee French](https://go.dev/doc/gopher/README). Licensed under the [Creative Commons 4.0 Attributions license](http://creativecommons.org/licenses/by/4.0/).
