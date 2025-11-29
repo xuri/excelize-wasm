@@ -664,6 +664,15 @@ declare module 'excelize-wasm' {
   };
 
   /**
+   * ChartDataPoint directly maps the format settings of the chart data point
+   * for doughnut, pie and 3D pie charts.
+   */
+  export type ChartDataPoint = {
+    Index: number;
+    Fill:  Fill;
+  };
+
+  /**
    * ChartSeries directly maps the format settings of the chart series.
    */
   export type ChartSeries = {
@@ -677,6 +686,7 @@ declare module 'excelize-wasm' {
     Marker?:            ChartMarker;
     DataLabel?:         ChartDataLabel;
     DataLabelPosition?: ChartDataLabelPositionType;
+    DataPoint?:         ChartDataPoint[];
   };
 
   /**
@@ -1373,6 +1383,7 @@ declare module 'excelize-wasm' {
      *      Marker
      *      DataLabel
      *      DataLabelPosition
+     *      DataPoint
      *
      * Name: Set the name for the series. The name is displayed in the chart
      * legend and in the formula bar. The 'Name' property is optional and if it
@@ -1424,6 +1435,9 @@ declare module 'excelize-wasm' {
      * DataLabel: This sets the format of the chart series data label.
      *
      * DataLabelPosition: This sets the position of the chart series data label.
+     *
+     * DataPoint: This sets the format for individual data points in a doughnut,
+     * pie or 3D pie chart series. The 'DataPoint' property is optional.
      *
      * Set properties of the chart legend. The options that can be set are:
      *
@@ -1837,9 +1851,9 @@ declare module 'excelize-wasm' {
      * AddPictureFromBytes provides the method to add picture in a sheet by given
      * picture format set (such as offset, scale, aspect ratio setting and print
      * settings), file base name, extension name and file bytes, supported image
-     * types: EMF, EMZ, GIF, JPEG, JPG, PNG, SVG, TIF, TIFF, WMF, and WMZ. Note
-     * that this function only supports adding pictures placed over the cells
-     * currently, and doesn't support adding pictures placed in cells or
+     * types: EMF, EMZ, GIF, ICO, JPEG, JPG, PNG, SVG, TIF, TIFF, WMF, and WMZ.
+     * Note that this function only supports adding pictures placed over the
+     * cells currently, and doesn't support adding pictures placed in cells or
      * creating the Kingsoft WPS Office embedded image cells.
      *
      * The optional parameter "AltText" is used to add alternative text to a
@@ -1993,7 +2007,7 @@ declare module 'excelize-wasm' {
     /**
      * AddHeaderFooterImage provides a mechanism to set the graphics that can be
      * referenced in the header and footer definitions via &G, supported image
-     * types: EMF, EMZ, GIF, JPEG, JPG, PNG, SVG, TIF, TIFF, WMF, and WMZ.
+     * types: EMF, EMZ, GIF, ICO, JPEG, JPG, PNG, SVG, TIF, TIFF, WMF, and WMZ.
      *
      * The extension should be provided with a "." in front, e.g. ".png".
      * The width and height should have units in them, e.g. "100pt".
@@ -3795,7 +3809,8 @@ declare module 'excelize-wasm' {
     /**
      * SetSheetBackgroundFromBytes provides a function to set background picture
      * by given worksheet name, extension name and image data. Supported image
-     * types: BMP, EMF, EMZ, GIF, JPEG, JPG, PNG, SVG, TIF, TIFF, WMF, and WMZ.
+     * types: BMP, EMF, EMZ, GIF, ICO, JPEG, JPG, PNG, SVG, TIF, TIFF, WMF, and
+     * WMZ.
      * @param sheet The worksheet name
      * @param extension The extension name
      * @param picture The contents buffer of the file

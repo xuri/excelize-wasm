@@ -1202,7 +1202,7 @@ func AddFormControl(f *excelize.File) func(this js.Value, args []js.Value) inter
 
 // AddHeaderFooterImage provides a mechanism to set the graphics that can be
 // referenced in the header and footer definitions via &G, supported image
-// types: EMF, EMZ, GIF, JPEG, JPG, PNG, SVG, TIF, TIFF, WMF, and WMZ.
+// types: EMF, EMZ, GIF, ICO, JPEG, JPG, PNG, SVG, TIF, TIFF, WMF, and WMZ.
 //
 // The extension should be provided with a "." in front, e.g. ".png".
 // The width and height should have units in them, e.g. "100pt".
@@ -3983,7 +3983,7 @@ func SetRowVisible(f *excelize.File) func(this js.Value, args []js.Value) interf
 
 // SetSheetBackgroundFromBytes provides a function to set background picture by
 // given worksheet name, extension name and image data. Supported image types:
-// BMP, EMF, EMZ, GIF, JPEG, JPG, PNG, SVG, TIF, TIFF, WMF, and WMZ.
+// BMP, EMF, EMZ, GIF, ICO, JPEG, JPG, PNG, SVG, TIF, TIFF, WMF, and WMZ.
 func SetSheetBackgroundFromBytes(f *excelize.File) func(this js.Value, args []js.Value) interface{} {
 	return func(this js.Value, args []js.Value) interface{} {
 		ret := map[string]interface{}{"error": nil}

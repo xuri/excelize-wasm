@@ -30,7 +30,7 @@ jobs:
         cache: false
 
     - name: Checkout code
-      uses: actions/checkout@v5
+      uses: actions/checkout@v6
 
     - name: Get dependencies
       working-directory: ./cmd
@@ -59,7 +59,7 @@ jobs:
         gzip -f --best ../dist/excelize.wasm
 
     - name: Setup Node.js ${{ matrix.node-version }}
-      uses: actions/setup-node@v5
+      uses: actions/setup-node@v6
       with:
         node-version: ${{ matrix.node-version }}
 
