@@ -70,7 +70,7 @@ jobs:
         cp src/index.d.ts ./dist
 
     - name: NPM Publish
-      uses: JS-DevTools/npm-publish@v3
+      uses: JS-DevTools/npm-publish@v4
       with:
         token: ${{ secrets.NPM_TOKEN }}
         package: ./dist/package.json
