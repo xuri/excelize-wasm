@@ -423,7 +423,7 @@ func TestComments(t *testing.T) {
 	assert.Equal(t, "sheet SheetN does not exist", ret.Get("error").String())
 }
 
-func TestAddDataValidation(t *testing.T) {
+func TestDataValidation(t *testing.T) {
 	f := NewFile(js.Value{}, []js.Value{})
 	assert.True(t, f.(js.Value).Get("error").IsNull())
 	dv := js.ValueOf(map[string]interface{}{})
@@ -441,6 +441,19 @@ func TestAddDataValidation(t *testing.T) {
 	assert.Equal(t, errArgType.Error(), ret.Get("error").String())
 
 	ret = f.(js.Value).Call("AddDataValidation", js.ValueOf("SheetN"), dv)
+	assert.Equal(t, "sheet SheetN does not exist", ret.Get("error").String())
+
+	ret = f.(js.Value).Call("GetDataValidations", js.ValueOf("Sheet1"))
+	assert.True(t, ret.Get("error").IsNull())
+	assert.Equal(t, ret.Get("dataValidations").Length(), 1)
+
+	ret = f.(js.Value).Call("GetDataValidations")
+	assert.EqualError(t, errArgNum, ret.Get("error").String())
+
+	ret = f.(js.Value).Call("GetDataValidations", js.ValueOf(nil))
+	assert.Equal(t, errArgType.Error(), ret.Get("error").String())
+
+	ret = f.(js.Value).Call("GetDataValidations", js.ValueOf("SheetN"))
 	assert.Equal(t, "sheet SheetN does not exist", ret.Get("error").String())
 }
 

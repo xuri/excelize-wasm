@@ -18,6 +18,9 @@ jobs:
       GOOS: js
       GOARCH: wasm
       GO111MODULE: on
+    permissions:
+      contents: read
+      id-token: write
     steps:
 
     - name: Install Go
@@ -58,19 +61,20 @@ jobs:
     - name: Setup Node.js
       uses: actions/setup-node@v6
       with:
-        node-version: 20.18.1
+        node-version: 20.19.6
+        registry-url: 'https://registry.npmjs.org'
 
     - name: NPM Build
       run: |
-        npm install
+        npm install -g npm@latest
+        npm ci
         node ./node_modules/.bin/rollup -c
         cp LICENSE ./dist
         cp README.md ./dist
         cp package.json ./dist
         cp src/index.d.ts ./dist
+        npm publish
 
     - name: NPM Publish
-      uses: JS-DevTools/npm-publish@v4
-      with:
-        token: ${{ secrets.NPM_TOKEN }}
-        package: ./dist/package.json
+      run: |
+        npm publish
