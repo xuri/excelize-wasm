@@ -16,6 +16,8 @@ import (
 	"github.com/xuri/excelize/v2"
 )
 
+var MacintoshCyrillicCharset = []byte{0x8F, 0xF0, 0xE8, 0xE2, 0xE5, 0xF2, 0x20, 0xEC, 0xE8, 0xF0}
+
 func TestRegInteropFunc(t *testing.T) {
 	js.Global().Set("excelize", map[string]interface{}{})
 	regFuncs()
@@ -161,8 +163,20 @@ func TestNewFile(t *testing.T) {
 	f := NewFile(js.Value{}, []js.Value{})
 	assert.True(t, f.(js.Value).Get("error").IsNull())
 
-	f = NewFile(js.Value{}, []js.Value{js.ValueOf(true)})
+	f = NewFile(js.Value{}, []js.Value{js.ValueOf(map[string]interface{}{
+		"ShortDatePattern": "yyyy/m/d",
+	})})
+	assert.True(t, f.(js.Value).Get("error").IsNull())
+
+	f = NewFile(js.Value{}, []js.Value{js.ValueOf(map[string]interface{}{
+		"ShortDatePattern": "yyyy/m/d",
+	}), js.ValueOf(true)})
 	assert.EqualError(t, errArgNum, f.(js.Value).Get("error").String())
+
+	f = NewFile(js.Value{}, []js.Value{js.ValueOf(map[string]interface{}{
+		"ShortDatePattern": true,
+	})})
+	assert.EqualError(t, errArgType, f.(js.Value).Get("error").String())
 }
 
 func TestOpenReader(t *testing.T) {
@@ -214,7 +228,7 @@ func TestAddChart(t *testing.T) {
 	f := NewFile(js.Value{}, []js.Value{})
 	assert.True(t, f.(js.Value).Get("error").IsNull())
 	lineChart := js.ValueOf(map[string]interface{}{
-		"Type": "line",
+		"Type": int(excelize.Line),
 		"Series": []interface{}{
 			map[string]interface{}{
 				"Name":       "Sheet1!$A$2",
@@ -232,12 +246,12 @@ func TestAddChart(t *testing.T) {
 				"Values":     "Sheet1!$B$4:$D$4",
 			},
 		},
-		"Title": map[string]interface{}{
-			"Name": "Fruit 3D Clustered Column Chart",
+		"Title": []interface{}{
+			js.ValueOf(map[string]interface{}{"Text": "Fruit 3D Clustered Column Chart"}),
 		},
 	})
 	colChart := js.ValueOf(map[string]interface{}{
-		"Type": "col3DClustered",
+		"Type": int(excelize.Col3DClustered),
 		"Series": []interface{}{
 			map[string]interface{}{
 				"Name":       "Sheet1!$A$2",
@@ -255,8 +269,8 @@ func TestAddChart(t *testing.T) {
 				"Values":     "Sheet1!$B$4:$D$4",
 			},
 		},
-		"Title": map[string]interface{}{
-			"Name": "Fruit 3D Clustered Column Chart",
+		"Title": []interface{}{
+			js.ValueOf(map[string]interface{}{"Text": "Fruit 3D Clustered Column Chart"}),
 		},
 	})
 	ret := f.(js.Value).Call("AddChart", js.ValueOf("Sheet1"), js.ValueOf("A1"), lineChart)
@@ -271,17 +285,23 @@ func TestAddChart(t *testing.T) {
 	ret = f.(js.Value).Call("AddChart", js.ValueOf("Sheet1"), js.ValueOf("A1"), js.ValueOf(map[string]interface{}{"Type": true}))
 	assert.EqualError(t, errArgType, ret.Get("error").String())
 
-	ret = f.(js.Value).Call("AddChart", js.ValueOf("Sheet1"), js.ValueOf("A1"), js.ValueOf(map[string]interface{}{"Type": "col"}), js.ValueOf(map[string]interface{}{"Type": true}))
+	ret = f.(js.Value).Call("AddChart", js.ValueOf("Sheet1"), js.ValueOf("A1"), js.ValueOf(map[string]interface{}{}))
 	assert.EqualError(t, errArgType, ret.Get("error").String())
 
-	ret = f.(js.Value).Call("AddChart", js.ValueOf("Sheet1"), js.ValueOf("A1"), js.ValueOf(map[string]interface{}{"Type": ""}))
-	assert.Equal(t, "unsupported chart type ", ret.Get("error").String())
+	ret = f.(js.Value).Call("AddChart", js.ValueOf("Sheet1"), js.ValueOf("A1"), js.ValueOf(map[string]interface{}{"Type": int(excelize.Col)}), js.ValueOf(map[string]interface{}{"Type": true}))
+	assert.EqualError(t, errArgType, ret.Get("error").String())
 
-	ret = f.(js.Value).Call("AddChart", js.ValueOf("Sheet1"), js.ValueOf("A1"), js.ValueOf(map[string]interface{}{"Type": "col"}), js.ValueOf(map[string]interface{}{"Type": ""}))
-	assert.Equal(t, "unsupported chart type ", ret.Get("error").String())
+	ret = f.(js.Value).Call("AddChart", js.ValueOf("Sheet1"), js.ValueOf("A1"), js.ValueOf(map[string]interface{}{"Type": int(excelize.Col)}), js.ValueOf(map[string]interface{}{}))
+	assert.EqualError(t, errArgType, ret.Get("error").String())
+
+	ret = f.(js.Value).Call("AddChart", js.ValueOf("Sheet1"), js.ValueOf("A1"), js.ValueOf(map[string]interface{}{"Type": 65}))
+	assert.Equal(t, "unsupported chart type 65", ret.Get("error").String())
+
+	ret = f.(js.Value).Call("AddChart", js.ValueOf("Sheet1"), js.ValueOf("A1"), js.ValueOf(map[string]interface{}{"Type": int(excelize.Col)}), js.ValueOf(map[string]interface{}{"Type": 65}))
+	assert.Equal(t, "unsupported chart type 65", ret.Get("error").String())
 
 	ret = f.(js.Value).Call("AddChart", js.ValueOf("SheetN"), js.ValueOf("A1"),
-		js.ValueOf(map[string]interface{}{}))
+		js.ValueOf(map[string]interface{}{"Type": int(excelize.Col3DClustered)}))
 	assert.Equal(t, "sheet SheetN does not exist", ret.Get("error").String())
 }
 
@@ -289,7 +309,7 @@ func TestAddChartSheet(t *testing.T) {
 	f := NewFile(js.Value{}, []js.Value{})
 	assert.True(t, f.(js.Value).Get("error").IsNull())
 	lineChart := js.ValueOf(map[string]interface{}{
-		"Type": "line",
+		"Type": int(excelize.Line),
 		"Series": []interface{}{
 			map[string]interface{}{
 				"Name":       "Sheet1!$A$2",
@@ -307,12 +327,12 @@ func TestAddChartSheet(t *testing.T) {
 				"Values":     "Sheet1!$B$4:$D$4",
 			},
 		},
-		"Title": map[string]interface{}{
-			"Name": "Fruit 3D Clustered Column Chart",
+		"Title": []interface{}{
+			js.ValueOf(map[string]interface{}{"Text": "Fruit 3D Clustered Column Chart"}),
 		},
 	})
 	colChart := js.ValueOf(map[string]interface{}{
-		"Type": "col3DClustered",
+		"Type": int(excelize.Col3DClustered),
 		"Series": []interface{}{
 			map[string]interface{}{
 				"Name":       "Sheet1!$A$2",
@@ -330,8 +350,8 @@ func TestAddChartSheet(t *testing.T) {
 				"Values":     "Sheet1!$B$4:$D$4",
 			},
 		},
-		"Title": map[string]interface{}{
-			"Name": "Fruit 3D Clustered Column Chart",
+		"Title": []interface{}{
+			js.ValueOf(map[string]interface{}{"Text": "Fruit 3D Clustered Column Chart"}),
 		},
 	})
 	ret := f.(js.Value).Call("AddChartSheet", js.ValueOf("Sheet2"), lineChart)
@@ -346,26 +366,26 @@ func TestAddChartSheet(t *testing.T) {
 	ret = f.(js.Value).Call("AddChartSheet", js.ValueOf("Sheet4"), js.ValueOf(map[string]interface{}{"Type": true}))
 	assert.EqualError(t, errArgType, ret.Get("error").String())
 
-	ret = f.(js.Value).Call("AddChartSheet", js.ValueOf("Sheet2"), js.ValueOf(map[string]interface{}{"Type": "col"}), js.ValueOf(map[string]interface{}{"Type": true}))
+	ret = f.(js.Value).Call("AddChartSheet", js.ValueOf("Sheet2"), js.ValueOf(map[string]interface{}{"Type": int(excelize.Col)}), js.ValueOf(map[string]interface{}{"Type": true}))
 	assert.EqualError(t, errArgType, ret.Get("error").String())
 
-	ret = f.(js.Value).Call("AddChartSheet", js.ValueOf("Sheet4"), js.ValueOf(map[string]interface{}{"Type": ""}))
-	assert.Equal(t, "unsupported chart type ", ret.Get("error").String())
+	ret = f.(js.Value).Call("AddChartSheet", js.ValueOf("Sheet4"), js.ValueOf(map[string]interface{}{"Type": 65}))
+	assert.Equal(t, "unsupported chart type 65", ret.Get("error").String())
 
-	ret = f.(js.Value).Call("AddChartSheet", js.ValueOf("Sheet5"), js.ValueOf(map[string]interface{}{"Type": "col"}), js.ValueOf(map[string]interface{}{"Type": ""}))
-	assert.Equal(t, "unsupported chart type ", ret.Get("error").String())
+	ret = f.(js.Value).Call("AddChartSheet", js.ValueOf("Sheet5"), js.ValueOf(map[string]interface{}{"Type": int(excelize.Col)}), js.ValueOf(map[string]interface{}{"Type": 65}))
+	assert.Equal(t, "unsupported chart type 65", ret.Get("error").String())
 
 	ret = f.(js.Value).Call("AddChartSheet", js.ValueOf("Sheet1"), js.ValueOf(map[string]interface{}{}))
 	assert.EqualError(t, excelize.ErrExistsSheet, ret.Get("error").String())
 }
 
-func TestAddComment(t *testing.T) {
+func TestComments(t *testing.T) {
 	f := NewFile(js.Value{}, []js.Value{})
 	assert.True(t, f.(js.Value).Get("error").IsNull())
 	comment := js.ValueOf(map[string]interface{}{
 		"Cell":   "A12",
 		"Author": "Excelize",
-		"Runs": []interface{}{
+		"Paragraph": []interface{}{
 			map[string]interface{}{
 				"Text": "Excelize: ",
 				"Font": map[string]interface{}{"Bold": true},
@@ -388,6 +408,148 @@ func TestAddComment(t *testing.T) {
 
 	ret = f.(js.Value).Call("AddComment", js.ValueOf("SheetN"), comment)
 	assert.Equal(t, "sheet SheetN does not exist", ret.Get("error").String())
+
+	ret = f.(js.Value).Call("GetComments")
+	assert.EqualError(t, errArgNum, ret.Get("error").String())
+
+	ret = f.(js.Value).Call("GetComments", js.ValueOf(nil))
+	assert.Equal(t, errArgType.Error(), ret.Get("error").String())
+
+	ret = f.(js.Value).Call("GetComments", js.ValueOf("Sheet1"))
+	assert.True(t, ret.Get("error").IsNull())
+	assert.Equal(t, comment.Get("Author").String(), ret.Get("comments").Index(0).Get("Author").String())
+
+	ret = f.(js.Value).Call("GetComments", js.ValueOf("SheetN"))
+	assert.Equal(t, "sheet SheetN does not exist", ret.Get("error").String())
+}
+
+func TestAddDataValidation(t *testing.T) {
+	f := NewFile(js.Value{}, []js.Value{})
+	assert.True(t, f.(js.Value).Get("error").IsNull())
+	dv := js.ValueOf(map[string]interface{}{})
+
+	ret := f.(js.Value).Call("AddDataValidation", js.ValueOf("Sheet1"), dv)
+	assert.True(t, ret.Get("error").IsNull())
+
+	ret = f.(js.Value).Call("AddDataValidation")
+	assert.EqualError(t, errArgNum, ret.Get("error").String())
+
+	ret = f.(js.Value).Call("AddDataValidation", js.ValueOf("Sheet1"), js.ValueOf(nil))
+	assert.Equal(t, errArgType.Error(), ret.Get("error").String())
+
+	ret = f.(js.Value).Call("AddDataValidation", js.ValueOf("Sheet1"), map[string]interface{}{"Type": true})
+	assert.Equal(t, errArgType.Error(), ret.Get("error").String())
+
+	ret = f.(js.Value).Call("AddDataValidation", js.ValueOf("SheetN"), dv)
+	assert.Equal(t, "sheet SheetN does not exist", ret.Get("error").String())
+}
+
+func TestFormControl(t *testing.T) {
+	f := NewFile(js.Value{}, []js.Value{})
+	assert.True(t, f.(js.Value).Get("error").IsNull())
+
+	ret := f.(js.Value).Call("AddFormControl", js.ValueOf("Sheet1"), js.ValueOf(map[string]interface{}{
+		"Cell": "A1", "Type": int(excelize.FormControlButton),
+	}))
+	assert.True(t, ret.Get("error").IsNull())
+
+	ret = f.(js.Value).Call("GetFormControls", js.ValueOf("Sheet1"))
+	assert.True(t, ret.Get("error").IsNull())
+	assert.Equal(t, 1, ret.Get("formControls").Length())
+
+	ret = f.(js.Value).Call("DeleteFormControl", js.ValueOf("Sheet1"), js.ValueOf("A1"))
+	assert.True(t, ret.Get("error").IsNull())
+
+	ret = f.(js.Value).Call("AddFormControl")
+	assert.EqualError(t, errArgNum, ret.Get("error").String())
+
+	ret = f.(js.Value).Call("AddFormControl", js.ValueOf("Sheet1"), js.ValueOf(map[string]interface{}{
+		"Cell": "A1", "Type": true,
+	}))
+	assert.Equal(t, errArgType.Error(), ret.Get("error").String())
+
+	ret = f.(js.Value).Call("AddFormControl", js.ValueOf("SheetN"), js.ValueOf(map[string]interface{}{
+		"Cell": "A1", "Type": int(excelize.FormControlButton),
+	}))
+	assert.Equal(t, "sheet SheetN does not exist", ret.Get("error").String())
+
+	ret = f.(js.Value).Call("GetFormControls")
+	assert.EqualError(t, errArgNum, ret.Get("error").String())
+
+	ret = f.(js.Value).Call("GetFormControls", js.ValueOf("SheetN"))
+	assert.Equal(t, "sheet SheetN does not exist", ret.Get("error").String())
+
+	ret = f.(js.Value).Call("GetFormControls", js.ValueOf(true))
+	assert.Equal(t, errArgType.Error(), ret.Get("error").String())
+
+	ret = f.(js.Value).Call("DeleteFormControl")
+	assert.EqualError(t, errArgNum, ret.Get("error").String())
+
+	ret = f.(js.Value).Call("DeleteFormControl", js.ValueOf("Sheet1"), js.ValueOf(true))
+	assert.Equal(t, errArgType.Error(), ret.Get("error").String())
+
+	ret = f.(js.Value).Call("DeleteFormControl", js.ValueOf("SheetN"), js.ValueOf("A1"))
+	assert.Equal(t, "sheet SheetN does not exist", ret.Get("error").String())
+}
+
+func TestAddHeaderFooterImage(t *testing.T) {
+	buf, err := os.ReadFile(filepath.Join("..", "chart.png"))
+	assert.NoError(t, err)
+
+	uint8Array := js.Global().Get("Uint8Array").New(js.ValueOf(len(buf)))
+	for k, v := range buf {
+		uint8Array.SetIndex(k, v)
+	}
+
+	f := NewFile(js.Value{}, []js.Value{})
+	assert.True(t, f.(js.Value).Get("error").IsNull())
+
+	opts := js.ValueOf(map[string]interface{}{
+		"File":      js.ValueOf(uint8Array),
+		"IsFooter":  true,
+		"FirstPage": true,
+		"Extension": ".png",
+		"Width":     "50pt",
+		"Height":    "32pt",
+	})
+	ret := f.(js.Value).Call("AddHeaderFooterImage", js.ValueOf("Sheet1"), opts)
+	assert.True(t, ret.Get("error").IsNull(), ret.Get("error").String())
+
+	ret = f.(js.Value).Call("AddHeaderFooterImage", js.ValueOf("Sheet1"),
+		js.ValueOf(map[string]interface{}{"File": js.ValueOf(uint8Array), "Extension": "png"}),
+	)
+	assert.Equal(t, "unsupported image extension", ret.Get("error").String())
+
+	ret = f.(js.Value).Call("AddHeaderFooterImage")
+	assert.EqualError(t, errArgNum, ret.Get("error").String())
+
+	ret = f.(js.Value).Call("AddHeaderFooterImage", js.ValueOf("Sheet1"), js.ValueOf(true))
+	assert.EqualError(t, errArgType, ret.Get("error").String())
+
+	ret = f.(js.Value).Call("AddHeaderFooterImage", js.ValueOf("Sheet1"),
+		js.ValueOf(map[string]interface{}{"Extension": true}),
+	)
+	assert.EqualError(t, errArgType, ret.Get("error").String())
+
+	ret = f.(js.Value).Call("AddHeaderFooterImage", js.ValueOf("SheetN"), opts)
+	assert.Equal(t, "sheet SheetN does not exist", ret.Get("error").String())
+}
+
+func TestAddIgnoredErrors(t *testing.T) {
+	f := NewFile(js.Value{}, []js.Value{})
+	assert.True(t, f.(js.Value).Get("error").IsNull())
+
+	ret := f.(js.Value).Call("AddIgnoredErrors", js.ValueOf("Sheet1"), js.ValueOf("A1"), js.ValueOf(int(excelize.IgnoredErrorsEvalError)))
+	assert.True(t, ret.Get("error").IsNull(), ret.Get("error").String())
+
+	ret = f.(js.Value).Call("AddIgnoredErrors", js.ValueOf("SheetN"), js.ValueOf("A1"), js.ValueOf(int(excelize.IgnoredErrorsEvalError)))
+	assert.Equal(t, "sheet SheetN does not exist", ret.Get("error").String())
+
+	ret = f.(js.Value).Call("AddIgnoredErrors", js.ValueOf("Sheet1"), js.ValueOf("A1"))
+	assert.EqualError(t, errArgNum, ret.Get("error").String())
+
+	ret = f.(js.Value).Call("AddIgnoredErrors", js.ValueOf("SheetN"), js.ValueOf("A1"), js.ValueOf(true))
+	assert.EqualError(t, errArgType, ret.Get("error").String())
 }
 
 func TestAddPictureFromBytes(t *testing.T) {
@@ -402,20 +564,60 @@ func TestAddPictureFromBytes(t *testing.T) {
 	f := NewFile(js.Value{}, []js.Value{})
 	assert.True(t, f.(js.Value).Get("error").IsNull())
 
-	ret := f.(js.Value).Call("AddPictureFromBytes", js.ValueOf("Sheet1"), js.ValueOf("A1"), js.ValueOf("Picture 1"), js.ValueOf(".png"), js.ValueOf(uint8Array), js.ValueOf(map[string]interface{}{}))
-	assert.True(t, ret.Get("error").IsNull())
+	pic := js.ValueOf(map[string]interface{}{
+		"Extension": ".png",
+		"File":      js.ValueOf(uint8Array),
+		"Format": map[string]interface{}{
+			"AltText": "Picture 1",
+		},
+	})
+	ret := f.(js.Value).Call("AddPictureFromBytes", js.ValueOf("Sheet1"), js.ValueOf("A1"), pic)
+	assert.True(t, ret.Get("error").IsNull(), ret.Get("error").String())
+
+	ret = f.(js.Value).Call("GetPictures", js.ValueOf("Sheet1"), js.ValueOf("A1"))
+	assert.True(t, ret.Get("error").IsNull(), ret.Get("error").String())
+	assert.Equal(t, 1, ret.Get("pictures").Length())
+	assert.Equal(t, uint8Array.Length(), ret.Get("pictures").Index(0).Get("File").Length())
+
+	ret = f.(js.Value).Call("GetPictureCells", js.ValueOf("Sheet1"))
+	assert.True(t, ret.Get("error").IsNull(), ret.Get("error").String())
+	assert.Equal(t, 1, ret.Get("cells").Length())
+	assert.Equal(t, "A1", ret.Get("cells").Index(0).String())
 
 	ret = f.(js.Value).Call("AddPictureFromBytes")
 	assert.EqualError(t, errArgNum, ret.Get("error").String())
 
-	ret = f.(js.Value).Call("AddPictureFromBytes", js.ValueOf("Sheet1"), js.ValueOf("A1"), js.ValueOf("Picture 1"), js.ValueOf(".png"), js.ValueOf(uint8Array), js.ValueOf(map[string]interface{}{"Locked": 1}))
+	ret = f.(js.Value).Call("AddPictureFromBytes", js.ValueOf("Sheet1"), js.ValueOf("A1"),
+		js.ValueOf(map[string]interface{}{
+			"Extension": ".png",
+			"File":      uint8Array,
+			"Format": map[string]interface{}{
+				"Locked": 1,
+			},
+		}),
+	)
 	assert.EqualError(t, errArgType, ret.Get("error").String())
 
-	ret = f.(js.Value).Call("AddPictureFromBytes", js.ValueOf("Sheet1"), js.ValueOf("A1"), js.ValueOf("Picture 1"), js.ValueOf("png"), js.ValueOf(uint8Array), js.ValueOf(map[string]interface{}{}))
+	ret = f.(js.Value).Call("GetPictureCells", js.ValueOf(true))
+	assert.EqualError(t, errArgType, ret.Get("error").String())
+
+	ret = f.(js.Value).Call("AddPictureFromBytes", js.ValueOf("Sheet1"), js.ValueOf("A1"), js.ValueOf(map[string]interface{}{"Extension": "png", "File": uint8Array, "Format": map[string]interface{}{}}))
 	assert.EqualError(t, excelize.ErrImgExt, ret.Get("error").String())
+
+	ret = f.(js.Value).Call("GetPictures", js.ValueOf("Sheet1"))
+	assert.EqualError(t, errArgNum, ret.Get("error").String())
+
+	ret = f.(js.Value).Call("GetPictureCells")
+	assert.EqualError(t, errArgNum, ret.Get("error").String())
+
+	ret = f.(js.Value).Call("GetPictures", js.ValueOf("SheetN"), js.ValueOf("A1"))
+	assert.Equal(t, "sheet SheetN does not exist", ret.Get("error").String())
+
+	ret = f.(js.Value).Call("GetPictureCells", js.ValueOf("SheetN"))
+	assert.Equal(t, "sheet SheetN does not exist", ret.Get("error").String())
 }
 
-func TestAddPivotTable(t *testing.T) {
+func TestPivotTable(t *testing.T) {
 	f := NewFile(js.Value{}, []js.Value{})
 	assert.True(t, f.(js.Value).Get("error").IsNull())
 
@@ -468,6 +670,9 @@ func TestAddPivotTable(t *testing.T) {
 	ret = f.(js.Value).Call("AddPivotTable", opts)
 	assert.True(t, ret.Get("error").IsNull())
 
+	ret = f.(js.Value).Call("GetPivotTables", js.ValueOf("Sheet1"))
+	assert.True(t, ret.Get("error").IsNull())
+
 	ret = f.(js.Value).Call("AddPivotTable")
 	assert.EqualError(t, errArgNum, ret.Get("error").String())
 
@@ -479,28 +684,111 @@ func TestAddPivotTable(t *testing.T) {
 
 	ret = f.(js.Value).Call("AddPivotTable", js.ValueOf(map[string]interface{}{}))
 	assert.Equal(t, "parameter 'PivotTableRange' parsing error: parameter is required", ret.Get("error").String())
+
+	ret = f.(js.Value).Call("GetPivotTables")
+	assert.EqualError(t, errArgNum, ret.Get("error").String())
+
+	ret = f.(js.Value).Call("GetPivotTables", js.ValueOf(nil))
+	assert.Equal(t, errArgType.Error(), ret.Get("error").String())
+
+	ret = f.(js.Value).Call("GetPivotTables", js.ValueOf("SheetN"))
+	assert.Equal(t, "sheet SheetN does not exist", ret.Get("error").String())
 }
 
 func TestAddShape(t *testing.T) {
 	f := NewFile(js.Value{}, []js.Value{})
 	assert.True(t, f.(js.Value).Get("error").IsNull())
 
-	ret := f.(js.Value).Call("AddShape", js.ValueOf("Sheet1"), js.ValueOf("C30"),
-		js.ValueOf(map[string]interface{}{"Type": "rect", "Paragraph": map[string]interface{}{}}))
+	ret := f.(js.Value).Call("AddShape", js.ValueOf("Sheet1"),
+		js.ValueOf(map[string]interface{}{"Cell": "C30", "Type": "rect", "Paragraph": map[string]interface{}{}}))
 	assert.True(t, ret.Get("error").IsNull())
 
 	ret = f.(js.Value).Call("AddShape")
 	assert.EqualError(t, errArgNum, ret.Get("error").String())
 
-	ret = f.(js.Value).Call("AddShape", js.ValueOf("Sheet1"), js.ValueOf("C30"),
-		js.ValueOf(map[string]interface{}{"Type": true}))
+	ret = f.(js.Value).Call("AddShape", js.ValueOf("Sheet1"),
+		js.ValueOf(map[string]interface{}{"Cell": "C30", "Type": true}))
 	assert.EqualError(t, errArgType, ret.Get("error").String())
 
-	ret = f.(js.Value).Call("AddShape", js.ValueOf("SheetN"), js.ValueOf("C30"), js.ValueOf(map[string]interface{}{}))
+	ret = f.(js.Value).Call("AddShape", js.ValueOf("SheetN"), js.ValueOf(map[string]interface{}{"Cell": "C30", "Type": "rect"}))
 	assert.Equal(t, "sheet SheetN does not exist", ret.Get("error").String())
 
-	ret = f.(js.Value).Call("AddShape", js.ValueOf("Sheet1"), js.ValueOf("C30"), js.ValueOf(nil))
+	ret = f.(js.Value).Call("AddShape", js.ValueOf("Sheet1"), js.ValueOf(nil))
 	assert.Equal(t, errArgType.Error(), ret.Get("error").String())
+}
+
+func TestSlicer(t *testing.T) {
+	f := NewFile(js.Value{}, []js.Value{})
+	assert.True(t, f.(js.Value).Get("error").IsNull())
+
+	ret := f.(js.Value).Call("AddTable", js.ValueOf("Sheet1"),
+		js.ValueOf(map[string]interface{}{"Name": "Table1", "Range": "A1:D5"}))
+	assert.True(t, ret.Get("error").IsNull())
+
+	ret = f.(js.Value).Call("AddSlicer", js.ValueOf("Sheet1"),
+		js.ValueOf(map[string]interface{}{
+			"Name":       "Column1",
+			"Cell":       "E1",
+			"TableSheet": "Sheet1",
+			"TableName":  "Table1",
+			"Caption":    "Column1",
+		}))
+	assert.True(t, ret.Get("error").IsNull())
+
+	ret = f.(js.Value).Call("GetSlicers", js.ValueOf("Sheet1"))
+	assert.True(t, ret.Get("error").IsNull())
+	assert.Equal(t, 1, ret.Get("slicers").Length())
+	assert.Equal(t, "Column1", ret.Get("slicers").Index(0).Get("Name").String())
+
+	ret = f.(js.Value).Call("DeleteSlicer", js.ValueOf("Column1"))
+	assert.True(t, ret.Get("error").IsNull())
+
+	ret = f.(js.Value).Call("AddSlicer")
+	assert.EqualError(t, errArgNum, ret.Get("error").String())
+
+	ret = f.(js.Value).Call("AddSlicer", js.ValueOf("Sheet1"), js.ValueOf(nil))
+	assert.EqualError(t, errArgType, ret.Get("error").String())
+
+	ret = f.(js.Value).Call("AddSlicer", js.ValueOf("Sheet1"),
+		js.ValueOf(map[string]interface{}{"Name": true}))
+	assert.EqualError(t, errArgType, ret.Get("error").String())
+
+	ret = f.(js.Value).Call("AddSlicer", js.ValueOf("SheetN"),
+		js.ValueOf(map[string]interface{}{
+			"Name":       "Column1",
+			"Cell":       "E1",
+			"TableSheet": "SheetN",
+			"TableName":  "Table1",
+			"Caption":    "Column1",
+		}))
+	assert.Equal(t, "sheet SheetN does not exist", ret.Get("error").String())
+
+	ret = f.(js.Value).Call("DeleteSlicer", js.ValueOf("X"))
+	assert.Equal(t, "slicer X does not exist", ret.Get("error").String())
+
+	ret = f.(js.Value).Call("DeleteSlicer")
+	assert.EqualError(t, errArgNum, ret.Get("error").String())
+
+	ret = f.(js.Value).Call("DeleteSlicer", js.ValueOf(nil))
+	assert.EqualError(t, errArgType, ret.Get("error").String())
+
+	ret = f.(js.Value).Call("GetSlicers")
+	assert.EqualError(t, errArgNum, ret.Get("error").String())
+
+	ret = f.(js.Value).Call("GetSlicers", js.ValueOf(nil))
+	assert.EqualError(t, errArgType, ret.Get("error").String())
+
+	ret = f.(js.Value).Call("GetSlicers", js.ValueOf("SheetN"))
+	assert.Equal(t, "sheet SheetN does not exist", ret.Get("error").String())
+
+	ret = f.(js.Value).Call("DeleteSlicer", js.ValueOf("X"))
+	assert.Equal(t, "slicer X does not exist", ret.Get("error").String())
+
+	ret = f.(js.Value).Call("DeleteSlicer")
+	assert.EqualError(t, errArgNum, ret.Get("error").String())
+
+	ret = f.(js.Value).Call("DeleteSlicer", js.ValueOf(nil))
+	assert.EqualError(t, errArgType, ret.Get("error").String())
 }
 
 func TestAddSparkline(t *testing.T) {
@@ -529,7 +817,7 @@ func TestAddSparkline(t *testing.T) {
 			"Style":    -1,
 		}),
 	)
-	assert.Equal(t, "parameter 'Style' must between 0-35", ret.Get("error").String(), ret.Get("error").String())
+	assert.Equal(t, "parameter 'Style' value must be an integer from 0 to 35", ret.Get("error").String(), ret.Get("error").String())
 
 	ret = f.(js.Value).Call("AddSparkline", js.ValueOf("SheetN"),
 		js.ValueOf(map[string]interface{}{
@@ -540,21 +828,70 @@ func TestAddSparkline(t *testing.T) {
 	assert.Equal(t, "sheet SheetN does not exist", ret.Get("error").String())
 }
 
-func TestAddTable(t *testing.T) {
+func TestTable(t *testing.T) {
 	f := NewFile(js.Value{}, []js.Value{})
 	assert.True(t, f.(js.Value).Get("error").IsNull())
 
-	ret := f.(js.Value).Call("AddTable", js.ValueOf("Sheet1"), js.ValueOf("B26:A21"), js.ValueOf(map[string]interface{}{}))
+	ret := f.(js.Value).Call("AddTable", js.ValueOf("Sheet1"), js.ValueOf(map[string]interface{}{"Range": "B26:A21"}))
+	assert.True(t, ret.Get("error").IsNull())
+
+	ret = f.(js.Value).Call("GetTables", js.ValueOf("Sheet1"))
+	assert.True(t, ret.Get("error").IsNull())
+	assert.Equal(t, 1, ret.Get("tables").Length())
+	assert.Equal(t, "A21:B26", ret.Get("tables").Index(0).Get("Range").String())
+
+	ret = f.(js.Value).Call("DeleteTable", js.ValueOf("Table1"))
 	assert.True(t, ret.Get("error").IsNull())
 
 	ret = f.(js.Value).Call("AddTable")
 	assert.EqualError(t, errArgNum, ret.Get("error").String())
 
-	ret = f.(js.Value).Call("AddTable", js.ValueOf("Sheet1"), js.ValueOf("B26:A21"), js.ValueOf(map[string]interface{}{"Name": true}))
+	ret = f.(js.Value).Call("AddTable", js.ValueOf("Sheet1"), js.ValueOf(map[string]interface{}{"Name": true, "Range": "B26:A21"}))
 	assert.EqualError(t, errArgType, ret.Get("error").String())
 
-	ret = f.(js.Value).Call("AddTable", js.ValueOf("SheetN"), js.ValueOf("B26:A21"), js.ValueOf(map[string]interface{}{}))
+	ret = f.(js.Value).Call("AddTable", js.ValueOf("SheetN"), js.ValueOf(map[string]interface{}{"Range": "B26:A21"}))
 	assert.Equal(t, "sheet SheetN does not exist", ret.Get("error").String())
+
+	ret = f.(js.Value).Call("GetTables")
+	assert.EqualError(t, errArgNum, ret.Get("error").String())
+
+	ret = f.(js.Value).Call("GetTables", js.ValueOf(true))
+	assert.EqualError(t, errArgType, ret.Get("error").String())
+
+	ret = f.(js.Value).Call("GetTables", js.ValueOf("SheetN"))
+	assert.Equal(t, "sheet SheetN does not exist", ret.Get("error").String())
+
+	ret = f.(js.Value).Call("DeleteTable")
+	assert.EqualError(t, errArgNum, ret.Get("error").String())
+
+	ret = f.(js.Value).Call("DeleteTable", js.ValueOf(true))
+	assert.EqualError(t, errArgType, ret.Get("error").String())
+
+	ret = f.(js.Value).Call("DeleteTable", js.ValueOf("X"))
+	assert.Equal(t, "table X does not exist", ret.Get("error").String())
+}
+
+func TestAddVBAProject(t *testing.T) {
+	f := NewFile(js.Value{}, []js.Value{})
+	assert.True(t, f.(js.Value).Get("error").IsNull())
+
+	oleIdentifier := []byte{0xd0, 0xcf, 0x11, 0xe0, 0xa1, 0xb1, 0x1a, 0xe1}
+	uint8Array := js.Global().Get("Uint8Array").New(js.ValueOf(len(oleIdentifier)))
+	for k, v := range oleIdentifier {
+		uint8Array.SetIndex(k, v)
+	}
+	ret := f.(js.Value).Call("AddVBAProject", js.ValueOf(uint8Array))
+	assert.True(t, ret.Get("error").IsNull())
+
+	uint8Array = js.Global().Get("Uint8Array").New(js.ValueOf(1))
+	ret = f.(js.Value).Call("AddVBAProject", js.ValueOf(uint8Array))
+	assert.Equal(t, excelize.ErrAddVBAProject.Error(), ret.Get("error").String())
+
+	ret = f.(js.Value).Call("AddVBAProject")
+	assert.EqualError(t, errArgNum, ret.Get("error").String())
+
+	ret = f.(js.Value).Call("AddVBAProject", js.ValueOf(true))
+	assert.EqualError(t, errArgType, ret.Get("error").String())
 }
 
 func TestAutoFilter(t *testing.T) {
@@ -582,11 +919,57 @@ func TestCalcCellValue(t *testing.T) {
 	assert.True(t, ret.Get("error").IsNull())
 	assert.Equal(t, "", ret.Get("value").String())
 
+	ret = f.(js.Value).Call("CalcCellValue", js.ValueOf("Sheet1"), js.ValueOf("A1"), js.ValueOf(map[string]interface{}{"RawCellValue": true}))
+	assert.True(t, ret.Get("error").IsNull(), ret.Get("error").String())
+	assert.Equal(t, "", ret.Get("value").String())
+
 	ret = f.(js.Value).Call("CalcCellValue")
 	assert.EqualError(t, errArgNum, ret.Get("error").String())
 
+	ret = f.(js.Value).Call("CalcCellValue", js.ValueOf("Sheet1"), js.ValueOf("A1"), js.ValueOf(map[string]interface{}{"RawCellValue": 1}))
+	assert.EqualError(t, errArgType, ret.Get("error").String())
+
 	ret = f.(js.Value).Call("CalcCellValue", js.ValueOf("SheetN"), js.ValueOf("A1"))
 	assert.Equal(t, "sheet SheetN does not exist", ret.Get("error").String())
+}
+
+func TestCalcProps(t *testing.T) {
+	f := NewFile(js.Value{}, []js.Value{})
+	assert.True(t, f.(js.Value).Get("error").IsNull())
+
+	ret := f.(js.Value).Call("SetCalcProps",
+		js.ValueOf(map[string]interface{}{
+			"FullCalcOnLoad":        true,
+			"CalcID":                122211,
+			"ConcurrentManualCount": 5,
+			"IterateCount":          10,
+			"ConcurrentCalc":        true,
+		}),
+	)
+	assert.True(t, ret.Get("error").IsNull())
+
+	ret = f.(js.Value).Call("GetCalcProps")
+	assert.True(t, ret.Get("error").IsNull(), ret.Get("error").String())
+	assert.True(t, ret.Get("props").Get("FullCalcOnLoad").Bool())
+	assert.Equal(t, 122211, ret.Get("props").Get("CalcID").Int())
+	assert.Equal(t, 5, ret.Get("props").Get("ConcurrentManualCount").Int())
+	assert.Equal(t, 10, ret.Get("props").Get("IterateCount").Int())
+	assert.True(t, ret.Get("props").Get("ConcurrentCalc").Bool())
+	assert.True(t, ret.Get("props").Get("ForceFullCalc").IsUndefined())
+
+	ret = f.(js.Value).Call("GetCalcProps", js.ValueOf(map[string]interface{}{"CalcMode": true}))
+	assert.EqualError(t, errArgNum, ret.Get("error").String())
+
+	ret = f.(js.Value).Call("SetCalcProps", js.ValueOf(map[string]interface{}{"RefMode": "a1"}))
+	assert.Equal(t, "invalid RefMode value \"a1\", acceptable value should be one of A1, R1C1", ret.Get("error").String())
+
+	ret = f.(js.Value).Call("SetCalcProps")
+	assert.EqualError(t, errArgNum, ret.Get("error").String())
+
+	ret = f.(js.Value).Call("SetCalcProps",
+		js.ValueOf(map[string]interface{}{"CalcMode": true}),
+	)
+	assert.EqualError(t, errArgType, ret.Get("error").String())
 }
 
 func TestCopySheet(t *testing.T) {
@@ -753,6 +1136,29 @@ func TestGetActiveSheetIndex(t *testing.T) {
 	assert.Equal(t, 0, ret.Get("index").Int())
 }
 
+func TestGetBaseColor(t *testing.T) {
+	f := NewFile(js.Value{}, []js.Value{})
+	assert.True(t, f.(js.Value).Get("error").IsNull())
+
+	ret := f.(js.Value).Call("GetBaseColor", js.ValueOf("FFFFFF"), js.ValueOf(0))
+	assert.True(t, ret.Get("error").IsNull())
+	assert.Equal(t, "FFFFFF", ret.Get("color").String())
+
+	ret = f.(js.Value).Call("GetBaseColor", js.ValueOf("FFFFFF"), js.ValueOf(0), js.ValueOf(0))
+	assert.True(t, ret.Get("error").IsNull())
+	assert.Equal(t, "FFFFFF", ret.Get("color").String())
+
+	ret = f.(js.Value).Call("GetBaseColor", js.ValueOf("FFFFFF"), js.ValueOf(0), js.ValueOf(1))
+	assert.True(t, ret.Get("error").IsNull())
+	assert.Equal(t, "000000", ret.Get("color").String())
+
+	ret = f.(js.Value).Call("GetBaseColor")
+	assert.EqualError(t, errArgNum, ret.Get("error").String())
+
+	ret = f.(js.Value).Call("GetBaseColor", js.ValueOf("FFFFFF"), js.ValueOf(nil))
+	assert.Equal(t, errArgType.Error(), ret.Get("error").String())
+}
+
 func TestGetAppProps(t *testing.T) {
 	f := NewFile(js.Value{}, []js.Value{})
 	assert.True(t, f.(js.Value).Get("error").IsNull())
@@ -812,6 +1218,29 @@ func TestGetCellStyle(t *testing.T) {
 	ret = f.(js.Value).Call("GetCellStyle", js.ValueOf("SheetN"), js.ValueOf("A1"))
 	assert.Equal(t, "sheet SheetN does not exist", ret.Get("error").String())
 	assert.Equal(t, 0, ret.Get("style").Int())
+}
+
+func TestGetCellType(t *testing.T) {
+	f := NewFile(js.Value{}, []js.Value{})
+	assert.True(t, f.(js.Value).Get("error").IsNull())
+
+	ret := f.(js.Value).Call("GetCellType", js.ValueOf("Sheet1"), js.ValueOf("A1"))
+	assert.True(t, ret.Get("error").IsNull())
+	assert.Equal(t, 0, ret.Get("cellType").Int())
+
+	ret = f.(js.Value).Call("SetCellValue", js.ValueOf("Sheet1"), js.ValueOf("A1"), js.ValueOf(true))
+	assert.True(t, ret.Get("error").IsNull())
+
+	ret = f.(js.Value).Call("GetCellType", js.ValueOf("Sheet1"), js.ValueOf("A1"))
+	assert.True(t, ret.Get("error").IsNull())
+	assert.Equal(t, 1, ret.Get("cellType").Int())
+
+	ret = f.(js.Value).Call("GetCellType")
+	assert.EqualError(t, errArgNum, ret.Get("error").String())
+
+	ret = f.(js.Value).Call("GetCellType", js.ValueOf("SheetN"), js.ValueOf("A1"))
+	assert.Equal(t, "sheet SheetN does not exist", ret.Get("error").String())
+	assert.Equal(t, 0, ret.Get("cellType").Int())
 }
 
 func TestGetCellValue(t *testing.T) {
@@ -941,6 +1370,44 @@ func TestGetDefaultFont(t *testing.T) {
 	assert.EqualError(t, errArgNum, ret.Get("error").String())
 }
 
+func TestGetMergeCells(t *testing.T) {
+	f := NewFile(js.Value{}, []js.Value{})
+	assert.True(t, f.(js.Value).Get("error").IsNull())
+
+	ret := f.(js.Value).Call("SetCellValue", js.ValueOf("Sheet1"), js.ValueOf("A1"), js.ValueOf("value"))
+	assert.True(t, ret.Get("error").IsNull())
+
+	ret = f.(js.Value).Call("MergeCell", js.ValueOf("Sheet1"), js.ValueOf("A1"), js.ValueOf("C3"))
+	assert.True(t, ret.Get("error").IsNull())
+
+	ret = f.(js.Value).Call("GetMergeCells", js.ValueOf("Sheet1"))
+	assert.True(t, ret.Get("error").IsNull())
+
+	mergeCell := ret.Get("mergeCells").Index(0)
+	assert.Equal(t, "value", mergeCell.Call("GetCellValue").String())
+	assert.Equal(t, "A1", mergeCell.Call("GetStartAxis").String())
+	assert.Equal(t, "C3", mergeCell.Call("GetEndAxis").String())
+
+	// Test get merged cells without cell values
+	ret = f.(js.Value).Call("GetMergeCells", js.ValueOf("Sheet1"), js.ValueOf(true))
+	assert.True(t, ret.Get("error").IsNull())
+
+	mergeCell = ret.Get("mergeCells").Index(0)
+	assert.Empty(t, mergeCell.Call("GetCellValue").String())
+	assert.Equal(t, "A1", mergeCell.Call("GetStartAxis").String())
+	assert.Equal(t, "C3", mergeCell.Call("GetEndAxis").String())
+
+	ret = f.(js.Value).Call("GetMergeCells", js.ValueOf(1))
+	assert.EqualError(t, errArgType, ret.Get("error").String())
+
+	ret = f.(js.Value).Call("GetMergeCells")
+	assert.EqualError(t, errArgNum, ret.Get("error").String())
+
+	ret = f.(js.Value).Call("GetMergeCells", js.ValueOf("SheetN"))
+	assert.Equal(t, "sheet SheetN does not exist", ret.Get("error").String())
+	assert.Equal(t, 0, ret.Get("mergeCells").Length())
+}
+
 func TestGetRowHeight(t *testing.T) {
 	f := NewFile(js.Value{}, []js.Value{})
 	assert.True(t, f.(js.Value).Get("error").IsNull())
@@ -987,6 +1454,36 @@ func TestGetRowVisible(t *testing.T) {
 	ret = f.(js.Value).Call("GetRowVisible", js.ValueOf("SheetN"), js.ValueOf(1))
 	assert.Equal(t, "sheet SheetN does not exist", ret.Get("error").String())
 	assert.False(t, ret.Get("visible").Bool())
+}
+
+func TestSheetDimension(t *testing.T) {
+	f := NewFile(js.Value{}, []js.Value{})
+	assert.True(t, f.(js.Value).Get("error").IsNull())
+
+	ret := f.(js.Value).Call("SetSheetDimension", js.ValueOf("Sheet1"), js.ValueOf("A1:D5"))
+	assert.True(t, ret.Get("error").IsNull())
+
+	ret = f.(js.Value).Call("GetSheetDimension", js.ValueOf("Sheet1"))
+	assert.Equal(t, "A1:D5", ret.Get("dimension").String())
+	assert.True(t, ret.Get("error").IsNull())
+
+	ret = f.(js.Value).Call("SetSheetDimension", js.ValueOf("Sheet1"), js.ValueOf(true))
+	assert.EqualError(t, errArgType, ret.Get("error").String())
+
+	ret = f.(js.Value).Call("SetSheetDimension")
+	assert.EqualError(t, errArgNum, ret.Get("error").String())
+
+	ret = f.(js.Value).Call("SetSheetDimension", js.ValueOf("SheetN"), js.ValueOf("A1:D5"))
+	assert.Equal(t, "sheet SheetN does not exist", ret.Get("error").String())
+
+	ret = f.(js.Value).Call("GetSheetDimension", js.ValueOf(true))
+	assert.EqualError(t, errArgType, ret.Get("error").String())
+
+	ret = f.(js.Value).Call("GetSheetDimension")
+	assert.EqualError(t, errArgNum, ret.Get("error").String())
+
+	ret = f.(js.Value).Call("GetSheetDimension", js.ValueOf("SheetN"))
+	assert.Equal(t, "sheet SheetN does not exist", ret.Get("error").String())
 }
 
 func TestGetRows(t *testing.T) {
@@ -1173,6 +1670,26 @@ func TestMergeCell(t *testing.T) {
 	assert.Equal(t, "sheet SheetN does not exist", ret.Get("error").String())
 }
 
+func TestMoveSheet(t *testing.T) {
+	f := NewFile(js.Value{}, []js.Value{})
+	assert.True(t, f.(js.Value).Get("error").IsNull())
+
+	ret := f.(js.Value).Call("NewSheet", js.ValueOf("Sheet2"))
+	assert.True(t, ret.Get("error").IsNull())
+
+	ret = f.(js.Value).Call("MoveSheet", js.ValueOf("Sheet2"), js.ValueOf("Sheet1"))
+	assert.True(t, ret.Get("error").IsNull())
+
+	ret = f.(js.Value).Call("MoveSheet", js.ValueOf("Sheet1"), js.ValueOf("SheetN"))
+	assert.Equal(t, "sheet SheetN does not exist", ret.Get("error").String())
+
+	ret = f.(js.Value).Call("MoveSheet")
+	assert.EqualError(t, errArgNum, ret.Get("error").String())
+
+	ret = f.(js.Value).Call("MoveSheet", js.ValueOf("Sheet1"), js.ValueOf(nil))
+	assert.EqualError(t, errArgType, ret.Get("error").String())
+}
+
 func TestNewConditionalStyle(t *testing.T) {
 	f := NewFile(js.Value{}, []js.Value{})
 	assert.True(t, f.(js.Value).Get("error").IsNull())
@@ -1187,7 +1704,15 @@ func TestNewConditionalStyle(t *testing.T) {
 		}),
 	)
 	assert.True(t, ret.Get("error").IsNull(), ret.Get("error").String())
-	assert.Equal(t, 0, ret.Get("style").Int())
+	styleID := ret.Get("style")
+	assert.Equal(t, 0, styleID.Int())
+
+	ret = f.(js.Value).Call("GetConditionalStyle", styleID)
+	assert.True(t, ret.Get("error").IsNull())
+	assert.Equal(t, "pattern", ret.Get("style").Get("Fill").Get("Type").String())
+
+	ret = f.(js.Value).Call("GetConditionalStyle", js.ValueOf(2))
+	assert.Equal(t, "invalid style ID 2", ret.Get("error").String())
 
 	ret = f.(js.Value).Call("NewConditionalStyle",
 		js.ValueOf(map[string]interface{}{
@@ -1201,9 +1726,15 @@ func TestNewConditionalStyle(t *testing.T) {
 	ret = f.(js.Value).Call("NewConditionalStyle")
 	assert.EqualError(t, errArgNum, ret.Get("error").String())
 
+	ret = f.(js.Value).Call("GetConditionalStyle")
+	assert.EqualError(t, errArgNum, ret.Get("error").String())
+
 	ret = f.(js.Value).Call("NewConditionalStyle", js.ValueOf(map[string]interface{}{"Fill": 1}))
 	assert.Equal(t, errArgType.Error(), ret.Get("error").String())
 	assert.Equal(t, 0, ret.Get("style").Int())
+
+	ret = f.(js.Value).Call("GetConditionalStyle", js.ValueOf(true))
+	assert.EqualError(t, errArgType, ret.Get("error").String())
 }
 
 func TestNewSheet(t *testing.T) {
@@ -1222,7 +1753,7 @@ func TestNewSheet(t *testing.T) {
 	assert.Equal(t, 0, ret.Get("index").Int())
 }
 
-func TestNewStyle(t *testing.T) {
+func TestStyle(t *testing.T) {
 	f := NewFile(js.Value{}, []js.Value{})
 	assert.True(t, f.(js.Value).Get("error").IsNull())
 
@@ -1230,7 +1761,6 @@ func TestNewStyle(t *testing.T) {
 		"NumFmt":        1,
 		"DecimalPlaces": 2,
 		"CustomNumFmt":  "0.00",
-		"Lang":          "language",
 		"NegRed":        true,
 		"Border": []interface{}{
 			map[string]interface{}{"Type": "left", "Color": "000000", "Style": 1},
@@ -1269,11 +1799,16 @@ func TestNewStyle(t *testing.T) {
 	assert.True(t, ret.Get("error").IsNull(), ret.Get("error").String())
 	assert.Equal(t, 1, ret.Get("style").Int())
 
+	ret = f.(js.Value).Call("GetStyle", ret.Get("style"))
+	assert.True(t, ret.Get("error").IsNull())
+	assert.Equal(t, "0.00", ret.Get("style").Get("CustomNumFmt").String())
+	assert.True(t, ret.Get("style").Get("Font").Get("Bold").Bool())
+	assert.Equal(t, "single", ret.Get("style").Get("Font").Get("Underline").String())
+
 	for _, arg := range []map[string]interface{}{
 		{"NumFmt": "1"},
 		{"DecimalPlaces": "2"},
 		{"CustomNumFmt": true},
-		{"Lang": true},
 		{"NegRed": "true"},
 		{"Border": true},
 		{"Border": []interface{}{map[string]interface{}{"Type": true}}},
@@ -1321,6 +1856,15 @@ func TestNewStyle(t *testing.T) {
 	assert.EqualError(t, excelize.ErrFontSize, ret.Get("error").String())
 
 	ret = f.(js.Value).Call("NewStyle")
+	assert.EqualError(t, errArgNum, ret.Get("error").String())
+
+	ret = f.(js.Value).Call("GetStyle", js.ValueOf(-1))
+	assert.Equal(t, "invalid style ID -1", ret.Get("error").String())
+
+	ret = f.(js.Value).Call("GetStyle", js.ValueOf(true))
+	assert.EqualError(t, errArgType, ret.Get("error").String())
+
+	ret = f.(js.Value).Call("GetStyle")
 	assert.EqualError(t, errArgNum, ret.Get("error").String())
 }
 
@@ -1575,7 +2119,7 @@ func TestSetCellInt(t *testing.T) {
 	assert.Equal(t, "sheet SheetN does not exist", ret.Get("error").String())
 }
 
-func TestSetCellRichText(t *testing.T) {
+func TestCellRichText(t *testing.T) {
 	f := NewFile(js.Value{}, []js.Value{})
 	assert.True(t, f.(js.Value).Get("error").IsNull())
 
@@ -1592,6 +2136,11 @@ func TestSetCellRichText(t *testing.T) {
 	ret := f.(js.Value).Call("SetCellRichText", js.ValueOf("Sheet1"), js.ValueOf("A1"), runs)
 	assert.True(t, ret.Get("error").IsNull())
 
+	ret = f.(js.Value).Call("GetCellRichText", js.ValueOf("Sheet1"), js.ValueOf("A1"))
+	assert.True(t, ret.Get("error").IsNull())
+	assert.Equal(t, runs.Length(), ret.Get("runs").Length())
+	assert.True(t, ret.Get("runs").Index(0).Get("Font").Get("Bold").Bool())
+
 	ret = f.(js.Value).Call("SetCellRichText")
 	assert.EqualError(t, errArgNum, ret.Get("error").String())
 
@@ -1599,6 +2148,15 @@ func TestSetCellRichText(t *testing.T) {
 	assert.EqualError(t, errArgType, ret.Get("error").String())
 
 	ret = f.(js.Value).Call("SetCellRichText", js.ValueOf("SheetN"), js.ValueOf("A1"), runs)
+	assert.Equal(t, "sheet SheetN does not exist", ret.Get("error").String())
+
+	ret = f.(js.Value).Call("GetCellRichText")
+	assert.EqualError(t, errArgNum, ret.Get("error").String())
+
+	ret = f.(js.Value).Call("GetCellRichText", js.ValueOf("Sheet1"), js.ValueOf(true))
+	assert.EqualError(t, errArgType, ret.Get("error").String())
+
+	ret = f.(js.Value).Call("GetCellRichText", js.ValueOf("SheetN"), js.ValueOf("A1"))
 	assert.Equal(t, "sheet SheetN does not exist", ret.Get("error").String())
 }
 
@@ -1727,6 +2285,62 @@ func TestSetConditionalFormat(t *testing.T) {
 	assert.Equal(t, "sheet SheetN does not exist", ret.Get("error").String())
 }
 
+func TestCustomProps(t *testing.T) {
+	f := NewFile(js.Value{}, []js.Value{})
+	assert.True(t, f.(js.Value).Get("error").IsNull())
+
+	for _, prop := range []interface{}{
+		map[string]interface{}{"Name": "Text Prop", "Value": "text"},
+		map[string]interface{}{"Name": "Boolean Prop 1", "Value": true},
+		map[string]interface{}{"Name": "Boolean Prop 2", "Value": false},
+		map[string]interface{}{"Name": "Number Prop 1", "Value": -123.456},
+		map[string]interface{}{"Name": "Number Prop 2", "Value": 1},
+		map[string]interface{}{"Name": "Number Prop 2", "Value": nil},
+	} {
+		ret := f.(js.Value).Call("SetCustomProps", js.ValueOf(prop))
+		assert.True(t, ret.Get("error").IsNull())
+	}
+
+	ret := f.(js.Value).Call("GetCustomProps")
+	assert.Equal(t, ret.Get("props").Length(), 4)
+	assert.Equal(t, ret.Get("props").Index(0).Get("Value").String(), "text")
+	assert.True(t, ret.Get("props").Index(1).Get("Value").Bool())
+	assert.False(t, ret.Get("props").Index(2).Get("Value").Bool())
+	assert.Equal(t, ret.Get("props").Index(3).Get("Value").Float(), -123.456)
+
+	ret = f.(js.Value).Call("SetCustomProps")
+	assert.EqualError(t, errArgNum, ret.Get("error").String())
+
+	ret = f.(js.Value).Call("SetCustomProps", js.ValueOf(1))
+	assert.EqualError(t, errArgType, ret.Get("error").String())
+
+	ret = f.(js.Value).Call("SetCustomProps", js.ValueOf(map[string]interface{}{"Name": 1}))
+	assert.EqualError(t, errArgType, ret.Get("error").String())
+
+	ret = f.(js.Value).Call("GetCustomProps", js.ValueOf(1))
+	assert.EqualError(t, errArgNum, ret.Get("error").String())
+
+	// Test get custom property with unsupported charset
+	wb := excelize.NewFile()
+	wb.Sheet.Delete("docProps/custom.xml")
+	wb.Pkg.Store("docProps/custom.xml", MacintoshCyrillicCharset)
+	buf, err := wb.WriteToBuffer()
+	assert.NoError(t, err)
+
+	uint8Array := js.Global().Get("Uint8Array").New(js.ValueOf(buf.Len()))
+	for k, v := range buf.Bytes() {
+		uint8Array.SetIndex(k, v)
+	}
+	f = OpenReader(js.Value{}, []js.Value{uint8Array})
+	assert.True(t, f.(js.Value).Get("error").IsNull())
+	ret = f.(js.Value).Call("GetCustomProps")
+	assert.Equal(t, ret.Get("error").String(), "XML syntax error on line 1: invalid UTF-8")
+
+	// Test set custom property with unsupported charset
+	ret = f.(js.Value).Call("SetCustomProps", js.ValueOf(map[string]interface{}{"Name": "Text Prop", "Value": "text"}))
+	assert.Equal(t, ret.Get("error").String(), "XML syntax error on line 1: invalid UTF-8")
+}
+
 func TestSetDefaultFont(t *testing.T) {
 	f := NewFile(js.Value{}, []js.Value{})
 	assert.True(t, f.(js.Value).Get("error").IsNull())
@@ -1738,7 +2352,7 @@ func TestSetDefaultFont(t *testing.T) {
 	assert.EqualError(t, errArgNum, ret.Get("error").String())
 }
 
-func TestSetDefinedName(t *testing.T) {
+func TestDefinedName(t *testing.T) {
 	f := NewFile(js.Value{}, []js.Value{})
 	assert.True(t, f.(js.Value).Get("error").IsNull())
 
@@ -1748,6 +2362,10 @@ func TestSetDefinedName(t *testing.T) {
 		"Comment":  "defined name comment",
 	}))
 	assert.True(t, ret.Get("error").IsNull())
+
+	ret = f.(js.Value).Call("GetDefinedName")
+	assert.True(t, ret.Get("error").IsNull())
+	assert.Equal(t, "Amount", ret.Get("definedNames").Index(0).Get("Name").String())
 
 	ret = f.(js.Value).Call("SetDefinedName")
 	assert.EqualError(t, errArgNum, ret.Get("error").String())
@@ -1763,9 +2381,12 @@ func TestSetDefinedName(t *testing.T) {
 		"RefersTo": "Sheet1!$A$2:$D$5",
 	}))
 	assert.EqualError(t, excelize.ErrParameterInvalid, ret.Get("error").String())
+
+	ret = f.(js.Value).Call("GetDefinedName", js.ValueOf(true))
+	assert.EqualError(t, errArgNum, ret.Get("error").String())
 }
 
-func TestSetDocProps(t *testing.T) {
+func TestDocProps(t *testing.T) {
 	f := NewFile(js.Value{}, []js.Value{})
 	assert.True(t, f.(js.Value).Get("error").IsNull())
 
@@ -1774,6 +2395,10 @@ func TestSetDocProps(t *testing.T) {
 	}))
 	assert.True(t, ret.Get("error").IsNull())
 
+	ret = f.(js.Value).Call("GetDocProps")
+	assert.True(t, ret.Get("error").IsNull())
+	assert.Equal(t, "category", ret.Get("props").Get("Category").String())
+
 	ret = f.(js.Value).Call("SetDocProps")
 	assert.EqualError(t, errArgNum, ret.Get("error").String())
 
@@ -1781,9 +2406,12 @@ func TestSetDocProps(t *testing.T) {
 		"Category": true,
 	}))
 	assert.EqualError(t, errArgType, ret.Get("error").String())
+
+	ret = f.(js.Value).Call("GetDocProps", js.ValueOf(nil))
+	assert.EqualError(t, errArgNum, ret.Get("error").String())
 }
 
-func TestSetHeaderFooter(t *testing.T) {
+func TestHeaderFooter(t *testing.T) {
 	f := NewFile(js.Value{}, []js.Value{})
 	assert.True(t, f.(js.Value).Get("error").IsNull())
 
@@ -1791,6 +2419,10 @@ func TestSetHeaderFooter(t *testing.T) {
 		js.ValueOf(map[string]interface{}{"OddHeader": "header"}),
 	)
 	assert.True(t, ret.Get("error").IsNull())
+
+	ret = f.(js.Value).Call("GetHeaderFooter", js.ValueOf("Sheet1"))
+	assert.True(t, ret.Get("error").IsNull())
+	assert.Equal(t, "header", ret.Get("opts").Get("OddHeader").String())
 
 	ret = f.(js.Value).Call("SetHeaderFooter")
 	assert.EqualError(t, errArgNum, ret.Get("error").String())
@@ -1806,9 +2438,18 @@ func TestSetHeaderFooter(t *testing.T) {
 		}),
 	)
 	assert.Equal(t, "field OddHeader must be less than or equal to 255 characters", ret.Get("error").String())
+
+	ret = f.(js.Value).Call("GetHeaderFooter")
+	assert.Equal(t, errArgNum.Error(), ret.Get("error").String())
+
+	ret = f.(js.Value).Call("GetHeaderFooter", js.ValueOf(nil))
+	assert.Equal(t, errArgType.Error(), ret.Get("error").String())
+
+	ret = f.(js.Value).Call("GetHeaderFooter", js.ValueOf("SheetN"))
+	assert.Equal(t, "sheet SheetN does not exist", ret.Get("error").String())
 }
 
-func TestSetPageLayout(t *testing.T) {
+func TestPageLayout(t *testing.T) {
 	f := NewFile(js.Value{}, []js.Value{})
 	assert.True(t, f.(js.Value).Get("error").IsNull())
 
@@ -1821,6 +2462,7 @@ func TestSetPageLayout(t *testing.T) {
 			"FitToHeight":     2,
 			"FitToWidth":      2,
 			"BlackAndWhite":   true,
+			"PageOrder":       "overThenDown",
 		}),
 	)
 	assert.True(t, ret.Get("error").IsNull())
@@ -1836,9 +2478,22 @@ func TestSetPageLayout(t *testing.T) {
 		js.ValueOf(map[string]interface{}{"Size": 1}),
 	)
 	assert.Equal(t, "sheet SheetN does not exist", ret.Get("error").String())
+
+	ret = f.(js.Value).Call("GetPageLayout", js.ValueOf("Sheet1"))
+	assert.True(t, ret.Get("error").IsNull())
+
+	assert.Equal(t, "landscape", ret.Get("opts").Get("Orientation").String())
+	assert.Equal(t, 120, ret.Get("opts").Get("AdjustTo").Int())
+	assert.True(t, ret.Get("opts").Get("BlackAndWhite").Bool())
+
+	ret = f.(js.Value).Call("GetPageLayout")
+	assert.EqualError(t, errArgNum, ret.Get("error").String())
+
+	ret = f.(js.Value).Call("GetPageLayout", js.ValueOf("SheetN"))
+	assert.Equal(t, "sheet SheetN does not exist", ret.Get("error").String())
 }
 
-func TestSetPageMargins(t *testing.T) {
+func TestPageMargins(t *testing.T) {
 	f := NewFile(js.Value{}, []js.Value{})
 	assert.True(t, f.(js.Value).Get("error").IsNull())
 
@@ -1867,9 +2522,21 @@ func TestSetPageMargins(t *testing.T) {
 		js.ValueOf(map[string]interface{}{"Bottom": 1}),
 	)
 	assert.Equal(t, "sheet SheetN does not exist", ret.Get("error").String())
+
+	ret = f.(js.Value).Call("GetPageMargins", js.ValueOf("Sheet1"))
+	assert.True(t, ret.Get("error").IsNull())
+
+	assert.Equal(t, 1, ret.Get("opts").Get("Top").Int())
+	assert.True(t, ret.Get("opts").Get("Vertically").Bool())
+
+	ret = f.(js.Value).Call("GetPageMargins")
+	assert.EqualError(t, errArgNum, ret.Get("error").String())
+
+	ret = f.(js.Value).Call("GetPageMargins", js.ValueOf("SheetN"))
+	assert.Equal(t, "sheet SheetN does not exist", ret.Get("error").String())
 }
 
-func TestSetPanes(t *testing.T) {
+func TestPanes(t *testing.T) {
 	f := NewFile(js.Value{}, []js.Value{})
 	assert.True(t, f.(js.Value).Get("error").IsNull())
 
@@ -1881,6 +2548,11 @@ func TestSetPanes(t *testing.T) {
 	)
 	assert.True(t, ret.Get("error").IsNull())
 
+	ret = f.(js.Value).Call("GetPanes", js.ValueOf("Sheet1"))
+	assert.True(t, ret.Get("error").IsNull())
+	assert.False(t, ret.Get("panes").Get("Freeze").Bool())
+	assert.False(t, ret.Get("panes").Get("Split").Bool())
+
 	ret = f.(js.Value).Call("SetPanes")
 	assert.EqualError(t, errArgNum, ret.Get("error").String())
 
@@ -1891,12 +2563,18 @@ func TestSetPanes(t *testing.T) {
 	)
 	assert.EqualError(t, errArgType, ret.Get("error").String())
 
+	ret = f.(js.Value).Call("GetPanes")
+	assert.EqualError(t, errArgNum, ret.Get("error").String())
+
 	ret = f.(js.Value).Call("SetPanes", js.ValueOf("SheetN"),
 		js.ValueOf(map[string]interface{}{
 			"Freeze": false,
 			"Split":  false,
 		}),
 	)
+	assert.Equal(t, "sheet SheetN does not exist", ret.Get("error").String())
+
+	ret = f.(js.Value).Call("GetPanes", js.ValueOf("SheetN"))
 	assert.Equal(t, "sheet SheetN does not exist", ret.Get("error").String())
 }
 
@@ -1956,6 +2634,28 @@ func TestSetRowVisible(t *testing.T) {
 	assert.Equal(t, "sheet SheetN does not exist", ret.Get("error").String())
 }
 
+func TestSetSheetBackgroundFromBytes(t *testing.T) {
+	buf, err := os.ReadFile(filepath.Join("..", "chart.png"))
+	assert.NoError(t, err)
+
+	uint8Array := js.Global().Get("Uint8Array").New(js.ValueOf(len(buf)))
+	for k, v := range buf {
+		uint8Array.SetIndex(k, v)
+	}
+
+	f := NewFile(js.Value{}, []js.Value{})
+	assert.True(t, f.(js.Value).Get("error").IsNull())
+
+	ret := f.(js.Value).Call("SetSheetBackgroundFromBytes", js.ValueOf("Sheet1"), js.ValueOf(".png"), js.ValueOf(uint8Array))
+	assert.True(t, ret.Get("error").IsNull())
+
+	ret = f.(js.Value).Call("SetSheetBackgroundFromBytes")
+	assert.EqualError(t, errArgNum, ret.Get("error").String())
+
+	ret = f.(js.Value).Call("SetSheetBackgroundFromBytes", js.ValueOf("Sheet1"), js.ValueOf(".images"), js.ValueOf(uint8Array))
+	assert.EqualError(t, excelize.ErrImgExt, ret.Get("error").String())
+}
+
 func TestSetSheetCol(t *testing.T) {
 	f := NewFile(js.Value{}, []js.Value{})
 	assert.True(t, f.(js.Value).Get("error").IsNull())
@@ -1987,7 +2687,7 @@ func TestSetSheetName(t *testing.T) {
 	assert.True(t, ret.Get("error").IsNull())
 }
 
-func TestSetSheetProps(t *testing.T) {
+func TestSheetProps(t *testing.T) {
 	f := NewFile(js.Value{}, []js.Value{})
 	assert.True(t, f.(js.Value).Get("error").IsNull())
 
@@ -1999,7 +2699,15 @@ func TestSetSheetProps(t *testing.T) {
 	)
 	assert.True(t, ret.Get("error").IsNull())
 
+	ret = f.(js.Value).Call("GetSheetProps", js.ValueOf("Sheet1"))
+	assert.True(t, ret.Get("error").IsNull())
+	assert.True(t, ret.Get("props").Get("EnableFormatConditionsCalculation").Bool())
+	assert.Equal(t, "code", ret.Get("props").Get("CodeName").String())
+
 	ret = f.(js.Value).Call("SetSheetProps")
+	assert.EqualError(t, errArgNum, ret.Get("error").String())
+
+	ret = f.(js.Value).Call("GetSheetProps")
 	assert.EqualError(t, errArgNum, ret.Get("error").String())
 
 	ret = f.(js.Value).Call("SetSheetProps", js.ValueOf("Sheet1"),
@@ -2009,6 +2717,9 @@ func TestSetSheetProps(t *testing.T) {
 	ret = f.(js.Value).Call("SetSheetProps", js.ValueOf("SheetN"),
 		js.ValueOf(map[string]interface{}{"CodeName": "code"}),
 	)
+	assert.Equal(t, "sheet SheetN does not exist", ret.Get("error").String())
+
+	ret = f.(js.Value).Call("GetSheetProps", js.ValueOf("SheetN"))
 	assert.Equal(t, "sheet SheetN does not exist", ret.Get("error").String())
 }
 
@@ -2023,6 +2734,49 @@ func TestSetSheetRow(t *testing.T) {
 	assert.EqualError(t, errArgNum, ret.Get("error").String())
 
 	ret = f.(js.Value).Call("SetSheetRow", js.ValueOf("SheetN"), js.ValueOf("A1"), js.ValueOf([]interface{}{"foo", 1, true, nil}))
+	assert.Equal(t, "sheet SheetN does not exist", ret.Get("error").String())
+}
+
+func TestSheetView(t *testing.T) {
+	f := NewFile(js.Value{}, []js.Value{})
+	assert.True(t, f.(js.Value).Get("error").IsNull())
+
+	ret := f.(js.Value).Call("SetSheetView", js.ValueOf("Sheet1"), js.ValueOf(-1),
+		js.ValueOf(map[string]interface{}{
+			"DefaultGridColor":  false,
+			"RightToLeft":       false,
+			"ShowFormulas":      false,
+			"ShowGridLines":     false,
+			"ShowRowColHeaders": false,
+			"ShowRuler":         false,
+			"ShowZeros":         false,
+			"TopLeftCell":       "A1",
+			"View":              "normal",
+			"ZoomScale":         120,
+		}),
+	)
+	assert.True(t, ret.Get("error").IsNull())
+
+	ret = f.(js.Value).Call("GetSheetView", js.ValueOf("Sheet1"), js.ValueOf(-1))
+	assert.True(t, ret.Get("error").IsNull())
+	assert.Equal(t, 120, ret.Get("opts").Get("ZoomScale").Int())
+
+	ret = f.(js.Value).Call("SetSheetView")
+	assert.EqualError(t, errArgNum, ret.Get("error").String())
+
+	ret = f.(js.Value).Call("GetSheetView", js.ValueOf("Sheet1"))
+	assert.EqualError(t, errArgNum, ret.Get("error").String())
+
+	ret = f.(js.Value).Call("SetSheetView", js.ValueOf("Sheet1"), js.ValueOf(-1),
+		js.ValueOf(map[string]interface{}{"View": true}))
+	assert.EqualError(t, errArgType, ret.Get("error").String())
+
+	ret = f.(js.Value).Call("SetSheetView", js.ValueOf("SheetN"), js.ValueOf(-1),
+		js.ValueOf(map[string]interface{}{"View": "normal"}),
+	)
+	assert.Equal(t, "sheet SheetN does not exist", ret.Get("error").String())
+
+	ret = f.(js.Value).Call("GetSheetView", js.ValueOf("SheetN"), js.ValueOf(-1))
 	assert.Equal(t, "sheet SheetN does not exist", ret.Get("error").String())
 }
 
@@ -2043,7 +2797,7 @@ func TestSetSheetVisible(t *testing.T) {
 	assert.True(t, ret.Get("error").IsNull())
 }
 
-func TestSetWorkbookProps(t *testing.T) {
+func TestWorkbookProps(t *testing.T) {
 	f := NewFile(js.Value{}, []js.Value{})
 	assert.True(t, f.(js.Value).Get("error").IsNull())
 
@@ -2056,7 +2810,15 @@ func TestSetWorkbookProps(t *testing.T) {
 	)
 	assert.True(t, ret.Get("error").IsNull())
 
+	ret = f.(js.Value).Call("GetWorkbookProps")
+	assert.True(t, ret.Get("error").IsNull())
+	assert.True(t, ret.Get("props").Get("Date1904").Bool())
+	assert.Equal(t, "code", ret.Get("props").Get("CodeName").String())
+
 	ret = f.(js.Value).Call("SetWorkbookProps")
+	assert.EqualError(t, errArgNum, ret.Get("error").String())
+
+	ret = f.(js.Value).Call("GetWorkbookProps", js.ValueOf(true))
 	assert.EqualError(t, errArgNum, ret.Get("error").String())
 
 	ret = f.(js.Value).Call("SetWorkbookProps",
@@ -2103,6 +2865,20 @@ func TestUnprotectSheet(t *testing.T) {
 	assert.Equal(t, "worksheet has set no protect", ret.Get("error").String())
 }
 
+func TestUnprotectWorkbook(t *testing.T) {
+	f := NewFile(js.Value{}, []js.Value{})
+	assert.True(t, f.(js.Value).Get("error").IsNull())
+
+	ret := f.(js.Value).Call("UnprotectWorkbook")
+	assert.True(t, ret.Get("error").IsNull())
+
+	ret = f.(js.Value).Call("UnprotectWorkbook", js.ValueOf(true))
+	assert.EqualError(t, errArgType, ret.Get("error").String())
+
+	ret = f.(js.Value).Call("UnprotectWorkbook", js.ValueOf("password"))
+	assert.Equal(t, "workbook has set no protect", ret.Get("error").String())
+}
+
 func TestUnsetConditionalFormat(t *testing.T) {
 	f := NewFile(js.Value{}, []js.Value{})
 	assert.True(t, f.(js.Value).Get("error").IsNull())
@@ -2126,6 +2902,22 @@ func TestUpdateLinkedValue(t *testing.T) {
 
 	ret = f.(js.Value).Call("UpdateLinkedValue", js.ValueOf("Sheet1"))
 	assert.EqualError(t, errArgNum, ret.Get("error").String())
+
+	// Test unsupported charset
+	wb := excelize.NewFile()
+	wb.Sheet.Delete("xl/worksheets/sheet1.xml")
+	wb.Pkg.Store("xl/worksheets/sheet1.xml", MacintoshCyrillicCharset)
+	buf, err := wb.WriteToBuffer()
+	assert.NoError(t, err)
+
+	uint8Array := js.Global().Get("Uint8Array").New(js.ValueOf(buf.Len()))
+	for k, v := range buf.Bytes() {
+		uint8Array.SetIndex(k, v)
+	}
+	f = OpenReader(js.Value{}, []js.Value{uint8Array})
+	assert.True(t, f.(js.Value).Get("error").IsNull())
+	ret = f.(js.Value).Call("UpdateLinkedValue")
+	assert.Equal(t, ret.Get("error").String(), "XML syntax error on line 1: invalid UTF-8")
 }
 
 func TestWriteToBuffer(t *testing.T) {
@@ -2156,7 +2948,7 @@ func TestJsValueToGo(t *testing.T) {
 		F2 []*string
 	}
 	type T3 struct {
-		F1 []*uint8
+		F1 []*uint32
 	}
 	type T4 struct {
 		F1 []*T3
@@ -2198,4 +2990,118 @@ func TestJsToGoBaseType(t *testing.T) {
 	assert.EqualError(t, err, errArgType.Error())
 	_, err = jsToGoBaseType(js.ValueOf(true), reflect.Int64)
 	assert.EqualError(t, err, errArgType.Error())
+}
+
+func TestGoValueToJS(t *testing.T) {
+	enable, exp := true, "exp"
+	result, err := goValueToJS(reflect.ValueOf(excelize.Chart{
+		Format: excelize.GraphicOptions{PrintObject: &enable},
+	}), reflect.TypeOf(excelize.Chart{}))
+	assert.NoError(t, err)
+	assert.True(t, js.ValueOf(result).Get("Format").Get("PrintObject").Bool())
+
+	type T1 struct {
+		F1 []*excelize.DataValidation
+		F2 []*int64
+		F3 []uint
+	}
+	var num int64 = 1
+	result, err = goValueToJS(reflect.ValueOf(T1{
+		F1: []*excelize.DataValidation{{AllowBlank: true}, {}},
+		F2: []*int64{&num},
+		F3: []uint{1},
+	}), reflect.TypeOf(T1{}))
+	assert.NoError(t, err)
+	assert.True(t, js.ValueOf(result).Get("F1").Index(0).Get("AllowBlank").Bool())
+	assert.Equal(t, 1, js.ValueOf(result).Get("F2").Index(0).Int())
+	assert.Equal(t, 1, js.ValueOf(result).Get("F3").Index(0).Int())
+
+	result, err = goValueToJS(reflect.ValueOf(excelize.Style{
+		NumFmt:       1,
+		CustomNumFmt: &exp,
+		Alignment:    &excelize.Alignment{Indent: 1},
+		Border:       []excelize.Border{{Type: "left"}, {Type: "top"}},
+	}), reflect.TypeOf(excelize.Style{}))
+	assert.NoError(t, err)
+	assert.Equal(t, 1, js.ValueOf(result).Get("NumFmt").Int())
+	assert.Equal(t, exp, js.ValueOf(result).Get("CustomNumFmt").String())
+	assert.Equal(t, 1, js.ValueOf(result).Get("Alignment").Get("Indent").Int())
+	assert.Equal(t, "left", js.ValueOf(result).Get("Border").Index(0).Get("Type").String())
+	assert.Equal(t, "top", js.ValueOf(result).Get("Border").Index(1).Get("Type").String())
+
+	type T2 struct{ F1 string }
+	type T3 struct{ F1 bool }
+	_, err = goValueToJS(reflect.ValueOf(T2{
+		F1: "foo",
+	}), reflect.TypeOf(T3{}))
+	assert.EqualError(t, err, errArgType.Error())
+
+	type T4 struct{ F1 *T2 }
+	type T5 struct{ F1 *T3 }
+	_, err = goValueToJS(reflect.ValueOf(T4{
+		F1: &T2{F1: "foo"},
+	}), reflect.TypeOf(T5{}))
+	assert.EqualError(t, err, errArgType.Error())
+
+	type T6 struct{ F1 *bool }
+	type T7 struct{ F1 *string }
+	_, err = goValueToJS(reflect.ValueOf(T6{
+		F1: &enable,
+	}), reflect.TypeOf(T7{}))
+	assert.EqualError(t, err, errArgType.Error())
+
+	type T8 struct{ F1 T6 }
+	type T9 struct{ F1 T7 }
+	_, err = goValueToJS(reflect.ValueOf(T8{
+		F1: T6{F1: &enable},
+	}), reflect.TypeOf(T9{}))
+	assert.EqualError(t, err, errArgType.Error())
+
+	type T10 struct{ F1 []*T2 }
+	type T11 struct{ F1 []*T3 }
+	_, err = goValueToJS(reflect.ValueOf(T10{
+		F1: []*T2{{F1: "foo"}},
+	}), reflect.TypeOf(T11{}))
+	assert.EqualError(t, err, errArgType.Error())
+
+	type T12 struct{ F1 []*string }
+	type T13 struct{ F1 []*bool }
+	_, err = goValueToJS(reflect.ValueOf(T12{
+		F1: []*string{&exp},
+	}), reflect.TypeOf(T13{}))
+	assert.EqualError(t, err, errArgType.Error())
+
+	type T14 struct{ F1 []T2 }
+	type T15 struct{ F1 []T3 }
+	_, err = goValueToJS(reflect.ValueOf(T14{
+		F1: []T2{{F1: "foo"}},
+	}), reflect.TypeOf(T15{}))
+	assert.EqualError(t, err, errArgType.Error())
+
+	type T16 struct{ F1 []string }
+	type T17 struct{ F1 []bool }
+	_, err = goValueToJS(reflect.ValueOf(T16{
+		F1: []string{exp},
+	}), reflect.TypeOf(T17{}))
+	assert.EqualError(t, err, errArgType.Error())
+
+	type T18 struct{ F1 uint8 }
+	_, err = goValueToJS(reflect.ValueOf(T16{
+		F1: []string{exp},
+	}), reflect.TypeOf(T18{}))
+	assert.EqualError(t, err, errArgType.Error())
+}
+
+func TestGoBaseTypeToJS(t *testing.T) {
+	for _, typ := range []reflect.Kind{reflect.Bool, reflect.Bool, reflect.Int64} {
+		_, err := goBaseTypeToJS(reflect.ValueOf(0), typ)
+		assert.EqualError(t, err, errArgType.Error())
+	}
+	for _, typ := range []reflect.Kind{
+		reflect.Uint, reflect.Uint64, reflect.Int, reflect.Int64,
+		reflect.Float64, reflect.String, reflect.Complex128,
+	} {
+		_, err := goBaseTypeToJS(reflect.ValueOf(true), typ)
+		assert.EqualError(t, err, errArgType.Error())
+	}
 }

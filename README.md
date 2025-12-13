@@ -4,7 +4,7 @@
 
 <p align="center">
     <a href="https://www.npmjs.com/package/excelize-wasm"><img src="https://img.shields.io/npm/v/excelize-wasm.svg" alt="NPM version"></a>
-    <a href="https://github.com/xuri/excelize-wasm/actions/workflows/go.yml"><img src="https://github.com/xuri/excelize-wasm/actions/workflows/go.yml/badge.svg" alt="Build Status"></a>
+    <a href="https://github.com/xuri/excelize-wasm/actions/workflows/publish.yml"><img src="https://github.com/xuri/excelize-wasm/actions/workflows/publish.yml/badge.svg" alt="Build Status"></a>
     <a href="https://codecov.io/gh/xuri/excelize-wasm"><img src="https://codecov.io/gh/xuri/excelize-wasm/branch/main/graph/badge.svg" alt="Code Coverage"></a>
     <a href="https://goreportcard.com/report/github.com/xuri/excelize-wasm/cmd"><img src="https://goreportcard.com/badge/github.com/xuri/excelize-wasm/cmd" alt="Go Report Card"></a>
     <a href="https://pkg.go.dev/github.com/xuri/excelize/v2"><img src="https://img.shields.io/badge/go.dev-reference-007d9c?logo=go&logoColor=white" alt="go.dev"></a>
@@ -16,33 +16,33 @@ Excelize-wasm is a pure WebAssembly / Javascript port of Go [Excelize](https://g
 
 ## Environment Compatibility
 
-| Browser                                | Version    |
-| -------------------------------------- | ---------- |
-| Chrome                                 | &ge;71     |
-| Chrome for Android and Android Browser | &ge;108    |
-| Edge                                   | &ge;79     |
-| Safari on macOS and iOS                | &ge;12.2   |
-| Firefox                                | &ge;65     |
-| Firefox for Android                    | &ge;65     |
-| Opera                                  | &ge;58     |
-| Opera Mobile                           | &ge;50     |
-| Samsung Internet                       | &ge;10.1   |
-| UC Browser for Android                 | &ge;13.4   |
-| QQ Browser                             | &ge;13.1   |
-| Node.js                                | &ge;12.0.0 |
-| Deno                                   | &ge;1.0    |
+Browser | Version
+---|---
+Chrome | &ge;57
+Chrome for Android and Android Browser | &ge;105
+Edge | &ge;16
+Safari on macOS and iOS | &ge;11
+Firefox | &ge;52
+Firefox for Android | &ge;104
+Opera | &ge;44
+Opera Mobile | &ge;64
+Samsung Internet | &ge;7.2
+UC Browser for Android | &ge;13.4
+QQ Browser | &ge;10.4
+Node.js | &ge;12.0.0
+Deno | &ge;1.0
 
 ## Basic Usage
 
 ### Installation
 
-#### Node.js or browser
+#### Node.js
 
 ```bash
 npm install --save excelize-wasm
 ```
 
-#### Browser using script tag
+#### Browser
 
 ```html
 <script src="excelize-wasm/index.js"></script>
@@ -53,16 +53,20 @@ npm install --save excelize-wasm
 Here is a minimal example usage that will create spreadsheet file.
 
 ```javascript
-const { init } = require("excelize-wasm");
-const fs = require("fs");
+const { init } = require('excelize-wasm');
+const fs = require('fs');
 
-init("./node_modules/excelize-wasm/excelize.wasm.gz").then((excelize) => {
+init('./node_modules/excelize-wasm/excelize.wasm.gz').then((excelize) => {
   const f = excelize.NewFile();
+  if (f.error) {
+    console.log(f.error);
+    return;
+  }
   // Create a new sheet.
-  const { index } = f.NewSheet("Sheet2");
+  const { index } = f.NewSheet('Sheet2');
   // Set value of a cell.
-  f.SetCellValue("Sheet2", "A2", "Hello world.");
-  f.SetCellValue("Sheet1", "B2", 100);
+  f.SetCellValue('Sheet2', 'A2', 'Hello world.');
+  f.SetCellValue('Sheet1', 'B2', 100);
   // Set active sheet of the workbook.
   f.SetActiveSheet(index);
   // Save spreadsheet by the given path.
@@ -71,7 +75,7 @@ init("./node_modules/excelize-wasm/excelize.wasm.gz").then((excelize) => {
     console.log(error);
     return;
   }
-  fs.writeFile("Book1.xlsx", buffer, "binary", (error) => {
+  fs.writeFile('Book1.xlsx', buffer, 'binary', (error) => {
     if (error) {
       console.log(error);
     }
@@ -86,42 +90,49 @@ Create spreadsheet in browser:
 
 ```html
 <html>
-  <head>
-    <meta charset="utf-8" />
-    <script src="https://<your_hostname>/excelize-wasm/index.js"></script>
-  </head>
-  <body>
-    <div>
-      <button onclick="download()">Download</button>
-    </div>
-    <script>
-      function download() {
-        excelizeWASM.init("https://<your_hostname>/excelize-wasm/excelize.wasm.gz").then((excelize) => {
-          const f = excelize.NewFile();
-          // Create a new sheet.
-          const { index } = f.NewSheet("Sheet2");
-          // Set value of a cell.
-          f.SetCellValue("Sheet2", "A2", "Hello world.");
-          f.SetCellValue("Sheet1", "B2", 100);
-          // Set active sheet of the workbook.
-          f.SetActiveSheet(index);
-          // Save spreadsheet by the given path.
-          const { buffer, error } = f.WriteToBuffer();
-          if (error) {
-            console.log(error);
-            return;
-          }
-          const link = document.createElement("a");
-          link.download = "Book1.xlsx";
-          link.href = URL.createObjectURL(
-            new Blob([buffer], { type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" }),
-          );
-          link.click();
-        });
-      }
-    </script>
-  </body>
-</html>
+<head>
+  <meta charset="utf-8">
+  <script src="https://<your_hostname>/excelize-wasm/index.js"></script>
+</head>
+<body>
+  <div>
+    <button onclick="download()">Download</button>
+  </div>
+  <script>
+  function download() {
+    excelizeWASM
+      .init('https://<your_hostname>/excelize-wasm/excelize.wasm.gz')
+      .then((excelize) => {
+        const f = excelize.NewFile();
+        if (f.error) {
+          console.log(f.error);
+          return;
+        }
+        // Create a new sheet.
+        const { index } = f.NewSheet('Sheet2');
+        // Set value of a cell.
+        f.SetCellValue('Sheet2', 'A2', 'Hello world.');
+        f.SetCellValue('Sheet1', 'B2', 100);
+        // Set active sheet of the workbook.
+        f.SetActiveSheet(index);
+        // Save spreadsheet by the given path.
+        const { buffer, error } = f.WriteToBuffer();
+        if (error) {
+          console.log(error);
+          return;
+        }
+        const link = document.createElement('a');
+        link.download = 'Book1.xlsx';
+        link.href = URL.createObjectURL(
+          new Blob([buffer], {
+            type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+          })
+        );
+        link.click();
+      });
+  }
+  </script>
+</body>
 ```
 
 </details>
@@ -131,25 +142,29 @@ Create spreadsheet in browser:
 The following constitutes the bare to read a spreadsheet document.
 
 ```javascript
-const { init } = require("excelize-wasm");
-const fs = require("fs");
+const { init } = require('excelize-wasm');
+const fs = require('fs');
 
-init("./node_modules/excelize-wasm/excelize.wasm.gz").then((excelize) => {
-  const f = excelize.OpenReader(fs.readFileSync("Book1.xlsx"));
+init('./node_modules/excelize-wasm/excelize.wasm.gz').then((excelize) => {
+  const f = excelize.OpenReader(fs.readFileSync('Book1.xlsx'));
+  if (f.error) {
+    console.log(f.error);
+    return;
+  }
   // Set value of a cell.
-  var { value, error } = f.GetCellValue("Sheet1", "B2");
-  if (error) {
-    console.log(error);
+  const ret1 = f.GetCellValue('Sheet1', 'B2');
+  if (ret1.error) {
+    console.log(ret1.error);
     return;
   }
-  console.log(value);
+  console.log(ret1.value);
   // Get all the rows in the Sheet1.
-  var { result, error } = f.GetRows("Sheet1");
-  if (error) {
-    console.log(error);
+  const ret2 = f.GetRows('Sheet1');
+  if (ret2.error) {
+    console.log(ret2.error);
     return;
   }
-  result.forEach((row) => {
+  ret2.result.forEach((row) => {
     row.forEach((colCell) => {
       process.stdout.write(`${colCell}\t`);
     });
@@ -165,62 +180,66 @@ With excelize-wasm chart generation and management is as easy as a few lines of 
 <p align="center"><img width="650" src="https://raw.githubusercontent.com/xuri/excelize-wasm/main/chart.png" alt="Create chart by excelize-wasm"></p>
 
 ```javascript
-const { init } = require("excelize-wasm");
-const fs = require("fs");
+const { init } = require('excelize-wasm');
+const fs = require('fs');
 
-init("./node_modules/excelize-wasm/excelize.wasm.gz").then((excelize) => {
+init('./node_modules/excelize-wasm/excelize.wasm.gz').then((excelize) => {
   const f = excelize.NewFile();
+  if (f.error) {
+    console.log(f.error);
+    return;
+  }
   [
-    [null, "Apple", "Orange", "Pear"],
-    ["Small", 2, 3, 3],
-    ["Normal", 5, 2, 4],
-    ["Large", 6, 7, 8],
+    [null, 'Apple', 'Orange', 'Pear'],
+    ['Small', 2, 3, 3],
+    ['Normal', 5, 2, 4],
+    ['Large', 6, 7, 8],
   ].forEach((row, idx) => {
-    var { cell, error } = excelize.CoordinatesToCellName(1, idx + 1);
-    if (error) {
-      console.log(error);
+    const ret1 = excelize.CoordinatesToCellName(1, idx + 1);
+    if (ret1.error) {
+      console.log(ret1.error);
       return;
     }
-    var { error } = f.SetSheetRow("Sheet1", cell, row);
-    if (error) {
-      console.log(error);
+    const res2 = f.SetSheetRow('Sheet1', ret1.cell, row);
+    if (res2.error) {
+      console.log(res2.error);
       return;
     }
   });
-  var { error } = f.AddChart("Sheet1", "E1", {
-    Type: "col3DClustered",
+  const ret3 = f.AddChart('Sheet1', 'E1', {
+    Type: excelize.Col3DClustered,
     Series: [
       {
-        Name: "Sheet1!$A$2",
-        Categories: "Sheet1!$B$1:$D$1",
-        Values: "Sheet1!$B$2:$D$2",
+        Name: 'Sheet1!$A$2',
+        Categories: 'Sheet1!$B$1:$D$1',
+        Values: 'Sheet1!$B$2:$D$2',
       },
       {
-        Name: "Sheet1!$A$3",
-        Categories: "Sheet1!$B$1:$D$1",
-        Values: "Sheet1!$B$3:$D$3",
+        Name: 'Sheet1!$A$3',
+        Categories: 'Sheet1!$B$1:$D$1',
+        Values: 'Sheet1!$B$3:$D$3',
       },
       {
-        Name: "Sheet1!$A$4",
-        Categories: "Sheet1!$B$1:$D$1",
-        Values: "Sheet1!$B$4:$D$4",
+        Name: 'Sheet1!$A$4',
+        Categories: 'Sheet1!$B$1:$D$1',
+        Values: 'Sheet1!$B$4:$D$4',
       },
     ],
-    Title: {
-      Name: "Fruit 3D Clustered Column Chart",
-    },
+    Title: [{
+      Text: 'Fruit 3D Clustered Column Chart',
+    }],
   });
-  if (error) {
-    console.log(error);
+  if (ret3.error) {
+    console.log(ret3.error);
     return;
   }
   // Save spreadsheet by the given path.
-  var { buffer, error } = f.WriteToBuffer();
+  const { buffer, error } = f.WriteToBuffer();
   if (error) {
     console.log(error);
     return;
   }
-  fs.writeFile("Book1.xlsx", buffer, "binary", (error) => {
+  fs.writeFile('Book1.xlsx', buffer, 'binary', (error) => {
     if (error) {
       console.log(error);
     }
@@ -231,49 +250,59 @@ init("./node_modules/excelize-wasm/excelize.wasm.gz").then((excelize) => {
 ### Add picture to spreadsheet file
 
 ```javascript
-const { init } = require("excelize-wasm");
-const fs = require("fs");
+const { init } = require('excelize-wasm');
+const fs = require('fs');
 
-init("./node_modules/excelize-wasm/excelize.wasm.gz").then((excelize) => {
-  const f = excelize.OpenReader(fs.readFileSync("Book1.xlsx"));
+init('./node_modules/excelize-wasm/excelize.wasm.gz').then((excelize) => {
+  const f = excelize.OpenReader(fs.readFileSync('Book1.xlsx'));
   if (f.error) {
     console.log(f.error);
     return;
   }
   // Insert a picture.
-  var { error } = f.AddPictureFromBytes("Sheet1", "A2", "Picture 1", ".png", fs.readFileSync("image.png"), {});
-  if (error) {
-    console.log(error);
+  const ret1 = f.AddPictureFromBytes('Sheet1', 'A2', {
+    Extension: '.png',
+    File: fs.readFileSync('image.png'),
+    Format: { AltText: 'Picture 1' },
+  });
+  if (ret1.error) {
+    console.log(ret1.error);
     return;
   }
   // Insert a picture to worksheet with scaling.
-  var { error } = f.AddPictureFromBytes("Sheet1", "D2", "Picture 2", ".png", fs.readFileSync("image.jpg"), {
-    ScaleX: 0.5,
-    ScaleY: 0.5,
+  const ret2 = f.AddPictureFromBytes('Sheet1', 'D2', {
+    Extension: '.jpg',
+    File: fs.readFileSync('image.jpg'),
+    Format: { AltText: 'Picture 2', ScaleX: 0.5, ScaleY: 0.5 },
   });
-  if (error) {
-    console.log(error);
+  if (ret2.error) {
+    console.log(ret2.error);
     return;
   }
   // Insert a picture offset in the cell with printing support.
-  var { error } = f.AddPictureFromBytes("Sheet1", "H2", "Picture 3", ".png", fs.readFileSync("image.gif"), {
-    OffsetX: 15,
-    OffsetY: 10,
-    PrintObject: true,
-    LockAspectRatio: false,
-    Locked: false,
+  const ret3 = f.AddPictureFromBytes('Sheet1', 'H2', {
+    Extension: '.gif',
+    File: fs.readFileSync('image.gif'),
+    Format: {
+      AltText: 'Picture 3',
+      OffsetX: 15,
+      OffsetY: 10,
+      PrintObject: true,
+      LockAspectRatio: false,
+      Locked: false,
+    },
   });
-  if (error) {
-    console.log(error);
+  if (ret3.error) {
+    console.log(ret3.error);
     return;
   }
   // Save spreadsheet by the given path.
-  var { buffer, error } = f.WriteToBuffer();
+  const { buffer, error } = f.WriteToBuffer();
   if (error) {
     console.log(error);
     return;
   }
-  fs.writeFile("Book1.xlsx", buffer, "binary", (error) => {
+  fs.writeFile('Book1.xlsx', buffer, 'binary', (error) => {
     if (error) {
       console.log(error);
     }
@@ -285,20 +314,10 @@ init("./node_modules/excelize-wasm/excelize.wasm.gz").then((excelize) => {
 
 Contributions are welcome! Open a pull request to fix a bug, or open an issue to discuss a new feature or change.
 
-### Build locally
-
-Ensure you have node and go installed.
-
-Install all dependencies with `npm install` and build with `npm run build`. This will compile the javascript to three different build targets and will build and generate the wasm gzip file.
-
-To build just the JS, you can run `npm run build:js`
-
-Run tests by running `npm run test`
-
 ## Licenses
 
 This program is under the terms of the BSD 3-Clause License. See [https://opensource.org/licenses/BSD-3-Clause](https://opensource.org/licenses/BSD-3-Clause).
 
 The Excel logo is a trademark of [Microsoft Corporation](https://aka.ms/trademarks-usage). This artwork is an adaptation.
 
-gopher.{ai,svg,png} was created by [Takuya Ueda](https://twitter.com/tenntenn). Licensed under the [Creative Commons 3.0 Attributions license](http://creativecommons.org/licenses/by/3.0/).
+The Go gopher was created by [Renee French](https://go.dev/doc/gopher/README). Licensed under the [Creative Commons 4.0 Attributions license](http://creativecommons.org/licenses/by/4.0/).

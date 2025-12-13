@@ -1,19 +1,16 @@
-name: Pull Request Build
+name: Build
 on:
-  workflow_dispatch:
-  workflow_call:
-  pull_request:
+  push:
     branches:
       - main
 jobs:
 
-  test:
+  publish:
     strategy:
       matrix:
         go-version: [1.25.x]
         os: [ubuntu-24.04]
         targetplatform: [x64]
-        node-version: ['20.x', '21.x', '22.x', '23.x', '24.x']
 
     runs-on: ${{ matrix.os }}
     environment: production
@@ -58,10 +55,10 @@ jobs:
         GOOS=js GOARCH=wasm GO111MODULE=on CGO_ENABLED=0 go build -v -a -ldflags="-w -s" -gcflags=-trimpath="$(go env GOPATH)" -asmflags=-trimpath="$(go env GOPATH)" -o ../dist/excelize.wasm main.go
         gzip -f --best ../dist/excelize.wasm
 
-    - name: Setup Node.js ${{ matrix.node-version }}
+    - name: Setup Node.js
       uses: actions/setup-node@v6
       with:
-        node-version: ${{ matrix.node-version }}
+        node-version: 20.18.1
 
     - name: NPM Build
       run: |
@@ -71,3 +68,9 @@ jobs:
         cp README.md ./dist
         cp package.json ./dist
         cp src/index.d.ts ./dist
+
+    - name: NPM Publish
+      uses: JS-DevTools/npm-publish@v4
+      with:
+        token: ${{ secrets.NPM_TOKEN }}
+        package: ./dist/package.json

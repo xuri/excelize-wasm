@@ -1,9 +1,12 @@
 {
   "name": "excelize-wasm",
-  "version": "0.0.3",
+  "version": "0.1.0",
   "description": "A pure WebAssembly / Javascript port of Go Excelize library that allow you to write to and read from XLAM / XLSM / XLSX / XLTM / XLTX files",
   "author": "xuri <xuri.me@gmail.com>",
   "homepage": "https://xuri.me/excelize",
+  "scripts": {
+    "build": "rollup -c rollup.config.js"
+  },
   "bugs": {
     "url": "https://github.com/xuri/excelize-wasm/issues",
     "email": "xuri.me@gmail.com"
@@ -12,27 +15,12 @@
   "type": "module",
   "main": "main.cjs",
   "module": "main.js",
-  "exports": {
-    "require": "./dist/main.cjs",
-    "script": "./dist/index.js",
-    "default": "./dist/main.js"
-  },
-  "scripts": {
-    "build": "npm-run-all clean build:js build:go",
-    "build:js": "rollup -c",
-    "build:go": "cd cmd && GOOS=js GOARCH=wasm go build -ldflags=\"-s -w\" -o ../dist/excelize.wasm && cd ../dist && gzip -9 -v -c excelize.wasm > excelize.wasm.gz && rm excelize.wasm",
-    "clean": "rm -rf dist",
-    "test": "node test/test-nodejs.js"
-  },
   "files": [
     "excelize.wasm.gz",
     "index.d.ts",
     "index.js",
-    "index.js.map",
     "main.cjs",
-    "main.cjs.map",
-    "main.js",
-    "main.js.map"
+    "main.js"
   ],
   "types": "index.d.ts",
   "typings": "index.d.ts",
@@ -48,13 +36,10 @@
     "data-science",
     "ecma-376",
     "excel",
-    "excel",
-    "excelize",
     "excelize",
     "formula",
     "go",
     "golang",
-    "microsoft",
     "microsoft",
     "office",
     "ole",
@@ -70,22 +55,16 @@
     "wps",
     "xlsm",
     "xlsx",
-    "xlsx",
     "xltm",
     "xltx",
     "xml",
     "zip"
   ],
   "devDependencies": {
-    "@rollup/plugin-commonjs": "24.0.0",
-    "@rollup/plugin-node-resolve": "15.0.1",
-    "@rollup/plugin-terser": "0.2.1",
+    "@rollup/plugin-commonjs": "29.0.0",
+    "@rollup/plugin-node-resolve": "16.0.3",
+    "@rollup/plugin-terser": "0.4.4",
     "pako": "2.1.0",
-    "rollup": "3.8.0",
-    "rollup-plugin-polyfill-node": "0.11.0"
-  },
-  "dependencies": {
-    "npm-run-all": "^4.1.5",
-    "rollup-plugin-dts": "^5.1.1"
+    "rollup": "4.53.3"
   }
 }

@@ -1,4 +1,4 @@
-// Copyright 2022 - 2023 The excelize-wasm Authors. All rights reserved. Use of
+// Copyright 2022 - 2025 The excelize-wasm Authors. All rights reserved. Use of
 // this source code is governed by a BSD-style license that can be found in
 // the LICENSE file.
 //
@@ -9,7 +9,8 @@
 //
 // Type definitions for excelize-wasm
 
-declare module "excelize-wasm" {
+declare module 'excelize-wasm' {
+
   /**
    * AppProperties directly maps the document application properties.
    */
@@ -24,21 +25,103 @@ declare module "excelize-wasm" {
   };
 
   /**
-   * Options define the options for open and reading spreadsheet.
+   * This section defines the currently supported country code types
+   * enumeration for apply number format.
+   */
+  export enum CultureName {
+    CultureNameUnknown,
+    CultureNameEnUS,
+    CultureNameJaJP,
+    CultureNameKoKR,
+    CultureNameZhCN,
+    CultureNameZhTW,
+  }
+
+  /**
+   * This section defines the cell value types enumeration.
+   */
+  export enum CellType {
+    CellTypeUnset,
+    CellTypeBool,
+    CellTypeDate,
+    CellTypeError,
+    CellTypeFormula,
+    CellTypeInlineString,
+    CellTypeNumber,
+    CellTypeSharedString,
+  }
+
+  /**
+   * FormControlType is the type of supported form controls.
+   */
+  export enum FormControlType {
+    FormControlNote,
+    FormControlButton,
+    FormControlOptionButton,
+    FormControlSpinButton,
+    FormControlCheckBox,
+    FormControlGroupBox,
+    FormControlLabel,
+    FormControlScrollBar,
+  }
+
+  /**
+   * Options define the options for o`pen and reading spreadsheet.
+   *
+   * MaxCalcIterations specifies the maximum iterations for iterative
+   * calculation, the default value is 0.
+   *
+   * Password specifies the password of the spreadsheet in plain text.
+   *
+   * RawCellValue specifies if apply the number format for the cell value or get
+   * the raw value.
+   *
+   * UnzipSizeLimit specifies the unzip size limit in bytes on open the
+   * spreadsheet, this value should be greater than or equal to
+   * UnzipXMLSizeLimit, the default size limit is 16GB.
+   *
+   * UnzipXMLSizeLimit specifies the memory limit on unzipping worksheet and
+   * shared string table in bytes, worksheet XML will be extracted to system
+   * temporary directory when the file size is over this value, this value
+   * should be less than or equal to UnzipSizeLimit, the default value is
+   * 16MB.
+   *
+   * TmpDir specifies the temporary directory for creating temporary files, if
+   * the value is empty, the system default temporary directory will be used.
+   *
+   * ShortDatePattern specifies the short date number format code. In the
+   * spreadsheet applications, date formats display date and time serial numbers
+   * as date values. Date formats that begin with an asterisk (*) respond to
+   * changes in regional date and time settings that are specified for the
+   * operating system. Formats without an asterisk are not affected by operating
+   * system settings. The ShortDatePattern used for specifies apply date formats
+   * that begin with an asterisk.
+   *
+   * LongDatePattern specifies the long date number format code.
+   *
+   * LongTimePattern specifies the long time number format code.
+   *
+   * CultureInfo specifies the country code for applying built-in language
+   * number format code these effect by the system's local language settings.
    */
   export type Options = {
     MaxCalcIterations?: number;
-    Password?: string;
-    RawCellValue?: boolean;
-    UnzipSizeLimit?: number;
+    Password?:          string;
+    RawCellValue?:      boolean;
+    UnzipSizeLimit?:    number;
     UnzipXMLSizeLimit?: number;
+    TmpDir?:            string;
+    ShortDatePattern?:  string;
+    LongDatePattern?:   string;
+    LongTimePattern?:   string;
+    CultureInfo?:       CultureName;
   };
 
   /**
    * Border directly maps the border settings of the cells.
    */
   export type Border = {
-    Type?: string;
+    Type?:  string;
     Color?: string;
     Style?: number;
   };
@@ -47,42 +130,43 @@ declare module "excelize-wasm" {
    * Fill directly maps the fill settings of the cells.
    */
   export type Fill = {
-    Type?: string;
-    Pattern?: number;
-    Color?: string[];
-    Shading?: number;
+    Type?:         string;
+    Pattern?:      number;
+    Color?:        string[];
+    Shading?:      number;
+    Transparency?: number;
   };
 
   /**
    * Font directly maps the font settings of the fonts.
    */
   export type Font = {
-    Bold?: boolean;
-    Italic?: boolean;
-    Underline?: string;
-    Family?: string;
-    Size?: number;
-    Strike?: boolean;
-    Color?: string;
+    Bold?:         boolean;
+    Italic?:       boolean;
+    Underline?:    string;
+    Family?:       string;
+    Size?:         number;
+    Strike?:       boolean;
+    Color?:        string;
     ColorIndexed?: number;
-    ColorTheme?: number;
-    ColorTint?: number;
-    VertAlign?: string;
+    ColorTheme?:   number;
+    ColorTint?:    number;
+    VertAlign?:    string;
   };
 
   /**
    * Alignment directly maps the alignment settings of the cells.
    */
   export type Alignment = {
-    Horizontal?: string;
-    Indent?: number;
+    Horizontal?:      string;
+    Indent?:          number;
     JustifyLastLine?: boolean;
-    ReadingOrder?: number;
-    RelativeIndent?: number;
-    ShrinkToFit?: boolean;
-    TextRotation?: number;
-    Vertical?: string;
-    WrapText?: boolean;
+    ReadingOrder?:    number;
+    RelativeIndent?:  number;
+    ShrinkToFit?:     boolean;
+    TextRotation?:    number;
+    Vertical?:        string;
+    WrapText?:        boolean;
   };
 
   /**
@@ -97,38 +181,37 @@ declare module "excelize-wasm" {
    * Style directly maps the style settings of the cells.
    */
   export type Style = {
-    Border?: Border[];
-    Fill?: Fill;
-    Font?: Font;
-    Alignment?: Alignment;
-    Protection?: Protection;
-    NumFmt?: number;
+    Border?:        Border[];
+    Fill?:          Fill;
+    Font?:          Font;
+    Alignment?:     Alignment;
+    Protection?:    Protection;
+    NumFmt?:        number;
     DecimalPlaces?: number;
-    CustomNumFmt?: string;
-    Lang?: string;
-    NegRed?: boolean;
+    CustomNumFmt?:  string;
+    NegRed?:        boolean;
   };
 
   /**
-   * PaneOptions directly maps the settings of the pane.
+   * Selection directly maps the settings of the worksheet selection.
    */
-  export type PaneOptions = {
-    SQRef?: string;
+  export type Selection = {
+    SQRef?:      string;
     ActiveCell?: string;
-    Pane?: string;
+    Pane?:       string;
   };
 
   /**
    * Panes directly maps the settings of the panes.
    */
   export type Panes = {
-    Freeze?: boolean;
-    Split?: boolean;
-    XSplit?: number;
-    YSplit?: number;
+    Freeze?:      boolean;
+    Split?:       boolean;
+    XSplit?:      number;
+    YSplit?:      number;
     TopLeftCell?: string;
-    ActivePane?: string;
-    Panes?: PaneOptions[];
+    ActivePane?:  string;
+    Selection?:   Selection[];
   };
 
   /**
@@ -163,41 +246,80 @@ declare module "excelize-wasm" {
   };
 
   /**
+   * CustomProperty directly maps the custom property of the workbook. The value
+   * date type may be one of the following: number, boolean, string or null.
+   */
+  export type CustomProperty = {
+    Name:   string;
+    Value?: boolean | number | string | null;
+  };
+
+  /**
    * Shape directly maps the format settings of the shape.
    */
   export type Shape = {
-    Macro?: string;
-    Type?: string;
-    Width?: number;
-    Height?: number;
-    Format?: GraphicOptions;
-    Color?: ShapeColor;
-    Line?: ShapeLine;
-    Paragraph?: ShapeParagraph[];
+    Cell:       string;
+    Type?:      string;
+    Macro?:     string;
+    Width?:     number;
+    Height?:    number;
+    Format?:    GraphicOptions;
+    Fill?:      Fill;
+    Line?:      ShapeLine;
+    Paragraph?: RichTextRun[];
   };
 
   /**
-   * ShapeParagraph directly maps the format settings of the paragraph in the
-   * shape.
+   * SlicerOptions represents the settings of the slicer.
+   *
+   * Name specifies the slicer name, should be an existing field name of the
+   * given table or pivot table, this setting is required.
+   *
+   * Cell specifies the left top cell coordinates the position for inserting the
+   * slicer, this setting is required.
+   *
+   * TableSheet specifies the worksheet name of the table or pivot table, this
+   * setting is required.
+   *
+   * TableName specifies the name of the table or pivot table, this setting is
+   * required.
+   *
+   * Caption specifies the caption of the slicer, this setting is optional.
+   *
+   * Macro used for set macro for the slicer, the workbook extension should be
+   * XLSM or XLTM.
+   *
+   * Width specifies the width of the slicer, this setting is optional.
+   *
+   * Height specifies the height of the slicer, this setting is optional.
+   *
+   * DisplayHeader specifies if display header of the slicer, this setting is
+   * optional, the default setting is display.
+   *
+   * ItemDesc specifies descending (Z-A) item sorting, this setting is optional,
+   * and the default setting is false (represents ascending).
+   *
+   * Format specifies the format of the slicer, this setting is optional.
    */
-  export type ShapeParagraph = {
-    Font?: Font;
-    Text?: string;
-  };
-
-  /**
-   * ShapeColor directly maps the color settings of the shape.
-   */
-  export type ShapeColor = {
-    Line?: string;
-    Fill?: string;
-    Effect?: string;
+  export type SlicerOptions = {
+    Name:           string;
+    Cell:           string;
+    TableSheet:     string;
+    TableName:      string;
+    Caption?:       string;
+    Macro?:         string;
+    Width?:         number;
+    Height?:        number;
+    DisplayHeader?: boolean;
+    ItemDesc?:      boolean;
+    Format?:        GraphicOptions;
   };
 
   /**
    * ShapeLine directly maps the line settings of the shape.
    */
   export type ShapeLine = {
+    Color?: string;
     Width?: number;
   };
 
@@ -238,28 +360,31 @@ declare module "excelize-wasm" {
    * GraphicOptions directly maps the format settings of the picture.
    */
   export type GraphicOptions = {
-    PrintObject?: boolean;
-    Locked?: boolean;
-    LockAspectRatio?: boolean;
-    AutoFit?: boolean;
-    OffsetX?: number;
-    OffsetY?: number;
-    ScaleX?: number;
-    ScaleY?: number;
-    Hyperlink?: string;
-    HyperlinkType?: string;
-    Positioning?: string;
+    AltText?:             string;
+    PrintObject?:         boolean;
+    Locked?:              boolean;
+    LockAspectRatio?:     boolean;
+    AutoFit?:             boolean;
+    AutoFitIgnoreAspect?: boolean;
+    OffsetX?:             number;
+    OffsetY?:             number;
+    ScaleX?:              number;
+    ScaleY?:              number;
+    Hyperlink?:           string;
+    HyperlinkType?:       string;
+    Positioning?:         string;
   };
 
   /**
    * TableOptions directly maps the format settings of the table.
    */
   export type TableOptions = {
-    Name?: string;
-    StyleName?: string;
-    ShowFirstColumn?: boolean;
-    ShowLastColumn?: boolean;
-    ShowRowStripes?: boolean;
+    Range:              string;
+    Name?:              string;
+    StyleName?:         string;
+    ShowFirstColumn?:   boolean;
+    ShowLastColumn?:    boolean;
+    ShowRowStripes?:    boolean;
     ShowColumnStripes?: boolean;
   };
 
@@ -267,105 +392,340 @@ declare module "excelize-wasm" {
    * AutoFilterOptions directly maps the auto filter settings.
    */
   export type AutoFilterOptions = {
-    Column?: string;
+    Column?:     string;
     Expression?: string;
+  };
+
+  /**
+   * FormControl directly maps the form controls information.
+   */
+  export type FormControl = {
+    Cell:          string;
+    Macro?:        string;
+    Width?:        number;
+    Height?:       number;
+    Checked?:      boolean;
+    CurrentVal?:   number;
+    MinVal?:       number;
+    MaxVal?:       number;
+    IncChange?:    number;
+    PageChange?:   number;
+    Horizontally?: boolean;
+    CellLink?:     string;
+    Text?:         string;
+    Paragraph?:    RichTextRun[];
+    Type?:         FormControlType;
+    Format?:       GraphicOptions;
+  };
+
+  /*
+   * ChartNumFmt directly maps the number format settings of the chart.
+   */
+  export type ChartNumFmt = {
+    CustomNumFmt?: string;
+    SourceLinked?: boolean;
   };
 
   /**
    * ChartAxis directly maps the format settings of the chart axis.
    */
   export type ChartAxis = {
-    None?: boolean;
-    MajorGridLines?: boolean;
-    MinorGridLines?: boolean;
-    MajorUnit?: number;
-    TickLabelSkip?: number;
-    ReverseOrder?: boolean;
-    Maximum?: number;
-    Minimum?: number;
-    Font?: Font;
-    LogBase?: number;
+    None?:              boolean;
+    MajorGridLines?:    boolean;
+    MinorGridLines?:    boolean;
+    MajorUnit?:         number;
+    TickLabelPosition?: ChartTickLabelPositionType;
+    TickLabelSkip?:     number;
+    ReverseOrder?:      boolean;
+    Secondary?:         boolean;
+    Maximum?:           number;
+    Minimum?:           number;
+    Alignment?:         Alignment;
+    Font?:              Font;
+    LogBase?:           number;
+    NumFmt?:            ChartNumFmt;
+    Title?:             RichTextRun[];
   };
 
   /**
    * ChartDimension directly maps the dimension of the chart.
    */
   export type ChartDimension = {
-    Width?: number;
+    Width?:  number;
     Height?: number;
+  };
+
+  /**
+   * ChartUpDownBar directly maps the format settings of the stock chart up bars
+   * and down bars.
+   */
+  export type ChartUpDownBar = {
+    Fill?:   Fill;
+    Border?: ChartLine;
   };
 
   /**
    * ChartPlotArea directly maps the format settings of the plot area.
    */
   export type ChartPlotArea = {
-    ShowBubbleSize?: boolean;
-    ShowCatName?: boolean;
-    ShowLeaderLines?: boolean;
-    ShowPercent?: boolean;
-    ShowSerName?: boolean;
-    ShowVal?: boolean;
+    SecondPlotValues?:  number;
+    ShowBubbleSize?:    boolean;
+    ShowCatName?:       boolean;
+    ShowDataTable?:     boolean;
+    ShowDataTableKeys?: boolean;
+    ShowLeaderLines?:   boolean;
+    ShowPercent?:       boolean;
+    ShowSerName?:       boolean;
+    ShowVal?:           boolean;
+    Fill?:              Fill;
+    UpBars?:            ChartUpDownBar;
+    DownBars?:          ChartUpDownBar;
+    NumFmt?:            ChartNumFmt;
   };
+
+  /**
+   * ChartDashType defines the currently supported chart dash types enumeration.
+   */
+  export enum ChartDashType {
+    ChartDashUnset,
+    ChartDashSolid,
+    ChartDashDot,
+    ChartDashDash,
+    ChartDashLgDash,
+    ChartDashSashDot,
+    ChartDashLgDashDot,
+    ChartDashLgDashDotDot,
+    ChartDashSysDash,
+    ChartDashSysDot,
+    ChartDashSysDashDot,
+    ChartDashSysDashDotDot,
+  }
+
+  /**
+   * ChartLineType defines the currently supported chart line types enumeration.
+   */
+  export enum ChartLineType {
+    ChartLineUnset,
+    ChartLineSolid,
+    ChartLineNone,
+    ChartLineAutomatic,
+  }
+
+  /**
+   * ChartType defines the currently supported chart types enumeration.
+   */
+  export enum ChartType {
+    Area,
+    AreaStacked,
+    AreaPercentStacked,
+    Area3D,
+    Area3DStacked,
+    Area3DPercentStacked,
+    Bar,
+    BarStacked,
+    BarPercentStacked,
+    Bar3DClustered,
+    Bar3DStacked,
+    Bar3DPercentStacked,
+    Bar3DConeClustered,
+    Bar3DConeStacked,
+    Bar3DConePercentStacked,
+    Bar3DPyramidClustered,
+    Bar3DPyramidStacked,
+    Bar3DPyramidPercentStacked,
+    Bar3DCylinderClustered,
+    Bar3DCylinderStacked,
+    Bar3DCylinderPercentStacked,
+    Col,
+    ColStacked,
+    ColPercentStacked,
+    Col3D,
+    Col3DClustered,
+    Col3DStacked,
+    Col3DPercentStacked,
+    Col3DCone,
+    Col3DConeClustered,
+    Col3DConeStacked,
+    Col3DConePercentStacked,
+    Col3DPyramid,
+    Col3DPyramidClustered,
+    Col3DPyramidStacked,
+    Col3DPyramidPercentStacked,
+    Col3DCylinder,
+    Col3DCylinderClustered,
+    Col3DCylinderStacked,
+    Col3DCylinderPercentStacked,
+    Doughnut,
+    Line,
+    Line3D,
+    Pie,
+    Pie3D,
+    PieOfPie,
+    BarOfPie,
+    Radar,
+    Scatter,
+    Surface3D,
+    WireframeSurface3D,
+    Contour,
+    WireframeContour,
+    Bubble,
+    Bubble3D,
+    StockHighLowClose,
+    StockOpenHighLowClose,
+  }
+
+  /**
+   * ChartDataLabelPositionType is the type of chart data labels position.
+   */
+  export enum ChartDataLabelPositionType {
+    ChartDataLabelsPositionUnset,
+    ChartDataLabelsPositionBestFit,
+    ChartDataLabelsPositionBelow,
+    ChartDataLabelsPositionCenter,
+    ChartDataLabelsPositionInsideBase,
+    ChartDataLabelsPositionInsideEnd,
+    ChartDataLabelsPositionLeft,
+    ChartDataLabelsPositionOutsideEnd,
+    ChartDataLabelsPositionRight,
+    ChartDataLabelsPositionAbove,
+  }
+
+  /**
+   * ChartTickLabelPositionType is the type of supported chart tick label
+   * position types.
+   */
+  export enum ChartTickLabelPositionType {
+    ChartTickLabelNextToAxis,
+    ChartTickLabelHigh,
+    ChartTickLabelLow,
+    ChartTickLabelNone,
+  }
 
   /**
    * Chart directly maps the format settings of the chart.
    */
   export type Chart = {
-    Type?: string;
-    Series?: ChartSeries[];
-    Format?: GraphicOptions;
-    Dimension?: ChartDimension;
-    Legend?: ChartLegend;
-    Title?: ChartTitle;
-    VaryColors?: boolean;
-    XAxis?: ChartAxis;
-    YAxis?: ChartAxis;
-    PlotArea?: ChartPlotArea;
+    Type:          ChartType;
+    Series?:       ChartSeries[];
+    Format?:       GraphicOptions;
+    Dimension?:    ChartDimension;
+    Legend?:       ChartLegend;
+    Title?:        RichTextRun[];
+    VaryColors?:   boolean;
+    XAxis?:        ChartAxis;
+    YAxis?:        ChartAxis;
+    PlotArea?:     ChartPlotArea;
+    Fill?:         Fill;
+    Border?:       ChartLine;
     ShowBlanksAs?: string;
-    HoleSize?: number;
+    BubbleSize?:   number;
+    HoleSize?:     number;
+    GapWidth?:     number;
+    Overlap?:      number;
   };
 
   /**
    * ChartLegend directly maps the format settings of the chart legend.
    */
   export type ChartLegend = {
-    Position?: string;
+    Position?:      string
     ShowLegendKey?: boolean;
+    Font?:          Font;
   };
 
   /**
    * ChartMarker directly maps the format settings of the chart marker.
    */
   export type ChartMarker = {
+    Border?: ChartLine;
+    Fill?:   Fill;
     Symbol?: string;
-    Size?: number;
+    Size?:   number;
   };
 
   /**
    * ChartLine directly maps the format settings of the chart line.
    */
   export type ChartLine = {
-    Color?: string;
+    Type?:   ChartLineType;
+    Dash?:   ChartDashType;
+    Fill?:   Fill;
     Smooth?: boolean;
-    Width?: number;
+    Width?:  number;
+  };
+
+  /*
+   * ChartDataLabel directly maps the format settings of the chart labels.
+   */
+  export type ChartDataLabel = {
+    Alignment?: Alignment;
+    Font?:      Font;
+    Fill?:      Fill;
+  };
+
+  /**
+   * ChartDataPoint directly maps the format settings of the chart data point
+   * for doughnut, pie and 3D pie charts.
+   */
+  export type ChartDataPoint = {
+    Index: number;
+    Fill:  Fill;
   };
 
   /**
    * ChartSeries directly maps the format settings of the chart series.
    */
   export type ChartSeries = {
-    Name?: string;
-    Categories?: string;
-    Values?: string;
-    Line?: ChartLine;
-    Marker?: ChartMarker;
+    Name?:              string;
+    Categories?:        string;
+    Values?:            string;
+    Sizes?:             string;
+    Fill?:              Fill;
+    Legend?:            ChartLegend;
+    Line?:              ChartLine;
+    Marker?:            ChartMarker;
+    DataLabel?:         ChartDataLabel;
+    DataLabelPosition?: ChartDataLabelPositionType;
+    DataPoint?:         ChartDataPoint[];
   };
 
   /**
-   * ChartTitle directly maps the format settings of the chart title.
+   * HeaderFooterImagePositionType is the type of header and footer image
+   * position.
    */
-  export type ChartTitle = {
-    Name?: string;
+  export enum HeaderFooterImagePositionType {
+    HeaderFooterImagePositionLeft,
+    HeaderFooterImagePositionCenter,
+    HeaderFooterImagePositionRight,
+  }
+
+  /**
+   * IgnoredErrorsType is the type of ignored errors.
+   */
+  export enum IgnoredErrorsType {
+    IgnoredErrorsEvalError,
+    IgnoredErrorsTwoDigitTextYear,
+    IgnoredErrorsNumberStoredAsText,
+    IgnoredErrorsFormula,
+    IgnoredErrorsFormulaRange,
+    IgnoredErrorsUnlockedFormula,
+    IgnoredErrorsEmptyCellReference,
+    IgnoredErrorsListDataValidation,
+    IgnoredErrorsCalculatedColumn,
+  }
+
+  /**
+   * HeaderFooterImageOptions defines the settings for an image to be accessible
+   * from the worksheet header and footer options.
+   */
+  export type HeaderFooterImageOptions = {
+    Position?:  HeaderFooterImagePositionType;
+    File:      Uint8Array;
+    IsFooter?:  boolean;
+    FirstPage?: boolean;
+    Extension: string;
+    Width?:     string;
+    Height?:    string;
   };
 
   /**
@@ -373,13 +733,14 @@ declare module "excelize-wasm" {
    *
    *  PivotTableStyleName: The built-in pivot table style names
    *
-   * 	PivotStyleLight1 - PivotStyleLight28
-   * 	PivotStyleMedium1 - PivotStyleMedium28
-   * 	PivotStyleDark1 - PivotStyleDark28
+   *  PivotStyleLight1 - PivotStyleLight28
+   *  PivotStyleMedium1 - PivotStyleMedium28
+   *  PivotStyleDark1 - PivotStyleDark28
    */
   export type PivotTableOptions = {
     DataRange?:           string;
     PivotTableRange?:     string;
+    Name?:                string;
     Rows?:                PivotTableField[];
     Columns?:             PivotTableField[];
     Data?:                PivotTableField[];
@@ -390,6 +751,7 @@ declare module "excelize-wasm" {
     UseAutoFormatting?:   boolean;
     PageOverThenDown?:    boolean;
     MergeItem?:           boolean;
+    ClassicLayout?:       boolean;
     CompactData ?:        boolean;
     ShowError?:           boolean;
     ShowRowHeaders?:      boolean;
@@ -397,48 +759,101 @@ declare module "excelize-wasm" {
     ShowRowStripes?:      boolean;
     ShowColStripes?:      boolean;
     ShowLastColumn?:      boolean;
+    FieldPrintTitles?:    boolean;
+    ItemPrintTitles?:     boolean;
     PivotTableStyleName?: string;
   };
 
   /**
    * PivotTableField directly maps the field settings of the pivot table.
+   *
+   * Name specifies the name of the data field. Maximum 255 characters
+   * are allowed in data field name, excess characters will be truncated.
+   *
    * Subtotal specifies the aggregation function that applies to this data
    * field. The default value is sum. The possible values for this attribute
    * are:
    *
-   *	Average
-   *	Count
-   *	CountNums
-   *	Max
-   *	Min
-   *	Product
-   *	StdDev
-   *	StdDevp
-   *	Sum
-   *	Var
-   *	Varp
+   *     Average
+   *     Count
+   *     CountNums
+   *     Max
+   *     Min
+   *     Product
+   *     StdDev
+   *     StdDevp
+   *     Sum
+   *     Var
+   *     Varp
    *
-   * Name specifies the name of the data field. Maximum 255 characters
-   * are allowed in data field name, excess characters will be truncated.
+   * NumFmt specifies the number format ID of the data field, this filed only
+   * accepts built-in number format ID and does not support custom number format
+   * expression currently.
    */
   export type PivotTableField = {
-    Compact?: boolean;
-    Data?: string;
-    Name?: string;
-    Outline?: boolean;
-    Subtotal?: string;
+    Compact?:         boolean;
+    Data?:            string;
+    Name?:            string;
+    Outline?:         boolean;
+    ShowAll?:         boolean;
+    InsertBlankRow?:  boolean;
+    Subtotal?:        string;
     DefaultSubtotal?: boolean;
+    NumFmt?:          number;
   };
 
   /**
    * Comment directly maps the comment information.
    */
   export type Comment = {
-    Author?: string;
-    AuthorID?: number;
-    Cell?:     string;
-    Text?:     string;
-    Runs?:     RichTextRun[];
+    Author?:    string;
+    AuthorID?:  number;
+    Cell:       string;
+    Text?:      string;
+    Width?:     number;
+    Height?:    number;
+    Paragraph?: RichTextRun[];
+  };
+
+  /**
+   * PictureInsertType defines the type of the picture has been inserted into
+   * the worksheet.
+   */
+  export enum PictureInsertType {
+    PictureInsertTypePlaceOverCells,
+    PictureInsertTypePlaceInCell,
+    PictureInsertTypeDISPIMG,
+  }
+
+  /**
+   * Picture maps the format settings of the picture.
+   */
+  export type Picture = {
+    Extension: string;
+    File: Uint8Array;
+    Format: GraphicOptions;
+    InsertType: PictureInsertType;
+  };
+
+  /**
+   * DataValidation directly maps the a single item of data validation defined
+   * on a range of the worksheet.
+   */
+  export type DataValidation = {
+    AllowBlank?:       boolean;
+    Error?:            string;
+    ErrorStyle?:       string;
+    ErrorTitle?:       string;
+    Operator?:         string
+    Prompt?:           string;
+    PromptTitle?:      string;
+    ShowDropDown?:     boolean;
+    ShowErrorMessage?: boolean;
+    ShowInputMessage?: boolean;
+    Sqref?:            string;
+    Type?:             string;
+    Formula1?:         string;
+    Formula2?:         string;
   };
 
   /**
@@ -537,6 +952,26 @@ declare module "excelize-wasm" {
   };
 
   /**
+   * MergeCell define a merged cell data.
+   */
+  export interface MergeCell {
+    /**
+     * GetCellValue returns merged cell value.
+     */
+    GetCellValue: () => string;
+    /**
+     * GetStartAxis returns the top left cell reference of merged range, for
+     * example: "C2".
+     */
+    GetStartAxis: () => string;
+    /**
+     * GetEndAxis returns the bottom right cell reference of merged range, for
+     * example: "D4".
+     */
+    GetEndAxis: () => string;
+  }
+
+  /**
    * PageLayoutOptions directly maps the settings of page layout.
    */
   export type PageLayoutOptions = {
@@ -547,9 +982,9 @@ declare module "excelize-wasm" {
     // FirstPageNumber specified the first printed page number. If no value is
     // specified, then 'automatic' is assumed.
     FirstPageNumber?: number;
-    // AdjustTo defines the print scaling. This attribute is restricted to
-    // value ranging from 10 (10%) to 400 (400%). This setting is overridden
-    // when fitToWidth and/or fitToHeight are in use.
+    // AdjustTo defines the print scaling. This attribute is restricted to value
+    // ranging from 10 (10%) to 400 (400%). This setting is overridden when
+    // fitToWidth and/or fitToHeight are in use.
     AdjustTo?: number;
     // FitToHeight specified the number of vertical pages to fit on.
     FitToHeight?: number;
@@ -557,9 +992,14 @@ declare module "excelize-wasm" {
     FitToWidth?: number;
     // BlackAndWhite specified print black and white.
     BlackAndWhite?: boolean;
+    // PageOrder specifies the ordering of multiple pages. Values accepted:
+    // overThenDown and downThenOver
+    PageOrder?: string;
   };
 
-  // PageLayoutMarginsOptions directly maps the settings of page layout margins.
+  /**
+   * PageLayoutMarginsOptions directly maps the settings of page layout margins.
+   */
   export type PageLayoutMarginsOptions = {
     Bottom?:       number;
     Footer?:       number;
@@ -571,7 +1011,9 @@ declare module "excelize-wasm" {
     Vertically?:   boolean;
   };
 
-  // SheetPropsOptions directly maps the settings of sheet view.
+  /*
+   * SheetPropsOptions directly maps the settings of sheet view.
+   */
   export type SheetPropsOptions = {
     // Specifies a stable name of the sheet, which should not change over time,
     // and does not change from user input. This name should be used by code
@@ -629,6 +1071,63 @@ declare module "excelize-wasm" {
     ThickBottom?: boolean;
   };
 
+  export type ViewOptions = {
+    // DefaultGridColor indicating that the consuming application should use
+    // the default grid lines color(system dependent). Overrides any color
+    // specified in colorId.
+    DefaultGridColor?: boolean;
+    // RightToLeft indicating whether the sheet is in 'right to left' display
+    // mode. When in this mode, Column A is on the far right, Column B; is one
+    // column left of Column A, and so on. Also, information in cells is
+    // displayed in the Right to Left format.
+    RightToLeft?: boolean;
+    // ShowFormulas indicating whether this sheet should display formulas.
+    ShowFormulas?: boolean;
+    // ShowGridLines indicating whether this sheet should display grid lines.
+    ShowGridLines?: boolean;
+    // ShowRowColHeaders indicating whether the sheet should display row and
+    // column headings.
+    ShowRowColHeaders?: boolean;
+    // ShowRuler indicating this sheet should display ruler.
+    ShowRuler?: boolean;
+    // ShowZeros indicating whether to "show a zero in cells that have zero
+    // value". When using a formula to reference another cell which is empty,
+    // the referenced value becomes 0 when the flag is true. (Default setting
+    // is true.)
+    ShowZeros?: boolean;
+    // TopLeftCell specifies a location of the top left visible cell Location
+    // of the top left visible cell in the bottom right pane (when in
+    // Left-to-Right mode).
+    TopLeftCell: string;
+    // View indicating how sheet is displayed, by default it uses empty string
+    // available options: normal, pageLayout, pageBreakPreview
+    View: string;
+    // ZoomScale specifies a window zoom magnification for current view
+    // representing percent values. This attribute is restricted to values
+    // ranging from 10 to 400. Horizontal & Vertical scale together.
+    ZoomScale?: number;
+  };
+
+  /**
+   * CalcPropsOptions defines the collection of properties the application uses
+   * to record calculation status and details.
+   */
+  export type CalcPropsOptions = {
+    CalcID?:                number;
+    CalcMode?:              string;
+    FullCalcOnLoad?:        boolean;
+    RefMode?:               string;
+    Iterate?:               boolean;
+    IterateCount?:          number;
+    IterateDelta?:          number;
+    FullPrecision?:         boolean;
+    CalcCompleted?:         boolean;
+    CalcOnSave?:            boolean;
+    ConcurrentCalc?:        boolean;
+    ConcurrentManualCount?: number;
+    ForceFullCalc?:         boolean;
+  };
+
   /**
    * WorkbookPropsOptions directly maps the settings of workbook proprieties.
    */
@@ -654,7 +1153,7 @@ declare module "excelize-wasm" {
    * coordinates or returns an error.
    * @param cell The cell reference
    */
-  export function CellNameToCoordinates(cell: string): { col: number; row: number; error: string | null };
+  export function CellNameToCoordinates(cell: string): { col: number, row: number, error: string | null }
 
   /**
    * ColumnNameToNumber provides a function to convert Excel sheet column name
@@ -662,14 +1161,14 @@ declare module "excelize-wasm" {
    * incorrect.
    * @param name The column name
    */
-  export function ColumnNameToNumber(name: string): { col: number; error: string | null };
+  export function ColumnNameToNumber(name: string): { col: number, error: string | null }
 
   /**
    * ColumnNumberToName provides a function to convert the integer to Excel
    * sheet column title.
    * @param num The column name
    */
-  export function ColumnNumberToName(num: number): { col: string; error: string | null };
+  export function ColumnNumberToName(num: number): { col: string, error: string | null }
 
   /**
    * CoordinatesToCellName converts [X, Y] coordinates to alpha-numeric cell
@@ -678,11 +1177,7 @@ declare module "excelize-wasm" {
    * @param row The row number
    * @param abs Specifies the absolute cell references
    */
-  export function CoordinatesToCellName(
-    col: number,
-    row: number,
-    abs?: boolean,
-  ): { cell: string; error: string | null };
+  export function CoordinatesToCellName(col: number, row: number, abs?: boolean): { cell: string, error: string | null }
 
   /**
    * HSLToRGB converts an HSL triple to a RGB triple.
@@ -690,14 +1185,14 @@ declare module "excelize-wasm" {
    * @param s Saturation
    * @param l Lightness
    */
-  export function HSLToRGB(h: number, s: number, l: number): { r: number; g: number; b: number; error: string | null };
+  export function HSLToRGB(h: number, s: number, l: number): { r: number, g: number, b: number, error: string | null }
 
   /**
    * JoinCellName joins cell name from column name and row number.
    * @param col The column name
    * @param row The row number
    */
-  export function JoinCellName(col: string, row: number): { cell: string; error: string | null };
+  export function JoinCellName(col: string, row: number): { cell: string, error: string | null }
 
   /**
    * RGBToHSL converts an RGB triple to a HSL triple.
@@ -705,25 +1200,26 @@ declare module "excelize-wasm" {
    * @param g Green
    * @param b Blue
    */
-  export function RGBToHSL(r: number, g: number, b: number): { h: number; s: number; l: number; error: string | null };
+  export function RGBToHSL(r: number, g: number, b: number): { h: number, s: number, l: number, error: string | null }
 
   /**
    * SplitCellName splits cell name to column name and row number.
    * @param cell The cell reference
    */
-  export function SplitCellName(cell: string): { col: string; row: number; error: string | null };
+  export function SplitCellName(cell: string): { col: string, row: number, error: string | null }
 
   /**
    * ThemeColor applied the color with tint value.
    * @param baseColor Base color in hex format
    * @param tint A mixture of a color with white
    */
-  export function ThemeColor(baseColor: string, tint: number): { color: string; error: string | null };
+  export function ThemeColor(baseColor: string, tint: number): { color: string, error: string | null }
 
   /**
    * NewFile provides a function to create new file by default template.
+   * @param opts The options for open and reading spreadsheet
    */
-  export function NewFile(): NewFile;
+  export function NewFile(opts?: Options): NewFile;
 
   /**
    * OpenReader read data stream from buffer and return a populated spreadsheet
@@ -731,7 +1227,7 @@ declare module "excelize-wasm" {
    * @param r The contents buffer of the file
    * @param opts The options for open and reading spreadsheet
    */
-  export function OpenReader(r: Uint8Array[], opts?: Options): NewFile;
+  export function OpenReader(r: Uint8Array, opts?: Options): NewFile;
 
   /**
    * @constructor
@@ -740,14 +1236,555 @@ declare module "excelize-wasm" {
     /**
      * AddChart provides the method to add chart in a sheet by given chart
      * format set (such as offset, scale, aspect ratio setting and print
-     * settings) and properties set.
+     * settings) and properties set. For example, create 3D clustered column
+     * chart with data Sheet1!$E$1:$L$15:
+     *
+     * ```typescript
+     * const { init } = require('excelize-wasm');
+     * const fs = require('fs');
+     *
+     * init('./node_modules/excelize-wasm/excelize.wasm.gz').then((excelize) => {
+     *   const f = excelize.NewFile();
+     *   if (f.error) {
+     *     console.log(f.error);
+     *     return;
+     *   }
+     *   [
+     *     [null, 'Apple', 'Orange', 'Pear'],
+     *     ['Small', 2, 3, 3],
+     *     ['Normal', 5, 2, 4],
+     *     ['Large', 6, 7, 8],
+     *   ].forEach((row, idx) => {
+     *     const ret1 = excelize.CoordinatesToCellName(1, idx + 1);
+     *     if (ret1.error) {
+     *       console.log(ret1.error);
+     *       return;
+     *     }
+     *     const res2 = f.SetSheetRow('Sheet1', ret1.cell, row);
+     *     if (res2.error) {
+     *       console.log(res2.error);
+     *       return;
+     *     }
+     *   });
+     *   const ret3 = f.AddChart('Sheet1', 'E1', {
+     *     Type: excelize.Col3DClustered,
+     *     Series: [
+     *       {
+     *         Name: 'Sheet1!$A$2',
+     *         Categories: 'Sheet1!$B$1:$D$1',
+     *         Values: 'Sheet1!$B$2:$D$2',
+     *       },
+     *       {
+     *         Name: 'Sheet1!$A$3',
+     *         Categories: 'Sheet1!$B$1:$D$1',
+     *         Values: 'Sheet1!$B$3:$D$3',
+     *       },
+     *       {
+     *         Name: 'Sheet1!$A$4',
+     *         Categories: 'Sheet1!$B$1:$D$1',
+     *         Values: 'Sheet1!$B$4:$D$4',
+     *       },
+     *     ],
+     *     Title: [{
+     *       Text: 'Fruit 3D Clustered Column Chart',
+     *     }],
+     *   });
+     *   if (ret3.error) {
+     *     console.log(ret3.error);
+     *     return;
+     *   }
+     *   // Save spreadsheet by the given path.
+     *   const { buffer, error } = f.WriteToBuffer();
+     *   if (error) {
+     *     console.log(error);
+     *     return;
+     *   }
+     *   fs.writeFile('Book1.xlsx', buffer, 'binary', (error) => {
+     *     if (error) {
+     *       console.log(error);
+     *     }
+     *   });
+     * });
+     * ```
+     *
+     * The following shows the type of chart supported by excelize:
+     *
+     *       ID | Enumeration                 | Chart
+     *      ----+-----------------------------+------------------------------
+     *       0  | Area                        | 2D area chart
+     *       1  | AreaStacked                 | 2D stacked area chart
+     *       2  | AreaPercentStacked          | 2D 100% stacked area chart
+     *       3  | Area3D                      | 3D area chart
+     *       4  | Area3DStacked               | 3D stacked area chart
+     *       5  | Area3DPercentStacked        | 3D 100% stacked area chart
+     *       6  | Bar                         | 2D clustered bar chart
+     *       7  | BarStacked                  | 2D stacked bar chart
+     *       8  | BarPercentStacked           | 2D 100% stacked bar chart
+     *       9  | Bar3DClustered              | 3D clustered bar chart
+     *       10 | Bar3DStacked                | 3D stacked bar chart
+     *       11 | Bar3DPercentStacked         | 3D 100% stacked bar chart
+     *       12 | Bar3DConeClustered          | 3D cone clustered bar chart
+     *       13 | Bar3DConeStacked            | 3D cone stacked bar chart
+     *       14 | Bar3DConePercentStacked     | 3D cone percent bar chart
+     *       15 | Bar3DPyramidClustered       | 3D pyramid clustered bar chart
+     *       16 | Bar3DPyramidStacked         | 3D pyramid stacked bar chart
+     *       17 | Bar3DPyramidPercentStacked  | 3D pyramid percent stacked bar chart
+     *       18 | Bar3DCylinderClustered      | 3D cylinder clustered bar chart
+     *       19 | Bar3DCylinderStacked        | 3D cylinder stacked bar chart
+     *       20 | Bar3DCylinderPercentStacked | 3D cylinder percent stacked bar chart
+     *       21 | Col                         | 2D clustered column chart
+     *       22 | ColStacked                  | 2D stacked column chart
+     *       23 | ColPercentStacked           | 2D 100% stacked column chart
+     *       24 | Col3DClustered              | 3D clustered column chart
+     *       25 | Col3D                       | 3D column chart
+     *       26 | Col3DStacked                | 3D stacked column chart
+     *       27 | Col3DPercentStacked         | 3D 100% stacked column chart
+     *       28 | Col3DCone                   | 3D cone column chart
+     *       29 | Col3DConeClustered          | 3D cone clustered column chart
+     *       30 | Col3DConeStacked            | 3D cone stacked column chart
+     *       31 | Col3DConePercentStacked     | 3D cone percent stacked column chart
+     *       32 | Col3DPyramid                | 3D pyramid column chart
+     *       33 | Col3DPyramidClustered       | 3D pyramid clustered column chart
+     *       34 | Col3DPyramidStacked         | 3D pyramid stacked column chart
+     *       35 | Col3DPyramidPercentStacked  | 3D pyramid percent stacked column chart
+     *       36 | Col3DCylinder               | 3D cylinder column chart
+     *       37 | Col3DCylinderClustered      | 3D cylinder clustered column chart
+     *       38 | Col3DCylinderStacked        | 3D cylinder stacked column chart
+     *       39 | Col3DCylinderPercentStacked | 3D cylinder percent stacked column chart
+     *       40 | Doughnut                    | doughnut chart
+     *       41 | Line                        | line chart
+     *       42 | Line3D                      | 3D line chart
+     *       43 | Pie                         | pie chart
+     *       44 | Pie3D                       | 3D pie chart
+     *       45 | PieOfPie                    | pie of pie chart
+     *       46 | BarOfPie                    | bar of pie chart
+     *       47 | Radar                       | radar chart
+     *       48 | Scatter                     | scatter chart
+     *       49 | Surface3D                   | 3D surface chart
+     *       50 | WireframeSurface3D          | 3D wireframe surface chart
+     *       51 | Contour                     | contour chart
+     *       52 | WireframeContour            | wireframe contour chart
+     *       53 | Bubble                      | bubble chart
+     *       54 | Bubble3D                    | 3D bubble chart
+     *       55 | StockHighLowClose           | High-Low-Close stock chart
+     *       56 | StockOpenHighLowClose       | Open-High-Low-Close stock chart
+     *
+     * In Excel a chart series is a collection of information that defines which
+     * data is plotted such as values, axis labels and formatting.
+     *
+     * The series options that can be set are:
+     *
+     *      Name
+     *      Categories
+     *      Values
+     *      Fill
+     *      Legend
+     *      Line
+     *      Marker
+     *      DataLabel
+     *      DataLabelPosition
+     *      DataPoint
+     *
+     * Name: Set the name for the series. The name is displayed in the chart
+     * legend and in the formula bar. The 'Name' property is optional and if it
+     * isn't supplied it will default to Series 1..n. The name can also be a
+     * formula such as Sheet1!$A$1
+     *
+     * Categories: This sets the chart category labels. The category is more or
+     * less the same as the X axis. In most chart types the 'Categories'
+     * property is optional and the chart will just assume a sequential series
+     * from 1..n.
+     *
+     * Values: This is the most important property of a series and is the only
+     * mandatory option for every chart object. This option links the chart with
+     * the worksheet data that it displays.
+     *
+     * Sizes: This sets the bubble size in a data series. The 'Sizes' property
+     * is optional and the default value was same with 'Values'.
+     *
+     * Fill: This set the format for the data series fill. The 'Fill' property
+     * is optional.
+     *
+     * Legend: This set the font of legend text for a data series. The 'Legend'
+     * property is optional.
+     *
+     * Line: This sets the line format of the line chart. The 'Line' property is
+     * optional and if it isn't supplied it will default style. The options that
+     * can be set are width and color. The range of width is 0.25pt - 999pt. If
+     * the value of width is outside the range, the default width of the line is
+     * 2pt.
+     *
+     * Marker: This sets the marker of the line chart and scatter chart. The
+     * range of optional field 'Size' is 2-72 (default value is 5). The
+     * enumeration value of optional field 'Symbol' are (default value is
+     * 'auto'):
+     *
+     *      circle
+     *      dash
+     *      diamond
+     *      dot
+     *      none
+     *      picture
+     *      plus
+     *      square
+     *      star
+     *      triangle
+     *      x
+     *      auto
+     *
+     * DataLabel: This sets the format of the chart series data label.
+     *
+     * DataLabelPosition: This sets the position of the chart series data label.
+     *
+     * DataPoint: This sets the format for individual data points in a doughnut,
+     * pie or 3D pie chart series. The 'DataPoint' property is optional.
+     *
+     * Set properties of the chart legend. The options that can be set are:
+     *
+     *      Position
+     *      ShowLegendKey
+     *      Font
+     *
+     * Position: Set the position of the chart legend. The default legend
+     * position is bottom. The available positions are:
+     *
+     *      none
+     *      top
+     *      bottom
+     *      left
+     *      right
+     *      top_right
+     *
+     * ShowLegendKey: Set the legend keys shall be shown in data labels. The
+     * default value is false.
+     *
+     * Font: Set the font properties of the chart legend text. The properties
+     * that can be set are the same as the font object that is used for cell
+     * formatting. The font family, size, color, bold, italic, underline, and
+     * strike properties can be set.
+     *
+     * Set properties of the chart title. The properties that can be set are:
+     *
+     *      Title
+     *
+     * Title: Set the name (title) for the chart. The name is displayed above
+     * the chart. The name can also be a formula such as Sheet1!$A$1 or a list
+     * with a sheet name. The name property is optional. The default is to have
+     * no chart title.
+     *
+     * Specifies how blank cells are plotted on the chart by 'ShowBlanksAs'. The
+     * default value is gap. The options that can be set are:
+     *
+     *      gap
+     *      span
+     *      zero
+     *
+     * gap: Specifies that blank values shall be left as a gap.
+     *
+     * span: Specifies that blank values shall be spanned with a line.
+     *
+     * zero: Specifies that blank values shall be treated as zero.
+     *
+     * Specifies that each data marker in the series has a different color by
+     * 'VaryColors'. The default value is true.
+     *
+     * Set chart offset, scale, aspect ratio setting and print settings by
+     * 'Format', same as function 'AddPicture'.
+     *
+     * Set the position of the chart plot area by 'PlotArea'. The properties
+     * that can be set are:
+     *
+     *      SecondPlotValues
+     *      ShowBubbleSize
+     *      ShowCatName
+     *      ShowDataTable
+     *      ShowDataTableKeys
+     *      ShowLeaderLines
+     *      ShowPercent
+     *      ShowSerName
+     *      ShowVal
+     *      NumFmt
+     *
+     * SecondPlotValues: Specifies the values in second plot for the 'PieOfPie'
+     * and 'BarOfPie' chart.
+     *
+     * ShowBubbleSize: Specifies the bubble size shall be shown in a data label.
+     * The 'ShowBubbleSize' property is optional. The default value is false.
+     *
+     * ShowCatName: Specifies that the category name shall be shown in the data
+     * label. The 'ShowCatName' property is optional. The default value is true.
+     *
+     * ShowDataTable: Used for add data table under chart, depending on the
+     * chart type, only available for area, bar, column and line series type
+     * charts. The 'ShowDataTable' property is optional. The default value is
+     * false.
+     *
+     * ShowDataTableKeys: Used for add legend key in data table, only works on
+     * 'ShowDataTable' is enabled. The 'ShowDataTableKeys' property is optional.
+     * The default value is false.
+     *
+     * ShowLeaderLines: Specifies leader lines shall be shown for data labels.
+     * The 'ShowLeaderLines' property is optional. The default value is false.
+     *
+     * ShowPercent: Specifies that the percentage shall be shown in a data
+     * label. The 'ShowPercent' property is optional. The default value is
+     * false.
+     *
+     * ShowSerName: Specifies that the series name shall be shown in a data
+     * label. The 'ShowSerName' property is optional. The default value is
+     * false.
+     *
+     * ShowVal: Specifies that the value shall be shown in a data label.
+     * The 'ShowVal' property is optional. The default value is false.
+     *
+     * NumFmt: Specifies that if linked to source and set custom number format
+     * code for data labels. The 'NumFmt' property is optional. The default
+     * format code is 'General'.
+     *
+     * Set the primary horizontal and vertical axis options by 'XAxis' and
+     * 'YAxis'. The properties of 'XAxis' that can be set are:
+     *
+     *      None
+     *      MajorGridLines
+     *      MinorGridLines
+     *      TickLabelSkip
+     *      ReverseOrder
+     *      Maximum
+     *      Minimum
+     *      Alignment
+     *      Font
+     *      NumFmt
+     *      Title
+     *
+     * The properties of 'YAxis' that can be set are:
+     *
+     *      None
+     *      MajorGridLines
+     *      MinorGridLines
+     *      MajorUnit
+     *      Secondary
+     *      ReverseOrder
+     *      Maximum
+     *      Minimum
+     *      Alignment
+     *      Font
+     *      LogBase
+     *      NumFmt
+     *      Title
+     *
+     * None: Disable axes.
+     *
+     * MajorGridLines: Specifies major grid lines.
+     *
+     * MinorGridLines: Specifies minor grid lines.
+     *
+     * MajorUnit: Specifies the distance between major ticks. Shall contain a
+     * positive floating-point number. The 'MajorUnit' property is optional. The
+     * default value is auto.
+     *
+     * Secondary: Specifies the current series vertical axis as the secondary
+     * axis, this only works for the second and later chart in the combo chart.
+     * The default value is false.
+     *
+     * TickLabelSkip: Specifies how many tick labels to skip between label that
+     * is drawn. The 'TickLabelSkip' property is optional. The default value is
+     * auto.
+     *
+     * ReverseOrder: Specifies that the categories or values on reverse order
+     * (orientation of the chart). The 'ReverseOrder' property is optional. The
+     * default value is false.
+     *
+     * Maximum: Specifies that the fixed maximum, 0 is auto. The 'Maximum'
+     * property is optional. The default value is auto.
+     *
+     * Minimum: Specifies that the fixed minimum, 0 is auto. The 'Minimum'
+     * property is optional. The default value is auto.
+     *
+     * Alignment: Specifies that the alignment of the horizontal and vertical
+     * axis. The properties of alignment that can be set are:
+     *
+     *      TextRotation
+     *      Vertical
+     *
+     * The value of 'TextRotation' that can be set from -90 to 90:
+     *
+     * The value of 'Vertical' that can be set are:
+     *
+     *      horz
+     *      vert
+     *      vert270
+     *      wordArtVert
+     *      eaVert
+     *      mongolianVert
+     *      wordArtVertRtl
+     *
+     * Font: Specifies that the font of the horizontal and vertical axis. The
+     * properties of font that can be set are:
+     *
+     *      Bold
+     *      Italic
+     *      Underline
+     *      Family
+     *      Size
+     *      Strike
+     *      Color
+     *      VertAlign
+     *
+     * LogBase: Specifies logarithmic scale base number of the vertical axis.
+     *
+     * NumFmt: Specifies that if linked to source and set custom number format
+     * code for axis. The 'NumFmt' property is optional. The default format code
+     * is 'General'.
+     *
+     * Title: Specifies that the primary horizontal or vertical axis title and
+     * resize chart. The 'Title' property is optional.
+     *
+     * Set chart size by 'Dimension' property. The 'Dimension' property is
+     * optional. The default width is 480, and height is 260.
+     *
+     * Set chart legend for all data series by 'Legend' property. The 'Legend'
+     * property is optional.
+     *
+     * Set the bubble size in all data series for the bubble chart or 3D bubble
+     * chart by 'BubbleSizes' property. The 'BubbleSizes' property is optional.
+     * The default width is 100, and the value should be great than 0 and less
+     * or equal than 300.
+     *
+     * Set the doughnut hole size in all data series for the doughnut chart by
+     * 'HoleSize' property. The 'HoleSize' property is optional. The default
+     * width is 75, and the value should be great than 0 and less or equal than
+     * 90.
+     *
+     * Set the gap with of the column and bar series chart by 'GapWidth'
+     * property. The 'GapWidth' property is optional. The default width is 150,
+     * and the value should be great or equal than 0 and less or equal than 500.
+     *
+     * Set series overlap of the column and bar series chart by 'Overlap'
+     * property. The 'Overlap' property is optional. The default width is 0, and
+     * the value should be great or equal than -100 and less or equal than 100.
+     *
+     * combo: Specifies the create a chart that combines two or more chart types
+     * in a single chart. For example, create a clustered column - line chart
+     * with data Sheet1!$E$1:$L$15:
+     *
+     * ```typescript
+     * const { init } = require('excelize-wasm');
+     * const fs = require('fs');
+     *
+     * init('./node_modules/excelize-wasm/excelize.wasm.gz').then((excelize) => {
+     *   const f = excelize.NewFile();
+     *   if (f.error) {
+     *     console.log(f.error);
+     *     return;
+     *   }
+     *   [
+     *     [null, 'Apple', 'Orange', 'Pear'],
+     *     ['Small', 2, 3, 3],
+     *     ['Normal', 5, 2, 4],
+     *     ['Large', 6, 7, 8],
+     *   ].forEach((row, idx) => {
+     *     const ret1 = excelize.CoordinatesToCellName(1, idx + 1);
+     *     if (ret1.error) {
+     *       console.log(ret1.error);
+     *       return;
+     *     }
+     *     const res2 = f.SetSheetRow('Sheet1', ret1.cell, row);
+     *     if (res2.error) {
+     *       console.log(res2.error);
+     *       return;
+     *     }
+     *   });
+     *   const ret3 = f.AddChart('Sheet1', 'E1', {
+     *     Type: excelize.Col,
+     *     Series: [
+     *       {
+     *         Name: 'Sheet1!$A$2',
+     *         Categories: 'Sheet1!$B$1:$D$1',
+     *         Values: 'Sheet1!$B$2:$D$2',
+     *       },
+     *     ],
+     *     Format: {
+     *       ScaleX:          1,
+     *       ScaleY:          1,
+     *       OffsetX:         15,
+     *       OffsetY:         10,
+     *       PrintObject:     true,
+     *       LockAspectRatio: false,
+     *       Locked:          false,
+     *     },
+     *     Title: [{
+     *       Text: 'Clustered Column - Line Chart',
+     *     }],
+     *     Legend: {
+     *       Position:      'left',
+     *       ShowLegendKey: false,
+     *     },
+     *     PlotArea: {
+     *       ShowCatName:     false,
+     *       ShowLeaderLines: false,
+     *       ShowPercent:     true,
+     *       ShowSerName:     true,
+     *       ShowVal:         true,
+     *     },
+     *   }, {
+     *     Type: excelize.Line,
+     *     Series: [
+     *       {
+     *         Name: 'Sheet1!$A$4',
+     *         Categories: 'Sheet1!$B$1:$D$1',
+     *         Values: 'Sheet1!$B$4:$D$4',
+     *         Marker: {
+     *           Symbol: 'none',
+     *           Size: 10,
+     *         },
+     *       },
+     *     ],
+     *     Format: {
+     *       ScaleX:          1,
+     *       ScaleY:          1,
+     *       OffsetX:         15,
+     *       OffsetY:         10,
+     *       PrintObject:     true,
+     *       LockAspectRatio: false,
+     *       Locked:          false,
+     *     },
+     *     Legend: {
+     *       Position:      'right',
+     *       ShowLegendKey: false,
+     *     },
+     *     PlotArea: {
+     *       ShowCatName:     false,
+     *       ShowLeaderLines: false,
+     *       ShowPercent:     true,
+     *       ShowSerName:     true,
+     *       ShowVal:         true,
+     *     },
+     *   });
+     *   if (ret3.error) {
+     *     console.log(ret3.error);
+     *     return;
+     *   }
+     *   // Save spreadsheet by the given path.
+     *   const { buffer, error } = f.WriteToBuffer();
+     *   if (error) {
+     *     console.log(error);
+     *     return;
+     *   }
+     *   fs.writeFile('Book1.xlsx', buffer, 'binary', (error) => {
+     *     if (error) {
+     *       console.log(error);
+     *     }
+     *   });
+     * });
+     * ```
+     *
      * @param sheet The worksheet name
      * @param cell The cell reference
      * @param chart The chart options
      * @param combo Specifies the create a chart that combines two or more
      *  chart types in a single chart
      */
-    AddChart(sheet: string, cell: string, chart: Chart, combo?: Chart): { error: string | null };
+    AddChart(sheet: string, cell: string, chart: Chart, combo?: Chart): { error: string | null }
 
     /**
      * AddChartSheet provides the method to create a chartsheet by given chart
@@ -759,54 +1796,313 @@ declare module "excelize-wasm" {
      * @param combo Specifies the create a chart that combines two or more
      *  chart types in a single chart
      */
-    AddChartSheet(sheet: string, chart: Chart, combo?: Chart): { error: string | null };
+    AddChartSheet(sheet: string, chart: Chart, combo?: Chart): { error: string | null }
 
     /**
-     * AddComment provides the method to add comment in a sheet by given
-     * worksheet index, cell and format set (such as author and text). Note
-     * that the max author length is 255 and the max text length is 32512.
+     * AddComment provides the method to add comments in a sheet by giving the
+     * worksheet name, cell reference, and format set (such as author and text).
+     * Note that the maximum author name length is 255 and the max text length
+     * is 32512. For example, add a rich-text comment with a specified comments
+     * box size in Sheet1!A5:
+     *
+     * ```typescript
+     * const { error } = f.AddComment('Sheet1', {
+     *   Cell:   'A5',
+     *   Author: 'Excelize',
+     *   Height: 40,
+     *   Width:  180,
+     *   Paragraph: [
+     *     {
+     *       Font: {
+     *         Bold: true,
+     *       },
+     *       Text: 'Excelize: ',
+     *     },
+     *     {
+     *       Text: 'This is a comment.',
+     *     },
+     *   ],
+     * });
+     * ```
+     *
      * @param sheet The worksheet name
      * @param comment The comment options
      */
-    AddComment(sheet: string, comment: Comment): { error: string | null };
+    AddComment(sheet: string, comment: Comment): { error: string | null }
 
     /**
-     * AddPictureFromBytes provides the method to add picture in a sheet by
-     * given picture format set (such as offset, scale, aspect ratio setting
-     * and print settings), file base name, extension name and file bytes.
+     * AddDataValidation provides set data validation on a range of the worksheet
+     * by given data validation object and worksheet name.
+     * @param sheet The worksheet name
+     * @param dv The data validation rules
+     */
+    AddDataValidation(sheet: string, dv: DataValidation): { error: string | null }
+
+    /**
+     * AddDataValidation provides the method to ignored error for a range of
+     * cells.
+     * @param sheet The worksheet name
+     * @param rangeRef The top-left and right-bottom cell range reference
+     * @param ignoredErrorsType The enumeration value of ignored errors type
+     */
+    AddIgnoredErrors(sheet: string, rangeRef: string, ignoredErrorsType: IgnoredErrorsType): { error: string | null }
+
+    /**
+     * AddPictureFromBytes provides the method to add picture in a sheet by given
+     * picture format set (such as offset, scale, aspect ratio setting and print
+     * settings), file base name, extension name and file bytes, supported image
+     * types: EMF, EMZ, GIF, ICO, JPEG, JPG, PNG, SVG, TIF, TIFF, WMF, and WMZ.
+     * Note that this function only supports adding pictures placed over the
+     * cells currently, and doesn't support adding pictures placed in cells or
+     * creating the Kingsoft WPS Office embedded image cells.
+     *
+     * The optional parameter "AltText" is used to add alternative text to a
+     * graph object.
+     *
+     * The optional parameter "PrintObject" indicates whether the graph object
+     * is printed when the worksheet is printed, the default value of that is
+     * 'true'.
+     *
+     * The optional parameter "Locked" indicates whether lock the graph object.
+     * Locking an object has no effect unless the sheet is protected.
+     *
+     * The optional parameter "LockAspectRatio" indicates whether lock aspect
+     * ratio for the graph object, the default value of that is 'false'.
+     *
+     * The optional parameter "AutoFit" specifies if you make graph object size
+     * auto-fits the cell, the default value of that is 'false'.
+     *
+     * The optional parameter "AutoFitIgnoreAspect" specifies if fill the cell
+     * with the image and ignore its aspect ratio, the default value of that is
+     * 'false'. This option only works when the "AutoFit" is enabled.
+     *
+     * The optional parameter "OffsetX" specifies the horizontal offset of the
+     * graph object with the cell, the default value of that is 0.
+     *
+     * The optional parameter "OffsetY" specifies the vertical offset of the
+     * graph object with the cell, the default value of that is 0.
+     *
+     * The optional parameter "ScaleX" specifies the horizontal scale of graph
+     * object, the default value of that is 1.0 which presents 100%.
+     *
+     * The optional parameter "ScaleY" specifies the vertical scale of graph
+     * object, the default value of that is 1.0 which presents 100%.
+     *
+     * The optional parameter "Hyperlink" specifies the hyperlink of the graph
+     * object.
+     *
+     * The optional parameter "HyperlinkType" defines two types of
+     * hyperlink "External" for website or "Location" for moving to one of the
+     * cells in this workbook. When the "HyperlinkType" is "Location",
+     * coordinates need to start with "#".
+     *
+     * The optional parameter "Positioning" defines 3 types of the position of a
+     * graph object in a spreadsheet: "oneCell" (Move but don't size with
+     * cells), "twoCell" (Move and size with cells), and "absolute" (Don't move
+     * or size with cells). If you don't set this parameter, the default
+     * positioning is to move and size with cells.
      * @param sheet The worksheet name
      * @param cell The cell reference
-     * @param name The picture name
-     * @param extension The extension name
-     * @param file The contents buffer of the file
-     * @param opts The graphic options
+     * @param pic The picture format options
      */
-    AddPictureFromBytes(
-      sheet: string,
-      cell: string,
-      name: string,
-      extension: string,
-      file: Uint8Array[],
-      opts: GraphicOptions,
-    ): { error: string | null };
+    AddPictureFromBytes(sheet: string, cell: string, pic: Picture): { error: string | null }
+
+    /**
+     * AddFormControl provides the method to add form control object in a
+     * worksheet by given worksheet name and form control options. Supported
+     * form control type: button, check box, group box, label, option button,
+     * scroll bar and spinner. If set macro for the form control, the workbook
+     * extension should be XLSM or XLTM. Scroll value must be between 0 and
+     * 30000. Please note that if a cell link is set for a checkbox form
+     * control, Excelize will not assign a value to the linked cell when the
+     * checkbox is checked. To reflect the checkbox state, please use the
+     * 'SetCellValue' function to manually set the linked cell's value to true.
+     *
+     * Example 1, add button form control with macro, rich-text, custom button
+     * size, print property on Sheet1!A2, and let the button do not move or
+     * size with cells:
+     *
+     * ```typescript
+     * const { error } = f.AddFormControl('Sheet1', {
+     *   Cell:   'A2',
+     *   Type:   excelize.FormControlButton,
+     *   Macro:  'Button1_Click',
+     *   Width:  140,
+     *   Height: 60,
+     *   Text:   'Button 1\r\n',
+     *   Paragraph: [
+     *     {
+     *       Font: {
+     *         Bold:      true,
+     *         Italic:    true,
+     *         Underline: 'single',
+     *         Family:    'Times New Roman',
+     *         Size:      14,
+     *         Color:     '777777',
+     *       },
+     *       Text: 'C1=A1+B1',
+     *     },
+     *   ],
+     *   Format: {
+     *     PrintObject: true,
+     *     Positioning: 'absolute',
+     *   },
+     * });
+     * ```
+     *
+     * Example 2, add option button form control with checked status and text
+     * on Sheet1!A1:
+     *
+     * ```typescript
+     * const { error } = f.AddFormControl('Sheet1', {
+     *   Cell:    'A1',
+     *   Type:    excelize.FormControlOptionButton,
+     *   Text:    'Option Button 1',
+     *   Checked: true,
+     * });
+     * ```
+     *
+     * Example 3, add spin button form control on Sheet1!B1 to increase or
+     * decrease the value of Sheet1!A1:
+     *
+     * ```typescript
+     * const { error } = f.AddFormControl('Sheet1', {
+     *   Cell:       'B1',
+     *   Type:       excelize.FormControlSpinButton,
+     *   Width:      15,
+     *   Height:     40,
+     *   CurrentVal: 7,
+     *   MinVal:     5,
+     *   MaxVal:     10,
+     *   IncChange:  1,
+     *   CellLink:   'A1',
+     * });
+     * ```
+     *
+     * Example 4, add horizontally scroll bar form control on Sheet1!A2 to
+     * change the value of Sheet1!A1 by click the scroll arrows or drag the
+     * scroll box:
+     *
+     * ```typescript
+     * const { error } = f.AddFormControl('Sheet1', {
+     *   Cell:         'A2',
+     *   Type:         excelize.FormControlScrollBar,
+     *   Width:        140,
+     *   Height:       20,
+     *   CurrentVal:   50,
+     *   MinVal:       10,
+     *   MaxVal:       100,
+     *   IncChange:    1,
+     *   PageChange:   1,
+     *   CellLink:     'A1',
+     *   Horizontally: true,
+     * });
+     * ```
+     *
+     * @param sheet The worksheet name
+     * @param opts The form control options
+     */
+    AddFormControl(sheet: string, opts: FormControl): { error: string | null }
+
+    /**
+     * AddHeaderFooterImage provides a mechanism to set the graphics that can be
+     * referenced in the header and footer definitions via &G, supported image
+     * types: EMF, EMZ, GIF, ICO, JPEG, JPG, PNG, SVG, TIF, TIFF, WMF, and WMZ.
+     *
+     * The extension should be provided with a "." in front, e.g. ".png".
+     * The width and height should have units in them, e.g. "100pt".
+     *
+     * @param sheet The worksheet name
+     * @param opts The header footer image options
+     */
+    AddHeaderFooterImage(sheet: string, opts: HeaderFooterImageOptions): { error: string | null }
 
     /**
      * AddPivotTable provides the method to add pivot table by given pivot
      * table options. Note that the same fields can not in Columns, Rows and
      * Filter fields at the same time.
+     *
+     * For example, create a pivot table on the range reference Sheet1!G2:M34
+     * with the range reference Sheet1!A1:E31 as the data source, summarize by
+     * sum for sales:
+     *
+     * ```typescript
+     * const { init } = require('excelize-wasm');
+     * const fs = require('fs');
+     *
+     * init('./node_modules/excelize-wasm/excelize.wasm.gz').then((excelize) => {
+     *   const f = excelize.NewFile();
+     *   if (f.error) {
+     *     console.log(f.error);
+     *     return;
+     *   }
+     *   // Create some data in a sheet
+     *   const month = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+     *   const year = [2017, 2018, 2019];
+     *   const types = ['Meat', 'Dairy', 'Beverages', 'Produce'];
+     *   const region = ['East', 'West', 'North', 'South'];
+     *   f.SetSheetRow('Sheet1', 'A1', ['Month', 'Year', 'Type', 'Sales', 'Region']);
+     *   const randInt = (max) => {
+     *     return Math.floor(Math.random() * max);
+     *   }
+     *   for (let row = 2; row < 32; row++) {
+     *     f.SetCellValue('Sheet1', 'A' + row.toString(), month[randInt(12)]);
+     *     f.SetCellValue('Sheet1', 'B' + row.toString(), year[randInt(3)]);
+     *     f.SetCellValue('Sheet1', 'C' + row.toString(), types[randInt(4)]);
+     *     f.SetCellValue('Sheet1', 'D' + row.toString(), randInt(5000));
+     *     f.SetCellValue('Sheet1', 'E' + row.toString(), region[randInt(4)]);
+     *   }
+     *   const ret = f.AddPivotTable({
+     *     DataRange: 'Sheet1!A1:E31',
+     *     PivotTableRange: 'Sheet1!G2:M34',
+     *     Rows: [{ Data: 'Month', DefaultSubtotal: true }, { Data: 'Year' }],
+     *     Filter: [{ Data: 'Region' }],
+     *     Columns: [{ Data: 'Type', DefaultSubtotal: true }],
+     *     Data: [{ Data: 'Sales', Name: 'Summarize', Subtotal: 'Sum' }],
+     *     RowGrandTotals: true,
+     *     ColGrandTotals: true,
+     *     ShowDrill: true,
+     *     ShowRowHeaders: true,
+     *     ShowColHeaders: true,
+     *     ShowLastColumn: true,
+     *   });
+     *   if (ret.error) {
+     *     console.log(ret.error);
+     *     return;
+     *   }
+     *   const { buffer, error } = f.WriteToBuffer();
+     *   if (error) {
+     *     console.log(error);
+     *     return;
+     *   }
+     *   fs.writeFile('Book1.xlsx', buffer, 'binary', (error) => {
+     *     if (error) {
+     *       console.log(error);
+     *     }
+     *   });
+     * });
+     * ```
+     *
      * @param opt The pivot table option
      */
-    AddPivotTable(opt: PivotTableOptions): { error: string | null };
+    AddPivotTable(opt: PivotTableOptions): { error: string | null }
 
     /**
      * AddShape provides the method to add shape in a sheet by given worksheet
      * index, shape format set (such as offset, scale, aspect ratio setting
      * and print settings) and properties set.
      * @param sheet The worksheet name
-     * @param cell The cell reference
      * @param opts The shape options
      */
-    AddShape(sheet: string, cell: string, opts: Shape): { error: string | null };
+    AddShape(sheet: string, opts: Shape): { error: string | null }
+
+    /**
+     * AddSlicer function inserts a slicer by giving the worksheet name and
+     * slicer settings.
+     * @param sheet The worksheet name
+     * @param opts The slicer options
+     */
+    AddSlicer(sheet: string, opts: SlicerOptions): { error: string | null }
 
     /**
      * AddSparkline provides a function to add sparklines to the worksheet by
@@ -817,11 +2113,11 @@ declare module "excelize-wasm" {
      * sparkline. Changes are applied to all three:
      *
      * ```typescript
-     *	const { error } = f.AddSparkline("Sheet1", {
-     *	    Location: ["A1", "A2", "A3"],
-     *	    Range:    ["Sheet2!A1:J1", "Sheet2!A2:J2", "Sheet2!A3:J3"],
-     *	    Markers:  true,
-     *	})
+     * const { error } = f.AddSparkline('Sheet1', {
+     *   Location: ['A1', 'A2', 'A3'],
+     *   Range:    ['Sheet2!A1:J1', 'Sheet2!A2:J2', 'Sheet2!A3:J3'],
+     *   Markers:  true,
+     * });
      * ```
      *
      * The following shows the formatting options of sparkline supported by excelize-wasm:
@@ -854,7 +2150,15 @@ declare module "excelize-wasm" {
      * @param rangeRef The top-left and right-bottom cell range reference
      * @param opts The table options
      */
-    AddTable(sheet: string, rangeRef: string, opts: TableOptions): { error: string | null };
+    AddTable(sheet: string, opts: TableOptions): { error: string | null }
+
+    /**
+     * AddVBAProject provides the method to add vbaProject.bin file which
+     * contains functions and/or macros. The file extension should be XLSM or
+     * XLTM.
+     * @param file The contents buffer of the vbaProject.bin file
+     */
+    AddVBAProject(file: Uint8Array): { error: string | null }
 
     /**
      * AutoFilter provides the method to add auto filter in a worksheet by
@@ -874,8 +2178,9 @@ declare module "excelize-wasm" {
      * formula and some other formulas are not supported currently.
      * @param sheet The worksheet name
      * @param cell The cell reference
+     * @param opts The options for get calculated cell value
      */
-    CalcCellValue(sheet: string, cell: string): { value: string; error: string | null };
+    CalcCellValue(sheet: string, cell: string, opts?: Options): { value: string, error: string | null }
 
     /**
      * CopySheet provides a function to duplicate a worksheet by gave source
@@ -884,7 +2189,7 @@ declare module "excelize-wasm" {
      * @param from Source sheet index
      * @param to Target sheet index
      */
-    CopySheet(from: number, to: number): { error: string | null };
+    CopySheet(from: number, to: number): { error: string | null }
 
     /**
      * DeleteChart provides a function to delete chart in spreadsheet by given
@@ -892,7 +2197,7 @@ declare module "excelize-wasm" {
      * @param sheet The worksheet name
      * @param cell The cell reference
      */
-    DeleteChart(sheet: string, cell: string): { error: string | null };
+    DeleteChart(sheet: string, cell: string): { error: string | null }
 
     /**
      * DeleteComment provides the method to delete comment in a sheet by given
@@ -900,7 +2205,7 @@ declare module "excelize-wasm" {
      * @param sheet The worksheet name
      * @param cell The cell reference
      */
-    DeleteComment(sheet: string, cell: string): { error: string | null };
+    DeleteComment(sheet: string, cell: string): { error: string | null }
 
     /**
      * DeleteDataValidation delete data validation by given worksheet name and
@@ -909,7 +2214,7 @@ declare module "excelize-wasm" {
      * @param sheet The worksheet name
      * @param sqref The cell reference sequence
      */
-    DeleteDataValidation(sheet: string, sqref?: string): { error: string | null };
+    DeleteDataValidation(sheet: string, sqref?: string): { error: string | null }
 
     /**
      * DeleteDefinedName provides a function to delete the defined names of the
@@ -920,13 +2225,21 @@ declare module "excelize-wasm" {
     DeleteDefinedName(definedName: DefinedName): { error: string | null }
 
     /**
+     * DeleteFormControl provides the method to delete form control in a
+     * worksheet by given worksheet name and cell reference.
+     * @param sheet The worksheet name
+     * @param cell The cell reference
+     */
+    DeleteFormControl(sheet: string, cell: string): { error: string | null }
+
+    /**
      * DeletePicture provides a function to delete charts in spreadsheet by
      * given worksheet name and cell reference. Note that the image file won't
      * be deleted from the document currently.
      * @param sheet The worksheet name
      * @param cell The cell reference
      */
-    DeletePicture(sheet: string, cell: string): { error: string | null };
+    DeletePicture(sheet: string, cell: string): { error: string | null }
 
     /**
      * DeleteSheet provides a function to delete worksheet in a workbook by
@@ -937,7 +2250,20 @@ declare module "excelize-wasm" {
      * worksheet is left.
      * @param sheet The worksheet name
      */
-    DeleteSheet(sheet: string): { error: string | null };
+    DeleteSheet(sheet: string): { error: string | null }
+
+    /**
+     * DeleteSlicer provides the method to delete a slicer by a given slicer
+     * name.
+     * @param name The slicer name
+     */
+    DeleteSlicer(name: string): { error: string | null }
+
+    /**
+     * DeleteTable provides the method to delete table by given table name.
+     * @param name The table name
+     */
+    DeleteTable(name: string): { error: string | null }
 
     /**
      * DuplicateRow inserts a copy of specified row (by its Excel row number)
@@ -949,7 +2275,7 @@ declare module "excelize-wasm" {
      * @param sheet The worksheet name
      * @param row The row number
      */
-    DuplicateRow(sheet: string, row: number): { error: string | null };
+    DuplicateRow(sheet: string, row: number): { error: string | null }
 
     /**
      * DuplicateRowTo inserts a copy of specified row by it Excel number to
@@ -962,13 +2288,13 @@ declare module "excelize-wasm" {
      * @param row The source row number
      * @param row2 The target row number
      */
-    DuplicateRowTo(sheet: string, row: number, row2: number): { error: string | null };
+    DuplicateRowTo(sheet: string, row: number, row2: number): { error: string | null }
 
     /**
      * GetActiveSheetIndex provides a function to get active sheet index of the
      * spreadsheet. If not found the active sheet will be return integer 0.
      */
-    GetActiveSheetIndex(): { index: number; error: string | null };
+    GetActiveSheetIndex(): { index: number, error: string | null }
 
     /**
      * GetAppProps provides a function to get document application properties.
@@ -977,12 +2303,23 @@ declare module "excelize-wasm" {
     GetAppProps(): { props?: AppProperties, error: string | null };
 
     /**
+     * GetBaseColor returns the preferred hex color code by giving hex color
+     * code, indexed color, and theme color.
+     */
+    GetBaseColor(hexColor: string, indexedColor: number, themeColor?: number): { color?: string, error: string | null };
+
+    /**
+     * GetCalcProps provides a function to gets calculation properties.
+     */
+    GetCalcProps(): { props: CalcPropsOptions, error: string | null }
+
+    /**
      * GetCellFormula provides a function to get formula from cell by given
      * worksheet name and cell reference in spreadsheet.
      * @param sheet The worksheet name
      * @param cell The cell reference
      */
-    GetCellFormula(sheet: string, cell: string): { formula: string; error: string | null };
+    GetCellFormula(sheet: string, cell: string): { formula: string, error: string | null }
 
     /**
      * GetCellHyperLink gets a cell hyperlink based on the given worksheet name
@@ -992,7 +2329,15 @@ declare module "excelize-wasm" {
      * @param sheet The worksheet name
      * @param cell The cell reference
      */
-    GetCellHyperLink(sheet: string, cell: string): { ok: boolean; location: string; error: string | null };
+    GetCellHyperLink(sheet: string, cell: string): { ok: boolean, location: string, error: string | null }
+
+    /**
+     * GetCellRichText provides a function to get rich text of cell by given
+     * worksheet.
+     * @param sheet The worksheet name
+     * @param cell The cell reference
+     */
+    GetCellRichText(sheet: string, cell: string): { runs: RichTextRun[], error: string | null }
 
     /**
      * GetCellStyle provides a function to get cell style index by given
@@ -1000,7 +2345,15 @@ declare module "excelize-wasm" {
      * @param sheet The worksheet name
      * @param cell The cell reference
      */
-    GetCellStyle(sheet: string, cell: string): { style: number; error: string | null };
+    GetCellStyle(sheet: string, cell: string): { style: number, error: string | null }
+
+    /**
+     * GetCellType provides a function to get the cell's data type by given
+     * worksheet name and cell reference in spreadsheet file.
+     * @param sheet The worksheet name
+     * @param cell The cell reference
+     */
+    GetCellType(sheet: string, cell: string): { cellType: CellType, error: string | null }
 
     /**
      * GetCellValue provides a function to get formatted value from cell by
@@ -1011,7 +2364,7 @@ declare module "excelize-wasm" {
      * the same in a merged range.
      * @param sheet The worksheet name
      * @param cell The cell reference
-     * @param opts
+     * @param opts The options for get cell value
      */
     GetCellValue(sheet: string, cell: string, opts?: Options): { value: string, error: string | null }
 
@@ -1021,7 +2374,7 @@ declare module "excelize-wasm" {
      * @param sheet The worksheet name
      * @param col The column name
      */
-    GetColOutlineLevel(sheet: string, col: string): { level: number; error: string | null };
+    GetColOutlineLevel(sheet: string, col: string): { level: number, error: string | null }
 
     /**
      * GetColStyle provides a function to get column style ID by given
@@ -1029,7 +2382,7 @@ declare module "excelize-wasm" {
      * @param sheet The worksheet name
      * @param col The column name
      */
-    GetColStyle(sheet: string, col: string): { style: number; error: string | null };
+    GetColStyle(sheet: string, col: string): { style: number, error: string | null }
 
     /**
      * GetColVisible provides a function to get visible of a single column by
@@ -1037,7 +2390,7 @@ declare module "excelize-wasm" {
      * @param sheet The worksheet name
      * @param col The column name
      */
-    GetColVisible(sheet: string, col: string): { visible: boolean; error: string | null };
+    GetColVisible(sheet: string, col: string): { visible: boolean, error: string | null }
 
     /**
      * GetColWidth provides a function to get column width by given worksheet
@@ -1045,7 +2398,7 @@ declare module "excelize-wasm" {
      * @param sheet The worksheet name
      * @param col The column name
      */
-    GetColWidth(sheet: string, col: string): { width: number; error: string | null };
+    GetColWidth(sheet: string, col: string): { width: number, error: string | null }
 
     /**
      * GetCols gets the value of all cells by columns on the worksheet based on
@@ -1054,9 +2407,28 @@ declare module "excelize-wasm" {
      * format can be applied to the value of the cell, the applied value will
      * be used, otherwise the original value will be used.
      * @param sheet The worksheet name
-     * @param opts
+     * @param opts The options for get column cells
      */
-    GetCols(sheet: string, opts?: Options): { result: string[][]; error: string | null };
+    GetCols(sheet: string, opts?: Options): { result: string[][], error: string | null }
+
+    /**
+     * GetComments retrieves all comments in a worksheet by given worksheet
+     * name.
+     * @param sheet The worksheet name
+     */
+    GetComments(sheet: string): { comments: Comment[], error: string | null }
+
+    /**
+     * GetConditionalStyle returns conditional format style definition by
+     * specified style index.
+     * @param styleID The style ID
+     */
+    GetConditionalStyle(styleID: number): { style: Style, error: string | null }
+
+    /**
+     * GetCustomProps provides a function to get custom file properties.
+     */
+    GetCustomProps(): { props: CustomProperty[], error: string | null }
 
     /**
      * GetDefaultFont provides the default font name currently set in the
@@ -1065,12 +2437,127 @@ declare module "excelize-wasm" {
     GetDefaultFont(): { fontName: string, error: string | null }
 
     /**
+     * GetDefinedName provides a function to get the defined names of the
+     * workbook or worksheet.
+     */
+    GetDefinedName(): { definedNames: DefinedName[], error: string | null }
+
+    /**
+     * GetDocProps provides a function to get document core properties.
+     */
+    GetDocProps(): { props: DocProperties, error: string | null }
+
+    /**
+     * GetFormControls retrieves all form controls in a worksheet by a given
+     * worksheet name. Note that, this function does not support getting the
+     * width and height of the form controls currently.
+     * @param sheet The worksheet name
+     */
+    GetFormControls(sheet: string): { formControls: FormControl[], error: string | null }
+
+    /**
+     * GetHeaderFooter provides a function to get worksheet header and footer by
+     * given worksheet name.
+     * @param sheet The worksheet name
+     */
+    GetHeaderFooter(sheet: string): { opts: HeaderFooterOptions, error: string | null }
+
+    /**
+     * GetMergeCells provides a function to get all merged cells from a specific
+     * worksheet. If the `withoutValues` parameter is set to `true`, it will not
+     * return the cell values of merged cells, only the range reference will be
+     * returned. For example get all merged cells on Sheet1:
+     *
+     * ```typescript
+     * const { mergeCells, error } = f.GetMergeCells("Sheet1")
+     * ```
+     *
+     * If you want to get merged cells without cell values, you can use the
+     * following code:
+     *
+     * ```typescript
+     * const { mergeCells, error } = f.GetMergeCells("Sheet1", true)
+     * ```
+     * @param sheet The worksheet name
+     */
+    GetMergeCells(sheet: string, withoutValues?: boolean): { mergeCells: MergeCell[], error: string | null }
+
+    /**
+     * GetPageLayout provides a function to gets worksheet page layout.
+     * @param sheet The worksheet name
+     */
+    GetPageLayout(sheet: string): { opts: PageLayoutOptions, error: string | null }
+
+    /**
+     * GetPanes provides a function to get freeze panes, split panes, and
+     * worksheet views by given worksheet name.
+     * @param sheet The worksheet name
+     */
+    GetPanes(sheet: string): { panes: Panes, error: string | null }
+
+    /**
+     * GetPictures provides a function to get picture meta info and raw content
+     * embed in spreadsheet by given worksheet and cell name. This function
+     * returns the image contents as []byte data types. This function is
+     * concurrency safe. For example:
+     *
+     * ```typescript
+     *  const { init } = require('excelize-wasm');
+     *  const fs = require('fs');
+     *
+     *  init('./node_modules/excelize-wasm/excelize.wasm.gz').then((excelize) => {
+     *    const f = excelize.OpenReader(fs.readFileSync('Book1.xlsx'));
+     *    if (f.error) {
+     *      console.log(f.error);
+     *      return
+     *    }
+     *    const { pictures, error } = f.GetPictures('Sheet1', 'A2')
+     *    if (error) {
+     *      console.log(error);
+     *      return;
+     *    }
+     *    pictures.forEach((pic, idx) => {
+     *      const name = 'image'+idx.toString()+pic.Extension;
+     *      fs.writeFile(name, pic.File, 'binary', (error) => {
+     *        if (error) {
+     *          console.log(error);
+     *        }
+     *      });
+     *    });
+     *  });
+     * ```
+     *
+     * @param sheet The worksheet name
+     * @param cell The cell reference
+     */
+    GetPictures(sheet: string, cell: string): { pictures: Picture[], error: string | null }
+
+    /**
+     * GetPictureCells returns all picture cell references in a worksheet by a
+     * specific worksheet name.
+     * @param sheet The worksheet name
+     */
+    GetPictureCells(sheet: string): { cells: string[], error: string | null }
+
+    /**
+     * GetPivotTables returns all pivot table definitions in a worksheet by
+     * given worksheet name.
+     */
+    GetPivotTables(sheet: string): { opts: PivotTableOptions[], error: string | null }
+
+    /**
      * GetRowHeight provides a function to get row height by given worksheet
-     * name and row number.
+     * name and row number. For example, get the height of the first row in
+     * Sheet1:
+     *
+     * ```typescript
+     * const { height, error } = f.GetRowHeight('Sheet1', 1);
+     * ```
+     *
      * @param sheet The worksheet name
      * @param row The row number
      */
-    GetRowHeight(sheet: string, row: number): { height: number; error: string | null };
+    GetRowHeight(sheet: string, row: number): { height: number, error: string | null }
 
     /**
      * GetRowOutlineLevel provides a function to get outline level number of a
@@ -1078,15 +2565,27 @@ declare module "excelize-wasm" {
      * @param sheet The worksheet name
      * @param row The row number
      */
-    GetRowOutlineLevel(sheet: string, row: number): { level: number; error: string | null };
+    GetRowOutlineLevel(sheet: string, row: number): { level: number, error: string | null }
 
     /**
      * GetRowVisible provides a function to get visible of a single row by
-     * given worksheet name and Excel row number.
+     * given worksheet name and Excel row number. For example, get visible state
+     * of row 2 in Sheet1:
+     *
+     * ```typescript
+     * const { visible, error } = f.GetRowVisible('Sheet1', 2);
+     * ```
+     *
      * @param sheet The worksheet name
      * @param row The row number
      */
-    GetRowVisible(sheet: string, row: number): { visible: boolean; error: string | null };
+    GetRowVisible(sheet: string, row: number): { visible: boolean, error: string | null }
+
+    /**
+     * GetSheetDimension provides the method to get the used range of the worksheet.
+     * @param sheet The worksheet name
+     */
+    GetSheetDimension(sheet: string): { dimension: string, error: string | null }
 
     /**
      * GetRows return all the rows in a sheet by given worksheet name, returned
@@ -1096,10 +2595,28 @@ declare module "excelize-wasm" {
      * be used. GetRows fetched the rows with value or formula cells, the
      * continually blank cells in the tail of each row will be skipped, so the
      * length of each row may be inconsistent.
+     *
+     * For example, get and traverse the value of all cells by rows on a
+     * worksheet named 'Sheet1':
+     *
+     * ```typescript
+     * const { result, error } = f.GetRows('Sheet1');
+     * if (error) {
+     *   console.log(error);
+     *   return;
+     * }
+     * result.forEach((row) => {
+     *   row.forEach((colCell) => {
+     *     process.stdout.write(`${colCell}\t`);
+     *   });
+     *   console.log();
+     * });
+     * ```
+     *
      * @param sheet The worksheet name
      * @param opts The options for get rows
      */
-    GetRows(sheet: string, opts?: Options): { result: string[][]; error: string | null };
+    GetRows(sheet: string, opts?: Options): { result: string[][], error: string | null }
 
     /**
      * GetSheetIndex provides a function to get a sheet index of the workbook
@@ -1107,19 +2624,19 @@ declare module "excelize-wasm" {
      * doesn't exist, it will return an integer type value -1.
      * @param sheet The worksheet name
      */
-    GetSheetIndex(sheet: string): { index: number; error: string | null };
+    GetSheetIndex(sheet: string): { index: number, error: string | null }
 
     /**
      * GetSheetList provides a function to get worksheets, chart sheets, and
      * dialog sheets name list of the workbook.
      */
-    GetSheetList(): { list: string[] };
+    GetSheetList(): { list: string[] }
 
     /**
      * GetSheetMap provides a function to get worksheets, chart sheets, dialog
      * sheets ID and name map of the workbook.
      */
-    GetSheetMap(): { sheets: Map<string, string>; error: string | null };
+    GetSheetMap(): { sheets: Map<string,string>, error: string | null }
 
     /**
      * GetSheetName provides a function to get the sheet name of the workbook
@@ -1127,21 +2644,61 @@ declare module "excelize-wasm" {
      * return an empty string.
      * @param index The sheet index
      */
-    GetSheetName(index: number): { name: string; error: string | null };
+    GetSheetName(index: number): { name: string, error: string | null }
+
+    /**
+     * GetSheetProps provides a function to get worksheet properties.
+     * @param sheet The worksheet name
+     */
+    GetSheetProps(sheet: string): { props: SheetPropsOptions, error: string | null }
+
+    /**
+     * GetSheetView gets the value of sheet view options. The viewIndex may be
+     * negative and if so is counted backward (-1 is the last view).
+     * @param sheet The worksheet name
+     * @param viewIndex The sheet view index
+     */
+    GetSheetView(sheet: string, viewIndex: number): { opts: ViewOptions, error: string | null }
 
     /**
      * GetSheetVisible provides a function to get worksheet visible by given
      * worksheet name.
      * @param sheet The worksheet name
      */
-    GetSheetVisible(sheet: string): { visible: boolean; error: string | null };
+    GetSheetVisible(sheet: string): { visible: boolean, error: string | null }
+
+    /**
+     * GetSlicers provides the method to get all slicers in a worksheet by a
+     * given worksheet name. Note that, this function does not support getting
+     * the height, width, and graphic options of the slicer shape currently.
+     * @param sheet The worksheet name
+     */
+    GetSlicers(sheet: number): { slicers: SlicerOptions[], error: string | null }
+
+    /**
+     * GetStyle provides a function to get style definition by given style index.
+     * @param styleID The style ID
+     */
+    GetStyle(styleID: number): { style: Style, error: string | null }
+
+    /**
+     * GetTables provides the method to get all tables in a worksheet by given
+     * worksheet name.
+     * @param sheet The worksheet name
+     */
+    GetTables(sheet: string): { tables: TableOptions[], error: string | null }
+
+    /**
+     * GetWorkbookProps provides a function to gets workbook properties.
+     */
+    GetWorkbookProps(): { props: WorkbookPropsOptions, error: string | null }
 
     /**
      * GroupSheets provides a function to group worksheets by given worksheets
      * name. Group worksheets must contain an active worksheet.
      * @param sheets The worksheet names
      */
-    GroupSheets(sheets: string[]): { error: string | null };
+    GroupSheets(sheets: string[]): { error: string | null }
 
     /**
      * InsertCols provides a function to insert new columns before the given
@@ -1155,7 +2712,7 @@ declare module "excelize-wasm" {
      * @param col The base column name
      * @param n The insert columns count
      */
-    InsertCols(sheet: string, col: string, n: number): { error: string | null };
+    InsertCols(sheet: string, col: string, n: number): { error: string | null }
 
     /**
      * InsertPageBreak create a page break to determine where the printed page
@@ -1165,7 +2722,7 @@ declare module "excelize-wasm" {
      * @param sheet The worksheet name
      * @param cell The cell reference
      */
-    InsertPageBreak(sheet: string, cell: string): { error: string | null };
+    InsertPageBreak(sheet: string, cell: string): { error: string | null }
 
     /**
      * InsertRows provides a function to insert new rows after the given Excel
@@ -1179,12 +2736,17 @@ declare module "excelize-wasm" {
      * @param row The base row number
      * @param n Insert rows count
      */
-    InsertRows(sheet: string, row: number, n: number): { error: string | null };
+    InsertRows(sheet: string, row: number, n: number): { error: string | null }
 
     /**
      * MergeCell provides a function to merge cells by given range reference
      * and sheet name. Merging cells only keeps the upper-left cell value, and
-     * discards the other values.
+     * discards the other values. For example create a merged cell of D3:E9 on
+     * Sheet1:
+     *
+     * ```typescript
+     * const { error } = f.MergeCell('Sheet1', 'D3', 'E9');
+     * ```
      *
      * If you create a merged cell that overlaps with another existing merged
      * cell, those merged cells that already exist will be removed. The cell
@@ -1203,10 +2765,27 @@ declare module "excelize-wasm" {
      *     |A8(x3,y4)      C8(x4,y4)|
      *     +------------------------+
      * @param sheet The worksheet name
-     * @param hCell The top-left cell reference
-     * @param vCell The right-bottom cell reference
+     * @param topLeftCell The top-left cell reference
+     * @param bottomRightCell The right-bottom cell reference
      */
-    MergeCell(sheet: string, hCell: string, vCell: string): { error: string | null };
+    MergeCell(sheet: string, topLeftCell: string, bottomRightCell: string): { error: string | null }
+
+    /**
+     * MoveSheet moves a sheet to a specified position in the workbook. The
+     * function moves the source sheet before the target sheet. After moving,
+     * other sheets will be shifted to the left or right. If the sheet is
+     * already at the target position, the function will not perform any action.
+     * Not that this function will be ungroup all sheets after moving. For
+     * example, move Sheet2 before Sheet1:
+     *
+     * ```typescript
+     * const { error } = f.MoveSheet('Sheet2', 'Sheet1');
+     * ```
+     *
+     * @param source The source sheet name
+     * @param target The target sheet name
+     */
+    MoveSheet(source: string, target: string): { error: string | null }
 
     /**
      * NewConditionalStyle provides a function to create style for conditional
@@ -1215,7 +2794,7 @@ declare module "excelize-wasm" {
      * only support to set font, fills, alignment and borders currently.
      * @param style
      */
-    NewConditionalStyle(style: Style): { style: number; error: string | null };
+    NewConditionalStyle(style: Style): { style: number, error: string | null }
 
     /**
      * NewSheet provides the function to create a new sheet by given a
@@ -1224,7 +2803,7 @@ declare module "excelize-wasm" {
      * worksheet named `Sheet1` will be created.
      * @param sheet The worksheet name
      */
-    NewSheet(sheet: string): { index: number; error: string | null };
+    NewSheet(sheet: string): { index: number, error: string | null }
 
     /**
      * ProtectSheet provides a function to prevent other users from
@@ -1235,13 +2814,13 @@ declare module "excelize-wasm" {
      * default. For example, protect Sheet1 with protection settings:
      *
      * ```typescript
-     * const { error } = f.ProtectSheet("Sheet1", {
-     *   AlgorithmName:       "SHA-512",
-     *   Password:            "password",
+     * const { error } = f.ProtectSheet('Sheet1', {
+     *   AlgorithmName:       'SHA-512',
+     *   Password:            'password',
      *   SelectLockedCells:   true,
      *   SelectUnlockedCells: true,
      *   EditScenarios:       true,
-     * })
+     * });
      * ```
      *
      * @param sheet The worksheet name
@@ -1261,9 +2840,9 @@ declare module "excelize-wasm" {
      *
      * ```typescript
      * const { error } = f.ProtectWorkbook({
-     *   Password:      "password",
+     *   Password:      'password',
      *   LockStructure: true,
-     * })
+     * });
      * ```
      *
      * @param opts The workbook protection options
@@ -1275,7 +2854,7 @@ declare module "excelize-wasm" {
      * options. Note that the color field uses RGB color code.
      * @param style The style options
      */
-    NewStyle(style: Style): { style: number; error: string | null };
+    NewStyle(style: Style): { style: number, error: string | null }
 
     /**
      * RemoveCol provides a function to remove single column by given worksheet
@@ -1288,7 +2867,7 @@ declare module "excelize-wasm" {
      * @param sheet The worksheet name
      * @param col The column name
      */
-    RemoveCol(sheet: string, col: string): { error: string | null };
+    RemoveCol(sheet: string, col: string): { error: string | null }
 
     /**
      * RemovePageBreak remove a page break by given worksheet name and cell
@@ -1296,7 +2875,7 @@ declare module "excelize-wasm" {
      * @param sheet The worksheet name
      * @param cell The cell reference
      */
-    RemovePageBreak(sheet: string, cell: string): { error: string | null };
+    RemovePageBreak(sheet: string, cell: string): { error: string | null }
 
     /**
      * RemoveRow provides a function to remove single row by given worksheet
@@ -1309,7 +2888,7 @@ declare module "excelize-wasm" {
      * @param sheet The worksheet name
      * @param row The row number
      */
-    RemoveRow(sheet: string, row: number): { error: string | null };
+    RemoveRow(sheet: string, row: number): { error: string | null }
 
     /**
      * SearchSheet provides a function to get cell reference by given worksheet
@@ -1321,7 +2900,7 @@ declare module "excelize-wasm" {
      * @param value The cell value to search
      * @param reg Specifies if search with regular expression
      */
-    SearchSheet(sheet: string, value: string, reg?: boolean): { result: string[]; error: string | null };
+    SearchSheet(sheet: string, value: string, reg?: boolean): { result: string[], error: string | null }
 
     /**
      * SetActiveSheet provides a function to set the default active sheet of
@@ -1330,7 +2909,7 @@ declare module "excelize-wasm" {
      * than or equal to 0 and less than the total worksheet numbers.
      * @param index The sheet index
      */
-    SetActiveSheet(index: number): { error: string | null };
+    SetActiveSheet(index: number): { error: string | null }
 
     /**
      * SetAppProps provides a function to set document application properties.
@@ -1381,19 +2960,27 @@ declare module "excelize-wasm" {
      *
      * ```typescript
      * const { error } = f.SetAppProps({
-     *   Application:       "Microsoft Excel",
+     *   Application:       'Microsoft Excel',
      *   ScaleCrop:         true,
      *   DocSecurity:       3,
-     *   Company:           "Company Name",
+     *   Company:           'Company Name',
      *   LinksUpToDate:     true,
      *   HyperlinksChanged: true,
-     *   AppVersion:        "16.0000",
-     * })
+     *   AppVersion:        '16.0000',
+     * });
      * ```
      *
      * @param props The application properties
      */
     SetAppProps(props: AppProperties): { error: string | null }
+
+    /**
+     * SetCalcProps provides a function to sets calculation properties. Optional
+     * value of "CalcMode" property is: "manual", "auto" or "autoNoTable".
+     * Optional value of "RefMode" property is: "A1" or "R1C1".
+     * @param props The application properties
+     */
+    SetCalcProps(opts: CalcPropsOptions): { error: string | null }
 
     /**
      * SetCellBool provides a function to set bool type value of a cell by
@@ -1402,7 +2989,7 @@ declare module "excelize-wasm" {
      * @param cell The cell reference
      * @param value The cell value to be write
      */
-    SetCellBool(sheet: string, cell: string, value: boolean): { error: string | null };
+    SetCellBool(sheet: string, cell: string, value: boolean): { error: string | null }
 
     /**
      * SetCellDefault provides a function to set string type value of a cell as
@@ -1411,7 +2998,7 @@ declare module "excelize-wasm" {
      * @param cell The cell reference
      * @param value The cell value to be write
      */
-    SetCellDefault(sheet: string, cell: string, value: string): { error: string | null };
+    SetCellDefault(sheet: string, cell: string, value: string): { error: string | null }
 
     /**
      * SetCellFloat sets a floating point value into a cell. The precision
@@ -1427,13 +3014,7 @@ declare module "excelize-wasm" {
      * @param bitSize BitSize is 32 or 64 depending on if a float32 or float64
      *  was originally used for the value
      */
-    SetCellFloat(
-      sheet: string,
-      cell: string,
-      value: number,
-      precision: number,
-      bitSize: number,
-    ): { error: string | null };
+    SetCellFloat(sheet: string, cell: string, value: number, precision: number, bitSize: number): { error: string | null }
 
     /**
      * SetCellFormula provides a function to set formula on the cell is taken
@@ -1447,34 +3028,46 @@ declare module "excelize-wasm" {
      *
      * Example 1, set normal formula "=SUM(A1,B1)" for the cell "A3" on "Sheet1":
      *
-     * const { error } = f.SetCellFormula("Sheet1", "A3", "=SUM(A1,B1)")
+     * ```typescript
+     * const { error } = f.SetCellFormula('Sheet1', 'A3', '=SUM(A1,B1)');
+     * ```
      *
      * Example 2, set one-dimensional vertical constant array (column array)
      * formula "1,2,3" for the cell "A3" on "Sheet1":
      *
-     * const { error } = f.SetCellFormula("Sheet1", "A3", "={1;2;3}")
+     * ```typescript
+     * const { error } = f.SetCellFormula('Sheet1', 'A3', '={1;2;3}');
+     * ```
      *
      * Example 3, set one-dimensional horizontal constant array (row array)
      * formula '"a","b","c"' for the cell "A3" on "Sheet1":
      *
-     * const { error } = f.SetCellFormula("Sheet1", "A3", "={\"a\",\"b\",\"c\"}")
+     * ```typescript
+     * const { error } = f.SetCellFormula('Sheet1', 'A3', '={"a","b","c"}');
+     * ```
      *
      * Example 4, set two-dimensional constant array formula '{1,2,"a","b"}' for
      * the cell "A3" on "Sheet1":
      *
-     * const { error } = f.SetCellFormula("Sheet1", "A3", "={1,2;\"a\",\"b\"}",
-     *     {Ref: "A3:A3", Type: "array"})
+     * ```typescript
+     * const { error } = f.SetCellFormula('Sheet1', 'A3', '={1,2;"a","b"}',
+     *     {Ref: 'A3:A3', Type: 'array'});
+     * ```
      *
      * Example 5, set range array formula "A1:A2" for the cell "A3" on "Sheet1":
      *
-     * const { error } = f.SetCellFormula("Sheet1", "A3", "=A1:A2",
-     *     {Ref: "A3:A3", Type: "array"})
+     * ```typescript
+     * const { error } = f.SetCellFormula('Sheet1', 'A3', '=A1:A2',
+     *     {Ref: 'A3:A3', Type: 'array'});
+     * ```
      *
      * Example 6, set shared formula "=A1+B1" for the cell "C1:C5"
      * on "Sheet1", "C1" is the master cell:
      *
-     * const { error } = f.SetCellFormula("Sheet1", "C1", "=A1+B1",
-     *     {Ref: "C1:C5", Type: "shared"})
+     * ```typescript
+     * const { error } = f.SetCellFormula('Sheet1', 'C1', '=A1+B1',
+     *     {Ref: 'C1:C5', Type: 'shared'});
+     * ```
      *
      * Example 7, set table formula "=SUM(Table1[[A]:[B]])" for the cell "C2"
      * on "Sheet1":
@@ -1533,12 +3126,13 @@ declare module "excelize-wasm" {
 
     /**
      * SetCellHyperLink provides a function to set cell hyperlink by given
-     * worksheet name and link URL address. LinkType defines two types of
+     * worksheet name and link URL address. LinkType defines three types of
      * hyperlink "External" for website or "Location" for moving to one of cell
-     * in this workbook. Maximum limit hyperlinks in a worksheet is 65530. This
-     * function is only used to set the hyperlink of the cell and doesn't
-     * affect the value of the cell. If you need to set the value of the cell,
-     * please use the other functions such as `SetCellStyle` or `SetSheetRow`.
+     * in this workbook or "None" for remove hyperlink. Maximum limit hyperlinks
+     * in a worksheet is 65530. This function is only used to set the hyperlink
+     * of the cell and doesn't affect the value of the cell. If you need to set
+     * the value of the cell, please use the other functions such as
+     * `SetCellStyle` or `SetSheetRow`.
      * @param sheet The worksheet name
      * @param cell The cell reference
      * @param link The hyperlink
@@ -1554,12 +3148,21 @@ declare module "excelize-wasm" {
      * @param cell The cell reference
      * @param value The cell value to be write
      */
-    SetCellInt(sheet: string, cell: string, value: number): { error: string | null };
+    SetCellInt(sheet: string, cell: string, value: number): { error: string | null }
+
+    /**
+     * SetCellUint provides a function to set uint type value of a cell by given
+     * worksheet name, cell reference and cell value.
+     * @param sheet The worksheet name
+     * @param cell The cell reference
+     * @param value The cell value to be write
+     */
+    SetCellUint(sheet: string, cell: string, value: number): { error: string | null }
 
     /**
      * SetCellRichText provides a function to set cell with rich text by given
-     * worksheet. For example, set rich text on the A1 cell of the worksheet
-     * named Sheet1:
+     * worksheet name, cell reference and rich text runs. For example, set rich
+     * text on the A1 cell of the worksheet named Sheet1:
      *
      * ```typescript
      * const { init } = require('excelize-wasm');
@@ -1696,7 +3299,7 @@ declare module "excelize-wasm" {
      * @param cell The cell reference
      * @param value The cell value to be write
      */
-    SetCellStr(sheet: string, cell: string, value: string): { error: string | null };
+    SetCellStr(sheet: string, cell: string, value: string): { error: string | null }
 
     /**
      * SetCellStyle provides a function to add style attribute for cells by
@@ -1705,11 +3308,11 @@ declare module "excelize-wasm" {
      * same range. SetCellStyle will overwrite the existing styles for the
      * cell, it won't append or merge style with existing styles.
      * @param sheet The worksheet name
-     * @param hCell The top-left cell reference
-     * @param vCell The right-bottom cell reference
+     * @param topLeftCell The top-left cell reference
+     * @param bottomRightCell The right-bottom cell reference
      * @param styleID The style ID
      */
-    SetCellStyle(sheet: string, hCell: string, vCell: string, styleID: number): { error: string | null };
+    SetCellStyle(sheet: string, topLeftCell: string, bottomRightCell: string, styleID: number): { error: string | null }
 
     /**
      * SetCellValue provides a function to set the value of a cell. The
@@ -1726,7 +3329,7 @@ declare module "excelize-wasm" {
      * @param cell The cell reference
      * @param value The cell value to be write
      */
-    SetCellValue(sheet: string, cell: string, value: boolean | number | string): { error: string | null };
+    SetCellValue(sheet: string, cell: string, value: boolean | number | string ): { error: string | null }
 
     /**
      * SetColOutlineLevel provides a function to set outline level of a single
@@ -1736,7 +3339,7 @@ declare module "excelize-wasm" {
      * @param col The column name
      * @param level The outline level of the column
      */
-    SetColOutlineLevel(sheet: string, col: string, level: number): { error: string | null };
+    SetColOutlineLevel(sheet: string, col: string, level: number): { error: string | null }
 
     /**
      * SetColStyle provides a function to set style of columns by given
@@ -1747,7 +3350,7 @@ declare module "excelize-wasm" {
      * @param columns The column range
      * @param styleID The style ID
      */
-    SetColStyle(sheet: string, columns: string, styleID: number): { error: string | null };
+    SetColStyle(sheet: string, columns: string, styleID: number): { error: string | null }
 
     /**
      * SetColVisible provides a function to set visible columns by given
@@ -1756,7 +3359,7 @@ declare module "excelize-wasm" {
      * @param columns The column name
      * @param visible The column's visibility
      */
-    SetColVisible(sheet: string, columns: string, visible: boolean): { error: string | null };
+    SetColVisible(sheet: string, columns: string, visible: boolean): { error: string | null }
 
     /**
      * SetColWidth provides a function to set the width of a single column or
@@ -1766,7 +3369,7 @@ declare module "excelize-wasm" {
      * @param endCol The end column name
      * @param width The width of the column
      */
-    SetColWidth(sheet: string, startCol: string, endCol: string, width: number): { error: string | null };
+    SetColWidth(sheet: string, startCol: string, endCol: string, width: number): { error: string | null }
 
     /**
      * SetConditionalFormat provides a function to create conditional
@@ -1780,10 +3383,21 @@ declare module "excelize-wasm" {
     SetConditionalFormat(sheet: string, reference: string, opts: ConditionalFormatOptions[]): { error: string | null }
 
     /**
+     * SetCustomProps provides a function to set custom file properties by given
+     * property name and value. If the property name already exists, it will be
+     * updated, otherwise a new property will be added. The value can be of type
+     * number, boolean, string, null. The property will be delete if the value
+     * is null. The function returns an error if the property value is not of
+     * the correct type.
+     * @param prop Custom property of the workbook
+     */
+    SetCustomProps(prop: CustomProperty): { error: string | null }
+
+    /**
      * SetDefaultFont changes the default font in the workbook.
      * @param fontName The font name
      */
-    SetDefaultFont(fontName: string): { error: string | null };
+    SetDefaultFont(fontName: string): { error: string | null }
 
     /**
      * SetDefinedName provides a function to set the defined names of the
@@ -1842,22 +3456,22 @@ declare module "excelize-wasm" {
      * For example:
      *
      * ```typescript
-     *	var { error } = f.SetDocProps({
-     *	    Category:       'category',
-     *	    ContentStatus:  'Draft',
-     *	    Created:        '2019-06-04T22:00:10Z',
-     *	    Creator:        'Go Excelize',
-     *	    Description:    'This file created by Go Excelize',
-     *	    Identifier:     'xlsx',
-     *	    Keywords:       'Spreadsheet',
-     *	    LastModifiedBy: 'Go Author',
-     *	    Modified:       '2019-06-04T22:00:10Z',
-     *	    Revision:       '0',
-     *	    Subject:        'Test Subject',
-     *	    Title:          'Test Title',
-     *	    Language:       'en-US',
-     *	    Version:        '1.0.0',
-     *	});
+     * const { error } = f.SetDocProps({
+     *   Category:       'category',
+     *   ContentStatus:  'Draft',
+     *   Created:        '2019-06-04T22:00:10Z',
+     *   Creator:        'Go Excelize',
+     *   Description:    'This file created by Go Excelize',
+     *   Identifier:     'xlsx',
+     *   Keywords:       'Spreadsheet',
+     *   LastModifiedBy: 'Go Author',
+     *   Modified:       '2019-06-04T22:00:10Z',
+     *   Revision:       '0',
+     *   Subject:        'Test Subject',
+     *   Title:          'Test Title',
+     *   Language:       'en-US',
+     *   Version:        '1.0.0',
+     * });
      * ```
      *
      * @param docProperties The document core properties
@@ -1876,8 +3490,10 @@ declare module "excelize-wasm" {
      *      DifferentFirst   | Different first-page header and footer indicator
      *      DifferentOddEven | Different odd and even page headers and footers indicator
      *      ScaleWithDoc     | Scale header and footer with document scaling
-     *      OddFooter        | Odd Page Footer
-     *      OddHeader        | Odd Header
+     *      OddFooter        | Odd Page Footer, or primary Page Footer if
+     *                       | 'DifferentOddEven' is 'false'
+     *      OddHeader        | Odd Header, or primary Page Header if 'DifferentOddEven'
+     *                       | is 'false'
      *      EvenFooter       | Even Page Footer
      *      EvenHeader       | Even Page Header
      *      FirstFooter      | First Page Footer
@@ -1912,7 +3528,7 @@ declare module "excelize-wasm" {
      *                             |
      *      &F                     | Current workbook's file name
      *                             |
-     *      &G                     | Drawing object as background (Not support currently)
+     *      &G                     | Drawing object as background (Use AddHeaderFooterImage)
      *                             |
      *      &H                     | Shadow text format
      *                             |
@@ -1956,15 +3572,15 @@ declare module "excelize-wasm" {
      * For example:
      *
      * ```typescript
-     *	var { error } = f.SetHeaderFooter("Sheet1", {
-     *	    DifferentFirst:   true,
-     *	    DifferentOddEven: true,
-     *	    OddHeader:        '&R&P',
-     *	    OddFooter:        '&C&F',
-     *	    EvenHeader:       '&L&P',
-     *	    EvenFooter:       '&L&D&R&T',
-     *	    FirstHeader:      `&CCenter &"-,Bold"Bold&"-,Regular"HeaderU+000A&D`,
-     *	})
+     * const { error } = f.SetHeaderFooter('Sheet1', {
+     *   DifferentFirst:   true,
+     *   DifferentOddEven: true,
+     *   OddHeader:        '&R&P',
+     *   OddFooter:        '&C&F',
+     *   EvenHeader:       '&L&P',
+     *   EvenFooter:       '&L&D&R&T',
+     *   FirstHeader:      `&CCenter &"-,Bold"Bold&"-,Regular"HeaderU+000A&D`,
+     * });
      * ```
      *
      * This example shows:
@@ -2133,15 +3749,17 @@ declare module "excelize-wasm" {
      * @param sheet The worksheet name
      * @param panes The panes format
      */
-    SetPanes(sheet: string, panes: Panes): { error: string | null };
+    SetPanes(sheet: string, panes: Panes): { error: string | null }
 
     /**
-     * SetRowHeight provides a function to set the height of a single row.
+     * SetRowHeight provides a function to set the height of a single row. If
+     * the value of height is 0, will hide the specified row, if the value of
+     * height is -1, will unset the custom row height.
      * @param sheet The worksheet name
      * @param row The row number
      * @param height The height of the row
      */
-    SetRowHeight(sheet: string, row: number, height: number): { error: string | null };
+    SetRowHeight(sheet: string, row: number, height : number): { error: string | null }
 
     /**
      * SetRowOutlineLevel provides a function to set outline level number of a
@@ -2151,7 +3769,7 @@ declare module "excelize-wasm" {
      * @param row The row number
      * @param level The outline level of the row
      */
-    SetRowOutlineLevel(sheet: string, row: number, level: number): { error: string | null };
+    SetRowOutlineLevel(sheet: string, row: number, level: number): { error: string | null }
 
     /**
      * SetRowStyle provides a function to set the style of rows by given
@@ -2163,18 +3781,21 @@ declare module "excelize-wasm" {
      * @param end Then end row number
      * @param styleID The style ID
      */
-    SetRowStyle(sheet: string, start: number, end: number, styleID: number): { error: string | null };
+    SetRowStyle(sheet: string, start: number, end: number, styleID: number): { error: string | null }
 
     /**
-     * SetRowStyle provides a function to set the style of rows by given
-     * worksheet name, row range, and style ID. Note that this will overwrite
-     * the existing styles for the rows, it won't append or merge style with
-     * existing styles.
+     * SetRowVisible provides a function to set visible of a single row by given
+     * worksheet name and Excel row number. For example, hide row 2 in Sheet1:
+     *
+     * ```typescript
+     * const { error } = f.SetRowVisible('Sheet1', 2, false);
+     * ```
+     *
      * @param sheet The worksheet name
      * @param row The row number
      * @param visible The row's visibility
      */
-    SetRowVisible(sheet: string, row: number, visible: boolean): { error: string | null };
+    SetRowVisible(sheet: string, row: number, visible: boolean): { error: string | null }
 
     /**
      * SetSheetCol writes an array to column by given worksheet name, starting
@@ -2183,7 +3804,29 @@ declare module "excelize-wasm" {
      * @param cell The cell reference
      * @param slice The column cells to be write
      */
-    SetSheetCol(sheet: string, cell: string, slice: Array<boolean | number | string>): { error: string | null };
+    SetSheetCol(sheet: string, cell: string, slice: Array<boolean | number | string>): { error: string | null }
+
+    /**
+     * SetSheetBackgroundFromBytes provides a function to set background picture
+     * by given worksheet name, extension name and image data. Supported image
+     * types: BMP, EMF, EMZ, GIF, ICO, JPEG, JPG, PNG, SVG, TIF, TIFF, WMF, and
+     * WMZ.
+     * @param sheet The worksheet name
+     * @param extension The extension name
+     * @param picture The contents buffer of the file
+     */
+    SetSheetBackgroundFromBytes(sheet: string, extension: string, picture: Uint8Array): { error: string | null }
+
+    /**
+     * SetSheetDimension provides the method to set or remove the used range of
+     * the worksheet by a given range reference. It specifies the row and column
+     * bounds of used cells in the worksheet. The range reference is set using
+     * the A1 reference style(e.g., "A1:D5"). Passing an empty range reference
+     * will remove the used range of the worksheet.
+     * @param sheet The worksheet name
+     * @param rangeRef The top-left and right-bottom cell range reference
+     */
+    SetSheetDimension(sheet: string, rangeRef: string): { error: string | null }
 
     /**
      * SetSheetName provides a function to set the worksheet name by given
@@ -2195,7 +3838,7 @@ declare module "excelize-wasm" {
      * @param source The source sheet name
      * @param target The target sheet name
      */
-    SetSheetName(source: string, target: string): { error: string | null };
+    SetSheetName(source: string, target: string): { error: string | null }
 
     /**
      * SetSheetProps provides a function to set worksheet properties.
@@ -2211,7 +3854,16 @@ declare module "excelize-wasm" {
      * @param cell The starting cell reference
      * @param slice The array for writes
      */
-    SetSheetRow(sheet: string, cell: string, slice: Array<boolean | number | string>): { error: string | null };
+    SetSheetRow(sheet: string, cell: string, slice: Array<boolean | number | string | null>): { error: string | null }
+
+    /**
+     * SetSheetView sets sheet view options. The viewIndex may be negative and
+     * if so is counted backward (-1 is the last view).
+     * @param sheet The worksheet name
+     * @param viewIndex The sheet view index
+     * @param opts The sheet view options
+     */
+    SetSheetView(sheet: string, viewIndex: number, opts: ViewOptions): { error: string | null }
 
     /**
      * SetSheetVisible provides a function to set worksheet visible by given
@@ -2221,7 +3873,7 @@ declare module "excelize-wasm" {
      * @param sheet The worksheet name
      * @param visible The worksheet visibility
      */
-    SetSheetVisible(sheet: string, visible: boolean): { error: string | null };
+    SetSheetVisible(sheet: string, visible: boolean): { error: string | null }
 
     /**
      * SetWorkbookProps provides a function to sets workbook properties.
@@ -2232,15 +3884,22 @@ declare module "excelize-wasm" {
     /**
      * UngroupSheets provides a function to ungroup worksheets.
      */
-    UngroupSheets(): { error: string | null };
+    UngroupSheets(): { error: string | null }
 
     /**
-     * UnmergeCell provides a function to unmerge a given range reference.
+     * UnmergeCell provides a function to unmerge a given range reference. For
+     * example unmerge range reference D3:E9 on Sheet1:
+     *
+     * ```typescript
+     * const { error } = f.UnmergeCell('Sheet1', 'D3', 'E9');
+     * ```
+     *
+     * Attention: overlapped range will also be unmerged.
      * @param sheet The worksheet name
-     * @param hCell The top-left cell reference
-     * @param vCell The right-bottom cell reference
+     * @param topLeftCell The top-left cell reference
+     * @param bottomRightCell The right-bottom cell reference
      */
-    UnmergeCell(sheet: string, hCell: string, vCell: string): { error: string | null };
+    UnmergeCell(sheet: string, topLeftCell: string, bottomRightCell: string): { error: string | null }
 
     /**
      * UnprotectSheet provides a function to remove protection for a sheet,
@@ -2249,7 +3908,15 @@ declare module "excelize-wasm" {
      * @param sheet The worksheet name
      * @param password The password for sheet protection
      */
-    UnprotectSheet(sheet: string, password?: string): { error: string | null };
+    UnprotectSheet(sheet: string, password?: string): { error: string | null }
+
+    /**
+     * UnprotectWorkbook provides a function to remove protection for workbook,
+     * specified the optional password parameter to remove workbook protection
+     * with password verification.
+     * @param password The password for workbook protection
+     */
+    UnprotectWorkbook(password?: string): { error: string | null }
 
     /**
      * UnsetConditionalFormat provides a function to unset the conditional
@@ -2257,14 +3924,14 @@ declare module "excelize-wasm" {
      * @param sheet The worksheet name
      * @param reference The conditional format range reference
      */
-    UnsetConditionalFormat(sheet: string, reference: string): { error: string | null };
+    UnsetConditionalFormat(sheet: string, reference: string): { error: string | null }
 
     /**
      * UpdateLinkedValue fix linked values within a spreadsheet are not
      * updating in Office Excel application. This function will be remove
      * value tag when met a cell have a linked value.
      */
-    UpdateLinkedValue(): { error: string | null };
+    UpdateLinkedValue(): { error: string | null }
 
     /**
      * WriteToBuffer provides a function to get the contents buffer from the
@@ -2272,7 +3939,7 @@ declare module "excelize-wasm" {
      * size is large.
      * @param opts The options for save the spreadsheet
      */
-    WriteToBuffer(opts?: Options): { buffer: BlobPart; error: string | null };
+    WriteToBuffer(opts?: Options): { buffer: BlobPart, error: string | null };
 
     /**
      * Error message
@@ -2280,24 +3947,145 @@ declare module "excelize-wasm" {
     error?: string | null;
   }
 
-  type Init = {
-    CellNameToCoordinates: typeof CellNameToCoordinates;
-    ColumnNameToNumber: typeof ColumnNameToNumber;
-    ColumnNumberToName: typeof ColumnNumberToName;
-    CoordinatesToCellName: typeof CoordinatesToCellName;
-    HSLToRGB: typeof HSLToRGB;
-    JoinCellName: typeof JoinCellName;
-    RGBToHSL: typeof RGBToHSL;
-    SplitCellName: typeof SplitCellName;
-    ThemeColor: typeof ThemeColor;
-    NewFile: typeof NewFile;
-    OpenReader: typeof OpenReader;
-  };
-
   /**
    * init provides a function to compile and instantiate WebAssembly code by a
    * given compressed wasm archive path.
    * @param path The compressed wasm archive path
    */
-  export function init(path: string): Promise<Init>;
+  export function init(path: string): Promise<{
+    CellNameToCoordinates:             typeof CellNameToCoordinates,
+    ColumnNameToNumber:                typeof ColumnNameToNumber,
+    ColumnNumberToName:                typeof ColumnNumberToName,
+    CoordinatesToCellName:             typeof CoordinatesToCellName,
+    HSLToRGB:                          typeof HSLToRGB,
+    JoinCellName:                      typeof JoinCellName,
+    RGBToHSL:                          typeof RGBToHSL,
+    SplitCellName:                     typeof SplitCellName,
+    ThemeColor:                        typeof ThemeColor,
+    NewFile:                           typeof NewFile;
+    OpenReader:                        typeof OpenReader;
+    CellTypeUnset:                     typeof CellType.CellTypeUnset;
+    CellTypeBool:                      typeof CellType.CellTypeBool;
+    CellTypeDate:                      typeof CellType.CellTypeDate;
+    CellTypeError:                     typeof CellType.CellTypeError;
+    CellTypeFormula:                   typeof CellType.CellTypeFormula;
+    CellTypeInlineString:              typeof CellType.CellTypeInlineString;
+    CellTypeNumber:                    typeof CellType.CellTypeNumber;
+    CellTypeSharedString:              typeof CellType.CellTypeSharedString;
+    CultureNameUnknown:                typeof CultureName.CultureNameUnknown;
+    CultureNameEnUS:                   typeof CultureName.CultureNameEnUS;
+    CultureNameJaJP:                   typeof CultureName.CultureNameJaJP;
+    CultureNameKoKR:                   typeof CultureName.CultureNameKoKR;
+    CultureNameZhCN:                   typeof CultureName.CultureNameZhCN;
+    CultureNameZhTW:                   typeof CultureName.CultureNameZhTW;
+    FormControlNote:                   typeof FormControlType.FormControlNote;
+    FormControlButton:                 typeof FormControlType.FormControlButton;
+    FormControlOptionButton:           typeof FormControlType.FormControlOptionButton;
+    FormControlSpinButton:             typeof FormControlType.FormControlSpinButton;
+    FormControlCheckBox:               typeof FormControlType.FormControlCheckBox;
+    FormControlGroupBox:               typeof FormControlType.FormControlGroupBox;
+    FormControlLabel:                  typeof FormControlType.FormControlLabel;
+    FormControlScrollBar:              typeof FormControlType.FormControlScrollBar;
+    Area:                              typeof ChartType.Area;
+    AreaStacked:                       typeof ChartType.AreaStacked;
+    AreaPercentStacked:                typeof ChartType.AreaPercentStacked;
+    Area3D:                            typeof ChartType.Area3D;
+    Area3DStacked:                     typeof ChartType.Area3DStacked;
+    Area3DPercentStacked:              typeof ChartType.Area3DPercentStacked;
+    Bar:                               typeof ChartType.Bar;
+    BarStacked:                        typeof ChartType.BarStacked;
+    BarPercentStacked:                 typeof ChartType.BarPercentStacked;
+    Bar3DClustered:                    typeof ChartType.Bar3DClustered;
+    Bar3DStacked:                      typeof ChartType.Bar3DStacked;
+    Bar3DPercentStacked:               typeof ChartType.Bar3DPercentStacked;
+    Bar3DConeClustered:                typeof ChartType.Bar3DConeClustered;
+    Bar3DConeStacked:                  typeof ChartType.Bar3DConeStacked;
+    Bar3DConePercentStacked:           typeof ChartType.Bar3DConePercentStacked;
+    Bar3DPyramidClustered:             typeof ChartType.Bar3DPyramidClustered;
+    Bar3DPyramidStacked:               typeof ChartType.Bar3DPyramidStacked;
+    Bar3DPyramidPercentStacked:        typeof ChartType.Bar3DPyramidPercentStacked;
+    Bar3DCylinderClustered:            typeof ChartType.Bar3DCylinderClustered;
+    Bar3DCylinderStacked:              typeof ChartType.Bar3DCylinderStacked;
+    Bar3DCylinderPercentStacked:       typeof ChartType.Bar3DCylinderPercentStacked;
+    Col:                               typeof ChartType.Col;
+    ColStacked:                        typeof ChartType.ColStacked;
+    ColPercentStacked:                 typeof ChartType.ColPercentStacked;
+    Col3D:                             typeof ChartType.Col3D;
+    Col3DClustered:                    typeof ChartType.Col3DClustered;
+    Col3DStacked:                      typeof ChartType.Col3DStacked;
+    Col3DPercentStacked:               typeof ChartType.Col3DPercentStacked;
+    Col3DCone:                         typeof ChartType.Col3DCone;
+    Col3DConeClustered:                typeof ChartType.Col3DConeClustered;
+    Col3DConeStacked:                  typeof ChartType.Col3DConeStacked;
+    Col3DConePercentStacked:           typeof ChartType.Col3DConePercentStacked;
+    Col3DPyramid:                      typeof ChartType.Col3DPyramid;
+    Col3DPyramidClustered:             typeof ChartType.Col3DPyramidClustered;
+    Col3DPyramidStacked:               typeof ChartType.Col3DPyramidStacked;
+    Col3DPyramidPercentStacked:        typeof ChartType.Col3DPyramidPercentStacked;
+    Col3DCylinder:                     typeof ChartType.Col3DCylinder;
+    Col3DCylinderClustered:            typeof ChartType.Col3DCylinderClustered;
+    Col3DCylinderStacked:              typeof ChartType.Col3DCylinderStacked;
+    Col3DCylinderPercentStacked:       typeof ChartType.Col3DCylinderPercentStacked;
+    Doughnut:                          typeof ChartType.Doughnut;
+    Line:                              typeof ChartType.Line;
+    Line3D:                            typeof ChartType.Line3D;
+    Pie:                               typeof ChartType.Pie;
+    Pie3D:                             typeof ChartType.Pie3D;
+    PieOfPie:                          typeof ChartType.PieOfPie;
+    BarOfPie:                          typeof ChartType.BarOfPie;
+    Radar:                             typeof ChartType.Radar;
+    Scatter:                           typeof ChartType.Scatter;
+    Surface3D:                         typeof ChartType.Surface3D;
+    WireframeSurface3D:                typeof ChartType.WireframeSurface3D;
+    Contour:                           typeof ChartType.Contour;
+    WireframeContour:                  typeof ChartType.WireframeContour;
+    Bubble:                            typeof ChartType.Bubble;
+    Bubble3D:                          typeof ChartType.Bubble3D;
+    StockHighLowClose:                 typeof ChartType.StockHighLowClose;
+    StockOpenHighLowClose:             typeof ChartType.StockOpenHighLowClose;
+    ChartDashUnset:                    typeof ChartDashType.ChartDashUnset;
+    ChartDashSolid:                    typeof ChartDashType.ChartDashSolid;
+    ChartDashDot:                      typeof ChartDashType.ChartDashDot;
+    ChartDashDash:                     typeof ChartDashType.ChartDashDash;
+    ChartDashLgDash:                   typeof ChartDashType.ChartDashLgDash;
+    ChartDashSashDot:                  typeof ChartDashType.ChartDashSashDot;
+    ChartDashLgDashDot:                typeof ChartDashType.ChartDashLgDashDot;
+    ChartDashLgDashDotDot:             typeof ChartDashType.ChartDashLgDashDotDot;
+    ChartDashSysDash:                  typeof ChartDashType.ChartDashSysDash;
+    ChartDashSysDot:                   typeof ChartDashType.ChartDashSysDot;
+    ChartDashSysDashDot:               typeof ChartDashType.ChartDashSysDashDot;
+    ChartDashSysDashDotDot:            typeof ChartDashType.ChartDashSysDashDotDot;
+    ChartLineSolid:                    typeof ChartLineType.ChartLineSolid;
+    ChartLineNone:                     typeof ChartLineType.ChartLineNone;
+    ChartLineAutomatic:                typeof ChartLineType.ChartLineAutomatic;
+    ChartDataLabelsPositionUnset:      typeof ChartDataLabelPositionType.ChartDataLabelsPositionUnset;
+    ChartDataLabelsPositionBestFit:    typeof ChartDataLabelPositionType.ChartDataLabelsPositionBestFit;
+    ChartDataLabelsPositionBelow:      typeof ChartDataLabelPositionType.ChartDataLabelsPositionBelow;
+    ChartDataLabelsPositionCenter:     typeof ChartDataLabelPositionType.ChartDataLabelsPositionCenter;
+    ChartDataLabelsPositionInsideBase: typeof ChartDataLabelPositionType.ChartDataLabelsPositionInsideBase;
+    ChartDataLabelsPositionInsideEnd:  typeof ChartDataLabelPositionType.ChartDataLabelsPositionInsideEnd;
+    ChartDataLabelsPositionLeft:       typeof ChartDataLabelPositionType.ChartDataLabelsPositionLeft;
+    ChartDataLabelsPositionOutsideEnd: typeof ChartDataLabelPositionType.ChartDataLabelsPositionOutsideEnd;
+    ChartDataLabelsPositionRight:      typeof ChartDataLabelPositionType.ChartDataLabelsPositionRight;
+    ChartDataLabelsPositionAbove:      typeof ChartDataLabelPositionType.ChartDataLabelsPositionAbove;
+    ChartTickLabelNextToAxis:          typeof ChartTickLabelPositionType.ChartTickLabelNextToAxis;
+    ChartTickLabelHigh:                typeof ChartTickLabelPositionType.ChartTickLabelHigh;
+    ChartTickLabelLow:                 typeof ChartTickLabelPositionType.ChartTickLabelLow;
+    ChartTickLabelNone:                typeof ChartTickLabelPositionType.ChartTickLabelNone;
+    HeaderFooterImagePositionLeft:     typeof HeaderFooterImagePositionType.HeaderFooterImagePositionLeft;
+    HeaderFooterImagePositionCenter:   typeof HeaderFooterImagePositionType.HeaderFooterImagePositionCenter;
+    HeaderFooterImagePositionRight:    typeof HeaderFooterImagePositionType.HeaderFooterImagePositionRight;
+    IgnoredErrorsEvalError:            typeof IgnoredErrorsType.IgnoredErrorsEvalError;
+    IgnoredErrorsTwoDigitTextYear:     typeof IgnoredErrorsType.IgnoredErrorsTwoDigitTextYear;
+    IgnoredErrorsNumberStoredAsText:   typeof IgnoredErrorsType.IgnoredErrorsNumberStoredAsText;
+    IgnoredErrorsFormula:              typeof IgnoredErrorsType.IgnoredErrorsFormula;
+    IgnoredErrorsFormulaRange:         typeof IgnoredErrorsType.IgnoredErrorsFormulaRange;
+    IgnoredErrorsUnlockedFormula:      typeof IgnoredErrorsType.IgnoredErrorsUnlockedFormula;
+    IgnoredErrorsEmptyCellReference:   typeof IgnoredErrorsType.IgnoredErrorsEmptyCellReference;
+    IgnoredErrorsListDataValidation:   typeof IgnoredErrorsType.IgnoredErrorsListDataValidation;
+    IgnoredErrorsCalculatedColumn:     typeof IgnoredErrorsType.IgnoredErrorsCalculatedColumn;
+    PictureInsertTypePlaceOverCells:   typeof PictureInsertType.PictureInsertTypePlaceOverCells,
+    PictureInsertTypePlaceInCell:      typeof PictureInsertType.PictureInsertTypePlaceInCell,
+    PictureInsertTypeDISPIMG:          typeof PictureInsertType.PictureInsertTypeDISPIMG,
+  }>;
 }
