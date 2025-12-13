@@ -379,6 +379,7 @@ func regInteropFunc(f *excelize.File, fn map[string]interface{}) interface{} {
 		"GetComments":                 GetComments(f),
 		"GetConditionalStyle":         GetConditionalStyle(f),
 		"GetCustomProps":              GetCustomProps(f),
+		"GetDataValidations":          GetDataValidations(f),
 		"GetDefaultFont":              GetDefaultFont(f),
 		"GetDefinedName":              GetDefinedName(f),
 		"GetDocProps":                 GetDocProps(f),
@@ -2176,6 +2177,33 @@ func GetCustomProps(f *excelize.File) func(this js.Value, args []js.Value) inter
 			x := ret["props"].([]interface{})
 			x = append(x, js.ValueOf(map[string]interface{}{"Name": prop.Name, "Value": prop.Value}))
 			ret["props"] = x
+		}
+		return js.ValueOf(ret)
+	}
+}
+
+// GetDataValidations returns data validations list by given worksheet name.
+func GetDataValidations(f *excelize.File) func(this js.Value, args []js.Value) interface{} {
+	return func(this js.Value, args []js.Value) interface{} {
+		ret := map[string]interface{}{"dataValidations": []interface{}{}, "error": nil}
+		if err := prepareArgs(args, []argsRule{
+			{types: []js.Type{js.TypeString}},
+		}); err != nil {
+			ret["error"] = err.Error()
+			return js.ValueOf(ret)
+		}
+		dataValidations, err := f.GetDataValidations(args[0].String())
+		if err != nil {
+			ret["error"] = err.Error()
+			return js.ValueOf(ret)
+		}
+		for _, dv := range dataValidations {
+			if jsVal, err := goValueToJS(reflect.ValueOf(*dv),
+				reflect.TypeOf(excelize.DataValidation{})); err == nil {
+				x := ret["dataValidations"].([]interface{})
+				x = append(x, jsVal)
+				ret["dataValidations"] = x
+			}
 		}
 		return js.ValueOf(ret)
 	}
