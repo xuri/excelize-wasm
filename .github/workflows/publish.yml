@@ -5,7 +5,7 @@ on:
       - main
 jobs:
 
-  publish:
+  build:
     strategy:
       matrix:
         go-version: [1.25.x]
@@ -18,9 +18,6 @@ jobs:
       GOOS: js
       GOARCH: wasm
       GO111MODULE: on
-    permissions:
-      contents: read
-      id-token: write
     steps:
 
     - name: Install Go
@@ -62,19 +59,45 @@ jobs:
       uses: actions/setup-node@v6
       with:
         node-version: 20.19.6
-        registry-url: 'https://registry.npmjs.org'
 
     - name: NPM Build
       run: |
-        npm install -g npm@latest
         npm ci
         node ./node_modules/.bin/rollup -c
         cp LICENSE ./dist
         cp README.md ./dist
         cp package.json ./dist
         cp src/index.d.ts ./dist
-        npm publish
+
+    - name: Upload Artifacts
+      uses: actions/upload-artifact@v6
+      with:
+        name: excelize-wasm
+        path: dist/
+
+  publish:
+    needs: build
+    runs-on: ubuntu-24.04
+    environment: production
+    permissions:
+      contents: read
+      id-token: write
+    steps:
+
+    - name: Download Artifacts
+      uses: actions/download-artifact@v7
+      with:
+        name: excelize-wasm
+        path: dist/
+
+    - name: Setup Node.js
+      uses: actions/setup-node@v6
+      with:
+        node-version: 20.19.6
+        registry-url: 'https://registry.npmjs.org'
 
     - name: NPM Publish
       run: |
+        cd dist
+        npm install -g npm@latest
         npm publish
