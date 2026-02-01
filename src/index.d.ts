@@ -1,4 +1,4 @@
-// Copyright 2022 - 2025 The excelize-wasm Authors. All rights reserved. Use of
+// Copyright 2022 - 2026 The excelize-wasm Authors. All rights reserved. Use of
 // this source code is governed by a BSD-style license that can be found in
 // the LICENSE file.
 //
@@ -361,6 +361,7 @@ declare module 'excelize-wasm' {
    */
   export type GraphicOptions = {
     AltText?:             string;
+    Name?:                string;
     PrintObject?:         boolean;
     Locked?:              boolean;
     LockAspectRatio?:     boolean;
@@ -431,6 +432,8 @@ declare module 'excelize-wasm' {
    */
   export type ChartAxis = {
     None?:              boolean;
+    DropLines?:         boolean;
+    HighLowLines?:      boolean;
     MajorGridLines?:    boolean;
     MinorGridLines?:    boolean;
     MajorUnit?:         number;
@@ -1545,6 +1548,8 @@ declare module 'excelize-wasm' {
      * 'YAxis'. The properties of 'XAxis' that can be set are:
      *
      *      None
+     *      DropLines
+     *      HighLowLines
      *      MajorGridLines
      *      MinorGridLines
      *      TickLabelSkip
@@ -1573,6 +1578,17 @@ declare module 'excelize-wasm' {
      *      Title
      *
      * None: Disable axes.
+     *
+     * DropLines: Specifies drop lines for the 2D and 3D area and line charts.
+     * Drop lines are vertical lines that connect data points in a chart down to
+     * the horizontal (category) axis. They are often used in Line or Area
+     * charts to make it easier to see the exact category position of each
+     * point. The 'DropLines' property is optional. The default value is false.
+     *
+     * HighLowLines: Specifies high low lines for the 2D line chart. High low
+     * lines displayed by default in stock charts. They extend from the highest
+     * value to the lowest value in each category. The 'HighLowLines' property
+     * is optional. The default value is false.
      *
      * MajorGridLines: Specifies major grid lines.
      *
@@ -2657,6 +2673,14 @@ declare module 'excelize-wasm' {
      * @param sheet The worksheet name
      */
     GetSheetProps(sheet: string): { props: SheetPropsOptions, error: string | null }
+
+    /**
+     * GetSheetProtection provides a function to get worksheet protection
+     * settings by given worksheet name. Note that the password in the returned
+     * will always be empty.
+     * @param sheet The worksheet name
+     */
+    GetSheetProtection(sheet: string): { opts: SheetProtectionOptions, error: string | null }
 
     /**
      * GetSheetView gets the value of sheet view options. The viewIndex may be

@@ -1887,10 +1887,15 @@ func TestProtectSheet(t *testing.T) {
 
 	ret := f.(js.Value).Call("ProtectSheet", js.ValueOf("Sheet1"),
 		js.ValueOf(map[string]interface{}{
-			"Password": "password",
+			"Password":      "password",
+			"EditScenarios": false,
 		}),
 	)
 	assert.True(t, ret.Get("error").IsNull())
+
+	ret = f.(js.Value).Call("GetSheetProtection", js.ValueOf("Sheet1"))
+	assert.True(t, ret.Get("error").IsNull())
+	assert.False(t, ret.Get("opts").Get("EditScenarios").Bool())
 
 	ret = f.(js.Value).Call("ProtectSheet")
 	assert.EqualError(t, errArgNum, ret.Get("error").String())
@@ -1907,6 +1912,15 @@ func TestProtectSheet(t *testing.T) {
 			"Password": true,
 		}),
 	)
+	assert.EqualError(t, errArgType, ret.Get("error").String())
+
+	ret = f.(js.Value).Call("GetSheetProtection")
+	assert.EqualError(t, errArgNum, ret.Get("error").String())
+
+	ret = f.(js.Value).Call("GetSheetProtection", js.ValueOf("SheetN"))
+	assert.Equal(t, "sheet SheetN does not exist", ret.Get("error").String())
+
+	ret = f.(js.Value).Call("GetSheetProtection", js.ValueOf(nil))
 	assert.EqualError(t, errArgType, ret.Get("error").String())
 }
 

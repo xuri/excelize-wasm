@@ -1,4 +1,4 @@
-// Copyright 2022 - 2025 The excelize-wasm Authors. All rights reserved. Use of
+// Copyright 2022 - 2026 The excelize-wasm Authors. All rights reserved. Use of
 // this source code is governed by a BSD-style license that can be found in
 // the LICENSE file.
 //
@@ -402,6 +402,7 @@ func regInteropFunc(f *excelize.File, fn map[string]interface{}) interface{} {
 		"GetSheetMap":                 GetSheetMap(f),
 		"GetSheetName":                GetSheetName(f),
 		"GetSheetProps":               GetSheetProps(f),
+		"GetSheetProtection":          GetSheetProtection(f),
 		"GetSheetView":                GetSheetView(f),
 		"GetSheetVisible":             GetSheetVisible(f),
 		"GetSlicers":                  GetSlicers(f),
@@ -2717,6 +2718,31 @@ func GetSheetProps(f *excelize.File) func(this js.Value, args []js.Value) interf
 		if jsVal, err := goValueToJS(reflect.ValueOf(props),
 			reflect.TypeOf(excelize.SheetPropsOptions{})); err == nil {
 			ret["props"] = jsVal
+		}
+		return js.ValueOf(ret)
+	}
+}
+
+// GetSheetProtection provides a function to get worksheet protection settings
+// by given worksheet name. Note that the password in the returned will always
+// be empty.
+func GetSheetProtection(f *excelize.File) func(this js.Value, args []js.Value) interface{} {
+	return func(this js.Value, args []js.Value) interface{} {
+		ret := map[string]interface{}{"opts": map[string]interface{}{}, "error": nil}
+		if err := prepareArgs(args, []argsRule{
+			{types: []js.Type{js.TypeString}},
+		}); err != nil {
+			ret["error"] = err.Error()
+			return js.ValueOf(ret)
+		}
+		props, err := f.GetSheetProtection(args[0].String())
+		if err != nil {
+			ret["error"] = err.Error()
+			return js.ValueOf(ret)
+		}
+		if jsVal, err := goValueToJS(reflect.ValueOf(props),
+			reflect.TypeOf(excelize.SheetProtectionOptions{})); err == nil {
+			ret["opts"] = jsVal
 		}
 		return js.ValueOf(ret)
 	}
