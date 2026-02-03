@@ -2478,6 +2478,18 @@ declare module 'excelize-wasm' {
     GetFormControls(sheet: string): { formControls: FormControl[], error: string | null }
 
     /**
+     * GetHyperLinkCells returns cell references which contain hyperlinks in a
+     * given worksheet name and link type. The optional parameter 'linkType' use
+     * for specific link type, the optional values are "External" for website
+     * links, "Location" for moving to one of cell in this workbook, "None" for
+     * no links. If linkType is empty, it will return all hyperlinks in the
+     * worksheet.
+     * @param sheet The worksheet name
+     * @param linkType The cell hyperlink type
+     */
+    GetHyperLinkCells(sheet: string, linkType: string): { result: string[], error: string | null }
+
+    /**
      * GetHeaderFooter provides a function to get worksheet header and footer by
      * given worksheet name.
      * @param sheet The worksheet name

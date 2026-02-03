@@ -384,6 +384,7 @@ func regInteropFunc(f *excelize.File, fn map[string]interface{}) interface{} {
 		"GetDefinedName":              GetDefinedName(f),
 		"GetDocProps":                 GetDocProps(f),
 		"GetFormControls":             GetFormControls(f),
+		"GetHyperLinkCells":           GetHyperLinkCells(f),
 		"GetHeaderFooter":             GetHeaderFooter(f),
 		"GetMergeCells":               GetMergeCells(f),
 		"GetPageLayout":               GetPageLayout(f),
@@ -2294,6 +2295,34 @@ func GetFormControls(f *excelize.File) func(this js.Value, args []js.Value) inte
 				ret["formControls"] = x
 			}
 		}
+		return js.ValueOf(ret)
+	}
+}
+
+// GetHyperLinkCells returns cell references which contain hyperlinks in a
+// given worksheet name and link type. The optional parameter 'linkType' use for
+// specific link type, the optional values are "External" for website links,
+// "Location" for moving to one of cell in this workbook, "None" for no links.
+// If linkType is empty, it will return all hyperlinks in the worksheet.
+func GetHyperLinkCells(f *excelize.File) func(this js.Value, args []js.Value) interface{} {
+	return func(this js.Value, args []js.Value) interface{} {
+		ret := map[string]interface{}{"result": js.ValueOf([]interface{}{}), "error": nil}
+		if err := prepareArgs(args, []argsRule{
+			{types: []js.Type{js.TypeString}},
+			{types: []js.Type{js.TypeString}},
+		}); err != nil {
+			ret["error"] = err.Error()
+			return js.ValueOf(ret)
+		}
+		result, err := f.GetHyperLinkCells(args[0].String(), args[1].String())
+		if err != nil {
+			ret["error"] = err.Error()
+		}
+		excepted := make([]interface{}, len(result))
+		for i, cell := range result {
+			excepted[i] = cell
+		}
+		ret["result"] = excepted
 		return js.ValueOf(ret)
 	}
 }
