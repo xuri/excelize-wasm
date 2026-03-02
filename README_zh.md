@@ -48,9 +48,9 @@ npm install --save excelize-wasm
 <script src="excelize-wasm/index.js"></script>
 ```
 
-### 创建 Excel 文档
+### 创建工作簿
 
-下面是一个创建 Excel 文档的简单例子：
+下面是一个创建工作簿的简单例子：
 
 ```javascript
 const { init } = require('excelize-wasm');
@@ -69,7 +69,7 @@ init('./node_modules/excelize-wasm/excelize.wasm.gz').then((excelize) => {
   f.SetCellValue('Sheet1', 'B2', 100);
   // 设置工作簿的默认工作表
   f.SetActiveSheet(index);
-  // 根据指定路径保存文件
+  // 根据指定路径保存工作簿
   const { buffer, error } = f.WriteToBuffer();
   if (error) {
     console.log(error);
@@ -83,7 +83,7 @@ init('./node_modules/excelize-wasm/excelize.wasm.gz').then((excelize) => {
 });
 ```
 
-在浏览器中创建 Excel 并下载：
+在浏览器中创建工作簿并下载：
 
 <details>
   <summary>查看代码</summary>
@@ -115,7 +115,7 @@ init('./node_modules/excelize-wasm/excelize.wasm.gz').then((excelize) => {
         f.SetCellValue('Sheet1', 'B2', 100);
         // 设置工作簿的默认工作表
         f.SetActiveSheet(index);
-        // 根据指定路径保存文件
+        // 根据指定路径保存工作簿
         const { buffer, error } = f.WriteToBuffer();
         if (error) {
           console.log(error);
@@ -137,9 +137,9 @@ init('./node_modules/excelize-wasm/excelize.wasm.gz').then((excelize) => {
 
 </details>
 
-### 读取 Excel 文档
+### 读取工作簿
 
-下面是读取 Excel 文档的例子：
+下面是读取工作簿的例子：
 
 ```javascript
 const { init } = require('excelize-wasm');
@@ -173,7 +173,7 @@ init('./node_modules/excelize-wasm/excelize.wasm.gz').then((excelize) => {
 });
 ```
 
-### 在 Excel 文档中创建图表
+### 创建图表
 
 使用 Excelize 生成图表十分简单，仅需几行代码。您可以根据工作表中的已有数据构建图表，或向工作表中添加数据并创建图表。
 
@@ -233,7 +233,7 @@ init('./node_modules/excelize-wasm/excelize.wasm.gz').then((excelize) => {
     console.log(ret3.error);
     return;
   }
-  // 根据指定路径保存文件
+  // 根据指定路径保存工作簿
   const { buffer, error } = f.WriteToBuffer();
   if (error) {
     console.log(error);
@@ -247,7 +247,7 @@ init('./node_modules/excelize-wasm/excelize.wasm.gz').then((excelize) => {
 });
 ```
 
-### 向 Excel 文档中插入图片
+### 在工作表中插入图片
 
 ```javascript
 const { init } = require('excelize-wasm');
@@ -296,7 +296,7 @@ init('./node_modules/excelize-wasm/excelize.wasm.gz').then((excelize) => {
     console.log(ret3.error);
     return;
   }
-  // 根据指定路径保存文件
+  // 根据指定路径保存工作簿
   const { buffer, error } = f.WriteToBuffer();
   if (error) {
     console.log(error);
@@ -320,4 +320,4 @@ init('./node_modules/excelize-wasm/excelize.wasm.gz').then((excelize) => {
 
 Excel 徽标是 [Microsoft Corporation](https://aka.ms/trademarks-usage) 的商标，项目的图片是一种改编。
 
-Go gopher 由 [Renee French](https://go.dev/doc/gopher/README) 创作，遵循 [Creative Commons 4.0 Attributions license](http://creativecommons.org/licenses/by/4.0/) 创作共用授权条款。
+Go gopher 由 [Renee French](https://go.dev/doc/gopher/README) 创作，遵循 [Creative Commons 4.0 Attributions license](https://creativecommons.org/licenses/by/4.0/) 创作共用授权条款。
