@@ -72,7 +72,7 @@ jobs:
         cp src/index.d.ts ./dist
 
     - name: Upload Artifacts
-      uses: actions/upload-artifact@v6
+      uses: actions/upload-artifact@v7
       with:
         name: excelize-wasm
         path: dist/
@@ -88,7 +88,7 @@ jobs:
     steps:
 
     - name: Download Artifacts
-      uses: actions/download-artifact@v7
+      uses: actions/download-artifact@v8
       with:
         name: excelize-wasm
         path: dist/

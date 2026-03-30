@@ -66,6 +66,34 @@ declare module 'excelize-wasm' {
   }
 
   /**
+   * LineDashType defines the currently supported line dash types enumeration.
+   */
+  export enum LineDashType {
+    LineDashUnset,
+    LineDashSolid,
+    LineDashDot,
+    LineDashDash,
+    LineDashLgDash,
+    LineDashSashDot,
+    LineDashLgDashDot,
+    LineDashLgDashDotDot,
+    LineDashSysDash,
+    LineDashSysDot,
+    LineDashSysDashDot,
+    LineDashSysDashDotDot,
+  }
+
+  /**
+   * LineType defines the currently supported line types enumeration.
+   */
+  export enum LineType {
+    LineUnset,
+    LineSolid,
+    LineNone,
+    LineAutomatic,
+  }
+
+  /**
    * Options define the options for o`pen and reading spreadsheet.
    *
    * MaxCalcIterations specifies the maximum iterations for iterative
@@ -265,7 +293,7 @@ declare module 'excelize-wasm' {
     Height?:    number;
     Format?:    GraphicOptions;
     Fill?:      Fill;
-    Line?:      ShapeLine;
+    Line?:      LineOptions;
     Paragraph?: RichTextRun[];
   };
 
@@ -300,6 +328,13 @@ declare module 'excelize-wasm' {
    * and the default setting is false (represents ascending).
    *
    * Format specifies the format of the slicer, this setting is optional.
+   *
+   * SelectedItems option is used to specify the default selected items in a
+   * slicer. It is currently only supported for slicers in pivot tables. The
+   * selected items must fall within the range of items selected in the pivot
+   * table. If the pivot table is created using the AddPivotTable function, the
+   * same field must also have its selected item range specified at the time the
+   * pivot table is created.
    */
   export type SlicerOptions = {
     Name:           string;
@@ -313,14 +348,7 @@ declare module 'excelize-wasm' {
     DisplayHeader?: boolean;
     ItemDesc?:      boolean;
     Format?:        GraphicOptions;
-  };
-
-  /**
-   * ShapeLine directly maps the line settings of the shape.
-   */
-  export type ShapeLine = {
-    Color?: string;
-    Width?: number;
+    SelectedItems?: string[];
   };
 
   /**
@@ -419,12 +447,37 @@ declare module 'excelize-wasm' {
     Format?:       GraphicOptions;
   };
 
+  /**
+   * LineOptions directly maps the format settings of the line.
+   */
+  export type LineOptions = {
+    Type?:   LineType;
+    Dash?:   LineDashType;
+    Fill?:   Fill;
+    Smooth?: boolean;
+    Width?:  number;
+  };
+
   /*
    * ChartNumFmt directly maps the number format settings of the chart.
    */
   export type ChartNumFmt = {
     CustomNumFmt?: string;
     SourceLinked?: boolean;
+  };
+
+  /*
+   * ChartTitle directly maps the format settings of the chart title.
+   */
+  export type ChartTitle = {
+    Fill?:      Fill;
+    Border?:    LineOptions;
+    Paragraph?: RichTextRun[];
+    OffsetX?:   number;
+    OffsetY?:   number;
+    Width?:     number;
+    Height?:    number;
+    Overlay?:   boolean;
   };
 
   /**
@@ -447,7 +500,7 @@ declare module 'excelize-wasm' {
     Font?:              Font;
     LogBase?:           number;
     NumFmt?:            ChartNumFmt;
-    Title?:             RichTextRun[];
+    Title?:             ChartTitle;
   };
 
   /**
@@ -464,7 +517,7 @@ declare module 'excelize-wasm' {
    */
   export type ChartUpDownBar = {
     Fill?:   Fill;
-    Border?: ChartLine;
+    Border?: LineOptions;
   };
 
   /**
@@ -485,34 +538,6 @@ declare module 'excelize-wasm' {
     DownBars?:          ChartUpDownBar;
     NumFmt?:            ChartNumFmt;
   };
-
-  /**
-   * ChartDashType defines the currently supported chart dash types enumeration.
-   */
-  export enum ChartDashType {
-    ChartDashUnset,
-    ChartDashSolid,
-    ChartDashDot,
-    ChartDashDash,
-    ChartDashLgDash,
-    ChartDashSashDot,
-    ChartDashLgDashDot,
-    ChartDashLgDashDotDot,
-    ChartDashSysDash,
-    ChartDashSysDot,
-    ChartDashSysDashDot,
-    ChartDashSysDashDotDot,
-  }
-
-  /**
-   * ChartLineType defines the currently supported chart line types enumeration.
-   */
-  export enum ChartLineType {
-    ChartLineUnset,
-    ChartLineSolid,
-    ChartLineNone,
-    ChartLineAutomatic,
-  }
 
   /**
    * ChartType defines the currently supported chart types enumeration.
@@ -613,13 +638,13 @@ declare module 'excelize-wasm' {
     Format?:       GraphicOptions;
     Dimension?:    ChartDimension;
     Legend?:       ChartLegend;
-    Title?:        RichTextRun[];
+    Title?:        ChartTitle;
     VaryColors?:   boolean;
     XAxis?:        ChartAxis;
     YAxis?:        ChartAxis;
     PlotArea?:     ChartPlotArea;
     Fill?:         Fill;
-    Border?:       ChartLine;
+    Border?:       LineOptions;
     ShowBlanksAs?: string;
     BubbleSize?:   number;
     HoleSize?:     number;
@@ -640,21 +665,10 @@ declare module 'excelize-wasm' {
    * ChartMarker directly maps the format settings of the chart marker.
    */
   export type ChartMarker = {
-    Border?: ChartLine;
+    Border?: LineOptions;
     Fill?:   Fill;
     Symbol?: string;
     Size?:   number;
-  };
-
-  /**
-   * ChartLine directly maps the format settings of the chart line.
-   */
-  export type ChartLine = {
-    Type?:   ChartLineType;
-    Dash?:   ChartDashType;
-    Fill?:   Fill;
-    Smooth?: boolean;
-    Width?:  number;
   };
 
   /*
@@ -685,7 +699,7 @@ declare module 'excelize-wasm' {
     Sizes?:             string;
     Fill?:              Fill;
     Legend?:            ChartLegend;
-    Line?:              ChartLine;
+    Line?:              LineOptions;
     Marker?:            ChartMarker;
     DataLabel?:         ChartDataLabel;
     DataLabelPosition?: ChartDataLabelPositionType;
@@ -792,6 +806,10 @@ declare module 'excelize-wasm' {
    * NumFmt specifies the number format ID of the data field, this filed only
    * accepts built-in number format ID and does not support custom number format
    * expression currently.
+   *
+   * SelectedItems specifies the default selected items in a pivot table field.
+   * The selected items must be values within the cell range referenced by that
+   * field.
    */
   export type PivotTableField = {
     Compact?:         boolean;
@@ -803,6 +821,7 @@ declare module 'excelize-wasm' {
     Subtotal?:        string;
     DefaultSubtotal?: boolean;
     NumFmt?:          number;
+    SelectedItems?:   string[];
   };
 
   /**
@@ -1288,9 +1307,7 @@ declare module 'excelize-wasm' {
      *         Values: 'Sheet1!$B$4:$D$4',
      *       },
      *     ],
-     *     Title: [{
-     *       Text: 'Fruit 3D Clustered Column Chart',
-     *     }],
+     *     Title: { Paragraph: [{ Text: 'Fruit 3D Clustered Column Chart' }] },
      *   });
      *   if (ret3.error) {
      *     console.log(ret3.error);
@@ -2038,9 +2055,9 @@ declare module 'excelize-wasm' {
      * table options. Note that the same fields can not in Columns, Rows and
      * Filter fields at the same time.
      *
-     * For example, create a pivot table on the range reference Sheet1!G2:M34
+     * For example, create a pivot table on the range reference Sheet1!G4:M31
      * with the range reference Sheet1!A1:E31 as the data source, summarize by
-     * sum for sales:
+     * sum for revenue:
      *
      * ```typescript
      * const { init } = require('excelize-wasm');
@@ -2056,25 +2073,23 @@ declare module 'excelize-wasm' {
      *   const month = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
      *   const year = [2017, 2018, 2019];
      *   const types = ['Meat', 'Dairy', 'Beverages', 'Produce'];
+     *   const revenue = [3217, 4512, 3891, 4738, 3054, 4265, 3643, 4901, 3378, 4126];
      *   const region = ['East', 'West', 'North', 'South'];
-     *   f.SetSheetRow('Sheet1', 'A1', ['Month', 'Year', 'Type', 'Sales', 'Region']);
-     *   const randInt = (max) => {
-     *     return Math.floor(Math.random() * max);
-     *   }
+     *   f.SetSheetRow('Sheet1', 'A1', ['Month', 'Year', 'Type', 'Revenue', 'Region']);
      *   for (let row = 2; row < 32; row++) {
-     *     f.SetCellValue('Sheet1', 'A' + row.toString(), month[randInt(12)]);
-     *     f.SetCellValue('Sheet1', 'B' + row.toString(), year[randInt(3)]);
-     *     f.SetCellValue('Sheet1', 'C' + row.toString(), types[randInt(4)]);
-     *     f.SetCellValue('Sheet1', 'D' + row.toString(), randInt(5000));
-     *     f.SetCellValue('Sheet1', 'E' + row.toString(), region[randInt(4)]);
+     *     f.SetCellValue('Sheet1', 'A' + row.toString(), month[(row - 2) % month.length]);
+     *     f.SetCellValue('Sheet1', 'B' + row.toString(), year[(row - 2) % year.length]);
+     *     f.SetCellValue('Sheet1', 'C' + row.toString(), types[(row - 2) % types.length]);
+     *     f.SetCellValue('Sheet1', 'D' + row.toString(), revenue[(row - 2) % revenue.length]);
+     *     f.SetCellValue('Sheet1', 'E' + row.toString(), region[(row - 2) % region.length]);
      *   }
      *   const ret = f.AddPivotTable({
      *     DataRange: 'Sheet1!A1:E31',
-     *     PivotTableRange: 'Sheet1!G2:M34',
+     *     PivotTableRange: 'Sheet1!G4:M31',
      *     Rows: [{ Data: 'Month', DefaultSubtotal: true }, { Data: 'Year' }],
      *     Filter: [{ Data: 'Region' }],
      *     Columns: [{ Data: 'Type', DefaultSubtotal: true }],
-     *     Data: [{ Data: 'Sales', Name: 'Summarize', Subtotal: 'Sum' }],
+     *     Data: [{ Data: 'Revenue', Name: 'Summarize', Subtotal: 'Sum' }],
      *     RowGrandTotals: true,
      *     ColGrandTotals: true,
      *     ShowDrill: true,
@@ -4085,21 +4100,6 @@ declare module 'excelize-wasm' {
     Bubble3D:                          typeof ChartType.Bubble3D;
     StockHighLowClose:                 typeof ChartType.StockHighLowClose;
     StockOpenHighLowClose:             typeof ChartType.StockOpenHighLowClose;
-    ChartDashUnset:                    typeof ChartDashType.ChartDashUnset;
-    ChartDashSolid:                    typeof ChartDashType.ChartDashSolid;
-    ChartDashDot:                      typeof ChartDashType.ChartDashDot;
-    ChartDashDash:                     typeof ChartDashType.ChartDashDash;
-    ChartDashLgDash:                   typeof ChartDashType.ChartDashLgDash;
-    ChartDashSashDot:                  typeof ChartDashType.ChartDashSashDot;
-    ChartDashLgDashDot:                typeof ChartDashType.ChartDashLgDashDot;
-    ChartDashLgDashDotDot:             typeof ChartDashType.ChartDashLgDashDotDot;
-    ChartDashSysDash:                  typeof ChartDashType.ChartDashSysDash;
-    ChartDashSysDot:                   typeof ChartDashType.ChartDashSysDot;
-    ChartDashSysDashDot:               typeof ChartDashType.ChartDashSysDashDot;
-    ChartDashSysDashDotDot:            typeof ChartDashType.ChartDashSysDashDotDot;
-    ChartLineSolid:                    typeof ChartLineType.ChartLineSolid;
-    ChartLineNone:                     typeof ChartLineType.ChartLineNone;
-    ChartLineAutomatic:                typeof ChartLineType.ChartLineAutomatic;
     ChartDataLabelsPositionUnset:      typeof ChartDataLabelPositionType.ChartDataLabelsPositionUnset;
     ChartDataLabelsPositionBestFit:    typeof ChartDataLabelPositionType.ChartDataLabelsPositionBestFit;
     ChartDataLabelsPositionBelow:      typeof ChartDataLabelPositionType.ChartDataLabelsPositionBelow;
@@ -4126,6 +4126,21 @@ declare module 'excelize-wasm' {
     IgnoredErrorsEmptyCellReference:   typeof IgnoredErrorsType.IgnoredErrorsEmptyCellReference;
     IgnoredErrorsListDataValidation:   typeof IgnoredErrorsType.IgnoredErrorsListDataValidation;
     IgnoredErrorsCalculatedColumn:     typeof IgnoredErrorsType.IgnoredErrorsCalculatedColumn;
+    LineDashUnset:                     typeof LineDashType.LineDashUnset;
+    LineDashSolid:                     typeof LineDashType.LineDashSolid;
+    LineDashDot:                       typeof LineDashType.LineDashDot;
+    LineDashDash:                      typeof LineDashType.LineDashDash;
+    LineDashLgDash:                    typeof LineDashType.LineDashLgDash;
+    LineDashSashDot:                   typeof LineDashType.LineDashSashDot;
+    LineDashLgDashDot:                 typeof LineDashType.LineDashLgDashDot;
+    LineDashLgDashDotDot:              typeof LineDashType.LineDashLgDashDotDot;
+    LineDashSysDash:                   typeof LineDashType.LineDashSysDash;
+    LineDashSysDot:                    typeof LineDashType.LineDashSysDot;
+    LineDashSysDashDot:                typeof LineDashType.LineDashSysDashDot;
+    LineDashSysDashDotDot:             typeof LineDashType.LineDashSysDashDotDot;
+    LineSolid:                         typeof LineType.LineSolid;
+    LineNone:                          typeof LineType.LineNone;
+    LineAutomatic:                     typeof LineType.LineAutomatic;
     PictureInsertTypePlaceOverCells:   typeof PictureInsertType.PictureInsertTypePlaceOverCells,
     PictureInsertTypePlaceInCell:      typeof PictureInsertType.PictureInsertTypePlaceInCell,
     PictureInsertTypeDISPIMG:          typeof PictureInsertType.PictureInsertTypeDISPIMG,

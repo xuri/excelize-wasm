@@ -4,7 +4,6 @@ import (
 	"archive/zip"
 	"bytes"
 	"fmt"
-	"math/rand"
 	"os"
 	"path/filepath"
 	"reflect"
@@ -246,9 +245,11 @@ func TestAddChart(t *testing.T) {
 				"Values":     "Sheet1!$B$4:$D$4",
 			},
 		},
-		"Title": []interface{}{
-			js.ValueOf(map[string]interface{}{"Text": "Fruit 3D Clustered Column Chart"}),
-		},
+		"Title": js.ValueOf(map[string]interface{}{
+			"Paragraph": []interface{}{
+				js.ValueOf(map[string]interface{}{"Text": "Fruit 3D Clustered Column Chart"}),
+			},
+		}),
 	})
 	colChart := js.ValueOf(map[string]interface{}{
 		"Type": int(excelize.Col3DClustered),
@@ -269,9 +270,11 @@ func TestAddChart(t *testing.T) {
 				"Values":     "Sheet1!$B$4:$D$4",
 			},
 		},
-		"Title": []interface{}{
-			js.ValueOf(map[string]interface{}{"Text": "Fruit 3D Clustered Column Chart"}),
-		},
+		"Title": js.ValueOf(map[string]interface{}{
+			"Paragraph": []interface{}{
+				js.ValueOf(map[string]interface{}{"Text": "Fruit 3D Clustered Column Chart"}),
+			},
+		}),
 	})
 	ret := f.(js.Value).Call("AddChart", js.ValueOf("Sheet1"), js.ValueOf("A1"), lineChart)
 	assert.True(t, ret.Get("error").IsNull(), ret.Get("error").String())
@@ -327,9 +330,11 @@ func TestAddChartSheet(t *testing.T) {
 				"Values":     "Sheet1!$B$4:$D$4",
 			},
 		},
-		"Title": []interface{}{
-			js.ValueOf(map[string]interface{}{"Text": "Fruit 3D Clustered Column Chart"}),
-		},
+		"Title": js.ValueOf(map[string]interface{}{
+			"Paragraph": []interface{}{
+				js.ValueOf(map[string]interface{}{"Text": "Fruit 3D Clustered Column Chart"}),
+			},
+		}),
 	})
 	colChart := js.ValueOf(map[string]interface{}{
 		"Type": int(excelize.Col3DClustered),
@@ -350,9 +355,11 @@ func TestAddChartSheet(t *testing.T) {
 				"Values":     "Sheet1!$B$4:$D$4",
 			},
 		},
-		"Title": []interface{}{
-			js.ValueOf(map[string]interface{}{"Text": "Fruit 3D Clustered Column Chart"}),
-		},
+		"Title": js.ValueOf(map[string]interface{}{
+			"Paragraph": []interface{}{
+				js.ValueOf(map[string]interface{}{"Text": "Fruit 3D Clustered Column Chart"}),
+			},
+		}),
 	})
 	ret := f.(js.Value).Call("AddChartSheet", js.ValueOf("Sheet2"), lineChart)
 	assert.True(t, ret.Get("error").IsNull())
@@ -637,41 +644,42 @@ func TestPivotTable(t *testing.T) {
 	month := []string{"Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"}
 	year := []int{2017, 2018, 2019}
 	types := []string{"Meat", "Dairy", "Beverages", "Produce"}
+	revenue := []int{3217, 4512, 3891, 4738, 3054, 4265, 3643, 4901, 3378, 4126}
 	region := []string{"East", "West", "North", "South"}
 	ret := f.(js.Value).Call("SetSheetRow",
 		js.ValueOf("Sheet1"), js.ValueOf("A1"),
-		js.ValueOf([]interface{}{"Month", "Year", "Type", "Sales", "Region"}),
+		js.ValueOf([]interface{}{"Month", "Year", "Type", "Revenue", "Region"}),
 	)
 	assert.True(t, ret.Get("error").IsNull())
 	for row := 2; row < 32; row++ {
 		ret = f.(js.Value).Call("SetCellValue",
-			js.ValueOf("Sheet1"), js.ValueOf(fmt.Sprintf("A%d", row)), js.ValueOf(month[rand.Intn(12)]),
+			js.ValueOf("Sheet1"), js.ValueOf(fmt.Sprintf("A%d", row)), js.ValueOf(month[(row-2)%len(month)]),
 		)
 		assert.True(t, ret.Get("error").IsNull())
 		ret = f.(js.Value).Call("SetCellValue",
-			js.ValueOf("Sheet1"), js.ValueOf(fmt.Sprintf("B%d", row)), js.ValueOf(year[rand.Intn(3)]),
+			js.ValueOf("Sheet1"), js.ValueOf(fmt.Sprintf("B%d", row)), js.ValueOf(year[(row-2)%len(year)]),
 		)
 		assert.True(t, ret.Get("error").IsNull())
 		ret = f.(js.Value).Call("SetCellValue",
-			js.ValueOf("Sheet1"), js.ValueOf(fmt.Sprintf("C%d", row)), js.ValueOf(types[rand.Intn(4)]),
+			js.ValueOf("Sheet1"), js.ValueOf(fmt.Sprintf("C%d", row)), js.ValueOf(types[(row-2)%len(types)]),
 		)
 		assert.True(t, ret.Get("error").IsNull())
 		ret = f.(js.Value).Call("SetCellValue",
-			js.ValueOf("Sheet1"), js.ValueOf(fmt.Sprintf("D%d", row)), js.ValueOf(rand.Intn(5000)),
+			js.ValueOf("Sheet1"), js.ValueOf(fmt.Sprintf("D%d", row)), js.ValueOf(revenue[(row-2)%len(revenue)]),
 		)
 		assert.True(t, ret.Get("error").IsNull())
 		ret = f.(js.Value).Call("SetCellValue",
-			js.ValueOf("Sheet1"), js.ValueOf(fmt.Sprintf("E%d", row)), js.ValueOf(region[rand.Intn(4)]),
+			js.ValueOf("Sheet1"), js.ValueOf(fmt.Sprintf("E%d", row)), js.ValueOf(region[(row-2)%len(region)]),
 		)
 		assert.True(t, ret.Get("error").IsNull())
 	}
 	opts := js.ValueOf(map[string]interface{}{
 		"DataRange":       "Sheet1!$A$1:$E$31",
-		"PivotTableRange": "Sheet1!$G$2:$M$34",
+		"PivotTableRange": "Sheet1!$G$4:$M$31",
 		"Rows":            []interface{}{map[string]interface{}{"Data": "Month", "DefaultSubtotal": true}, map[string]interface{}{"Data": "Year"}},
 		"Filter":          []interface{}{map[string]interface{}{"Data": "Region"}},
 		"Columns":         []interface{}{map[string]interface{}{"Data": "Type", "DefaultSubtotal": true}},
-		"Data":            []interface{}{map[string]interface{}{"Data": "Sales", "Subtotal": "Sum", "Name": "Summarize by Sum"}},
+		"Data":            []interface{}{map[string]interface{}{"Data": "Revenue", "Subtotal": "Sum", "Name": "Summarize by Sum"}},
 		"RowGrandTotals":  true,
 		"ColGrandTotals":  true,
 		"ShowDrill":       true,
