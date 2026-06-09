@@ -1464,19 +1464,19 @@ declare module 'excelize-wasm' {
      * Set properties of the chart legend by 'Legend' field with 'ChartLegend'
      * data type. The options that can be set are:
      *
-     *      Position
-     *      ShowLegendKey
-     *      Font
+     *     Position
+     *     ShowLegendKey
+     *     Font
      *
      * Position: Set the position of the chart legend. The default legend
      * position is bottom. The available positions are:
      *
-     *      none
-     *      top
-     *      bottom
-     *      left
-     *      right
-     *      top_right
+     *     none
+     *     top
+     *     bottom
+     *     left
+     *     right
+     *     top_right
      *
      * ShowLegendKey: Set the legend keys shall be shown in data labels. The
      * default value is false.
@@ -1489,16 +1489,16 @@ declare module 'excelize-wasm' {
      * Set properties of the chart title by 'Title' field with 'ChartTitle' data
      * type. The properties that can be set are:
      *
-     *      Fill
-     *      Border
-     *      Paragraph
-     *      Font
-     *      Formula
-     *      OffsetX
-     *      OffsetY
-     *      Width
-     *      Height
-     *      Overlay
+     *     Fill
+     *     Border
+     *     Paragraph
+     *     Font
+     *     Formula
+     *     OffsetX
+     *     OffsetY
+     *     Width
+     *     Height
+     *     Overlay
      *
      * Fill: Set fill color of the chart title. The 'Fill' property is optional.
      *
@@ -1539,9 +1539,9 @@ declare module 'excelize-wasm' {
      * Specifies how blank cells are plotted on the chart by 'ShowBlanksAs'. The
      * default value is gap. The options that can be set are:
      *
-     *      gap
-     *      span
-     *      zero
+     *     gap
+     *     span
+     *     zero
      *
      * gap: Specifies that blank values shall be left as a gap.
      *
@@ -1558,16 +1558,16 @@ declare module 'excelize-wasm' {
      * Set the properties of the chart plot area by 'PlotArea' field with
      * 'ChartPlotArea' data type. The properties that can be set are:
      *
-     *      SecondPlotValues
-     *      ShowBubbleSize
-     *      ShowCatName
-     *      ShowDataTable
-     *      ShowDataTableKeys
-     *      ShowLeaderLines
-     *      ShowPercent
-     *      ShowSerName
-     *      ShowVal
-     *      NumFmt
+     *     SecondPlotValues
+     *     ShowBubbleSize
+     *     ShowCatName
+     *     ShowDataTable
+     *     ShowDataTableKeys
+     *     ShowLeaderLines
+     *     ShowPercent
+     *     ShowSerName
+     *     ShowVal
+     *     NumFmt
      *
      * SecondPlotValues: Specifies the values in second plot for the 'PieOfPie'
      * and 'BarOfPie' chart.
@@ -1609,35 +1609,35 @@ declare module 'excelize-wasm' {
      * 'YAxis' fields with 'ChartAxis' data type. The properties of 'XAxis' that
      * can be set are:
      *
-     *      None
-     *      DropLines
-     *      HighLowLines
-     *      MajorGridLines
-     *      MinorGridLines
-     *      TickLabelSkip
-     *      ReverseOrder
-     *      Maximum
-     *      Minimum
-     *      Alignment
-     *      Font
-     *      NumFmt
-     *      Title
+     *     None
+     *     DropLines
+     *     HighLowLines
+     *     MajorGridLines
+     *     MinorGridLines
+     *     TickLabelSkip
+     *     ReverseOrder
+     *     Maximum
+     *     Minimum
+     *     Alignment
+     *     Font
+     *     NumFmt
+     *     Title
      *
      * The properties of 'YAxis' that can be set are:
      *
-     *      None
-     *      MajorGridLines
-     *      MinorGridLines
-     *      MajorUnit
-     *      Secondary
-     *      ReverseOrder
-     *      Maximum
-     *      Minimum
-     *      Alignment
-     *      Font
-     *      LogBase
-     *      NumFmt
-     *      Title
+     *     None
+     *     MajorGridLines
+     *     MinorGridLines
+     *     MajorUnit
+     *     Secondary
+     *     ReverseOrder
+     *     Maximum
+     *     Minimum
+     *     Alignment
+     *     Font
+     *     LogBase
+     *     NumFmt
+     *     Title
      *
      * None: Disable axes.
      *
@@ -1681,32 +1681,32 @@ declare module 'excelize-wasm' {
      * Alignment: Specifies that the alignment of the horizontal and vertical
      * axis. The properties of alignment that can be set are:
      *
-     *      TextRotation
-     *      Vertical
+     *     TextRotation
+     *     Vertical
      *
      * The value of 'TextRotation' that can be set from -90 to 90:
      *
      * The value of 'Vertical' that can be set are:
      *
-     *      horz
-     *      vert
-     *      vert270
-     *      wordArtVert
-     *      eaVert
-     *      mongolianVert
-     *      wordArtVertRtl
+     *     horz
+     *     vert
+     *     vert270
+     *     wordArtVert
+     *     eaVert
+     *     mongolianVert
+     *     wordArtVertRtl
      *
      * Font: Specifies that the font of the horizontal and vertical axis. The
      * properties of font that can be set are:
      *
-     *      Bold
-     *      Italic
-     *      Underline
-     *      Family
-     *      Size
-     *      Strike
-     *      Color
-     *      VertAlign
+     *     Bold
+     *     Italic
+     *     Underline
+     *     Family
+     *     Size
+     *     Strike
+     *     Color
+     *     VertAlign
      *
      * LogBase: Specifies logarithmic scale base number of the vertical axis.
      *
@@ -2254,6 +2254,466 @@ declare module 'excelize-wasm' {
      * feature is currently in working processing. Iterative calculation,
      * implicit intersection, explicit intersection, array formula, table
      * formula and some other formulas are not supported currently.
+     *
+     * Supported formula functions:
+     *
+     *     ABS
+     *     ACCRINT
+     *     ACCRINTM
+     *     ACOS
+     *     ACOSH
+     *     ACOT
+     *     ACOTH
+     *     ADDRESS
+     *     AGGREGATE
+     *     AMORDEGRC
+     *     AMORLINC
+     *     AND
+     *     ARABIC
+     *     ARRAYTOTEXT
+     *     ASIN
+     *     ASINH
+     *     ATAN
+     *     ATAN2
+     *     ATANH
+     *     AVEDEV
+     *     AVERAGE
+     *     AVERAGEA
+     *     AVERAGEIF
+     *     AVERAGEIFS
+     *     BAHTTEXT
+     *     BASE
+     *     BESSELI
+     *     BESSELJ
+     *     BESSELK
+     *     BESSELY
+     *     BETA.DIST
+     *     BETA.INV
+     *     BETADIST
+     *     BETAINV
+     *     BIN2DEC
+     *     BIN2HEX
+     *     BIN2OCT
+     *     BINOM.DIST
+     *     BINOM.DIST.RANGE
+     *     BINOM.INV
+     *     BINOMDIST
+     *     BITAND
+     *     BITLSHIFT
+     *     BITOR
+     *     BITRSHIFT
+     *     BITXOR
+     *     CEILING
+     *     CEILING.MATH
+     *     CEILING.PRECISE
+     *     CHAR
+     *     CHIDIST
+     *     CHIINV
+     *     CHISQ.DIST
+     *     CHISQ.DIST.RT
+     *     CHISQ.INV
+     *     CHISQ.INV.RT
+     *     CHISQ.TEST
+     *     CHITEST
+     *     CHOOSE
+     *     CLEAN
+     *     CODE
+     *     COLUMN
+     *     COLUMNS
+     *     COMBIN
+     *     COMBINA
+     *     COMPLEX
+     *     CONCAT
+     *     CONCATENATE
+     *     CONFIDENCE
+     *     CONFIDENCE.NORM
+     *     CONFIDENCE.T
+     *     CONVERT
+     *     CORREL
+     *     COS
+     *     COSH
+     *     COT
+     *     COTH
+     *     COUNT
+     *     COUNTA
+     *     COUNTBLANK
+     *     COUNTIF
+     *     COUNTIFS
+     *     COUPDAYBS
+     *     COUPDAYS
+     *     COUPDAYSNC
+     *     COUPNCD
+     *     COUPNUM
+     *     COUPPCD
+     *     COVAR
+     *     COVARIANCE.P
+     *     COVARIANCE.S
+     *     CRITBINOM
+     *     CSC
+     *     CSCH
+     *     CUMIPMT
+     *     CUMPRINC
+     *     DATE
+     *     DATEDIF
+     *     DATEVALUE
+     *     DAVERAGE
+     *     DAY
+     *     DAYS
+     *     DAYS360
+     *     DB
+     *     DBCS
+     *     DCOUNT
+     *     DCOUNTA
+     *     DDB
+     *     DEC2BIN
+     *     DEC2HEX
+     *     DEC2OCT
+     *     DECIMAL
+     *     DEGREES
+     *     DELTA
+     *     DEVSQ
+     *     DGET
+     *     DISC
+     *     DMAX
+     *     DMIN
+     *     DOLLAR
+     *     DOLLARDE
+     *     DOLLARFR
+     *     DPRODUCT
+     *     DSTDEV
+     *     DSTDEVP
+     *     DSUM
+     *     DURATION
+     *     DVAR
+     *     DVARP
+     *     EDATE
+     *     EFFECT
+     *     ENCODEURL
+     *     EOMONTH
+     *     ERF
+     *     ERF.PRECISE
+     *     ERFC
+     *     ERFC.PRECISE
+     *     ERROR.TYPE
+     *     EUROCONVERT
+     *     EVEN
+     *     EXACT
+     *     EXP
+     *     EXPON.DIST
+     *     EXPONDIST
+     *     F.DIST
+     *     F.DIST.RT
+     *     F.INV
+     *     F.INV.RT
+     *     F.TEST
+     *     FACT
+     *     FACTDOUBLE
+     *     FALSE
+     *     FDIST
+     *     FIND
+     *     FINDB
+     *     FINV
+     *     FISHER
+     *     FISHERINV
+     *     FIXED
+     *     FLOOR
+     *     FLOOR.MATH
+     *     FLOOR.PRECISE
+     *     FORECAST
+     *     FORECAST.LINEAR
+     *     FORMULATEXT
+     *     FREQUENCY
+     *     FTEST
+     *     FV
+     *     FVSCHEDULE
+     *     GAMMA
+     *     GAMMA.DIST
+     *     GAMMA.INV
+     *     GAMMADIST
+     *     GAMMAINV
+     *     GAMMALN
+     *     GAMMALN.PRECISE
+     *     GAUSS
+     *     GCD
+     *     GEOMEAN
+     *     GESTEP
+     *     GROWTH
+     *     HARMEAN
+     *     HEX2BIN
+     *     HEX2DEC
+     *     HEX2OCT
+     *     HLOOKUP
+     *     HOUR
+     *     HYPERLINK
+     *     HYPGEOM.DIST
+     *     HYPGEOMDIST
+     *     IF
+     *     IFERROR
+     *     IFNA
+     *     IFS
+     *     IMABS
+     *     IMAGINARY
+     *     IMARGUMENT
+     *     IMCONJUGATE
+     *     IMCOS
+     *     IMCOSH
+     *     IMCOT
+     *     IMCSC
+     *     IMCSCH
+     *     IMDIV
+     *     IMEXP
+     *     IMLN
+     *     IMLOG10
+     *     IMLOG2
+     *     IMPOWER
+     *     IMPRODUCT
+     *     IMREAL
+     *     IMSEC
+     *     IMSECH
+     *     IMSIN
+     *     IMSINH
+     *     IMSQRT
+     *     IMSUB
+     *     IMSUM
+     *     IMTAN
+     *     INDEX
+     *     INDIRECT
+     *     INT
+     *     INTERCEPT
+     *     INTRATE
+     *     IPMT
+     *     IRR
+     *     ISBLANK
+     *     ISERR
+     *     ISERROR
+     *     ISEVEN
+     *     ISFORMULA
+     *     ISLOGICAL
+     *     ISNA
+     *     ISNONTEXT
+     *     ISNUMBER
+     *     ISO.CEILING
+     *     ISODD
+     *     ISOWEEKNUM
+     *     ISPMT
+     *     ISREF
+     *     ISTEXT
+     *     KURT
+     *     LARGE
+     *     LCM
+     *     LEFT
+     *     LEFTB
+     *     LEN
+     *     LENB
+     *     LN
+     *     LOG
+     *     LOG10
+     *     LOGINV
+     *     LOGNORM.DIST
+     *     LOGNORM.INV
+     *     LOGNORMDIST
+     *     LOOKUP
+     *     LOWER
+     *     MATCH
+     *     MAX
+     *     MAXA
+     *     MAXIFS
+     *     MDETERM
+     *     MDURATION
+     *     MEDIAN
+     *     MID
+     *     MIDB
+     *     MIN
+     *     MINA
+     *     MINIFS
+     *     MINUTE
+     *     MINVERSE
+     *     MIRR
+     *     MMULT
+     *     MOD
+     *     MODE
+     *     MODE.MULT
+     *     MODE.SNGL
+     *     MONTH
+     *     MROUND
+     *     MULTINOMIAL
+     *     MUNIT
+     *     N
+     *     NA
+     *     NEGBINOM.DIST
+     *     NEGBINOMDIST
+     *     NETWORKDAYS
+     *     NETWORKDAYS.INTL
+     *     NOMINAL
+     *     NORM.DIST
+     *     NORM.INV
+     *     NORM.S.DIST
+     *     NORM.S.INV
+     *     NORMDIST
+     *     NORMINV
+     *     NORMSDIST
+     *     NORMSINV
+     *     NOT
+     *     NOW
+     *     NPER
+     *     NPV
+     *     OCT2BIN
+     *     OCT2DEC
+     *     OCT2HEX
+     *     ODD
+     *     ODDFPRICE
+     *     ODDFYIELD
+     *     ODDLPRICE
+     *     ODDLYIELD
+     *     OR
+     *     PDURATION
+     *     PEARSON
+     *     PERCENTILE
+     *     PERCENTILE.EXC
+     *     PERCENTILE.INC
+     *     PERCENTRANK
+     *     PERCENTRANK.EXC
+     *     PERCENTRANK.INC
+     *     PERMUT
+     *     PERMUTATIONA
+     *     PHI
+     *     PI
+     *     PMT
+     *     POISSON
+     *     POISSON.DIST
+     *     POWER
+     *     PPMT
+     *     PRICE
+     *     PRICEDISC
+     *     PRICEMAT
+     *     PROB
+     *     PRODUCT
+     *     PROPER
+     *     PV
+     *     QUARTILE
+     *     QUARTILE.EXC
+     *     QUARTILE.INC
+     *     QUOTIENT
+     *     RADIANS
+     *     RAND
+     *     RANDBETWEEN
+     *     RANK
+     *     RANK.EQ
+     *     RATE
+     *     RECEIVED
+     *     REPLACE
+     *     REPLACEB
+     *     REPT
+     *     RIGHT
+     *     RIGHTB
+     *     ROMAN
+     *     ROUND
+     *     ROUNDDOWN
+     *     ROUNDUP
+     *     ROW
+     *     ROWS
+     *     RRI
+     *     RSQ
+     *     SEARCH
+     *     SEARCHB
+     *     SEC
+     *     SECH
+     *     SECOND
+     *     SERIESSUM
+     *     SHEET
+     *     SHEETS
+     *     SIGN
+     *     SIN
+     *     SINH
+     *     SKEW
+     *     SKEW.P
+     *     SLN
+     *     SLOPE
+     *     SMALL
+     *     SORTBY
+     *     SQRT
+     *     SQRTPI
+     *     STANDARDIZE
+     *     STDEV
+     *     STDEV.P
+     *     STDEV.S
+     *     STDEVA
+     *     STDEVP
+     *     STDEVPA
+     *     STEYX
+     *     SUBSTITUTE
+     *     SUBTOTAL
+     *     SUM
+     *     SUMIF
+     *     SUMIFS
+     *     SUMPRODUCT
+     *     SUMSQ
+     *     SUMX2MY2
+     *     SUMX2PY2
+     *     SUMXMY2
+     *     SWITCH
+     *     SYD
+     *     T
+     *     T.DIST
+     *     T.DIST.2T
+     *     T.DIST.RT
+     *     T.INV
+     *     T.INV.2T
+     *     T.TEST
+     *     TAN
+     *     TANH
+     *     TBILLEQ
+     *     TBILLPRICE
+     *     TBILLYIELD
+     *     TDIST
+     *     TEXT
+     *     TEXTAFTER
+     *     TEXTBEFORE
+     *     TEXTJOIN
+     *     TIME
+     *     TIMEVALUE
+     *     TINV
+     *     TODAY
+     *     TRANSPOSE
+     *     TREND
+     *     TRIM
+     *     TRIMMEAN
+     *     TRUE
+     *     TRUNC
+     *     TTEST
+     *     TYPE
+     *     UNICHAR
+     *     UNICODE
+     *     UNIQUE
+     *     UPPER
+     *     VALUE
+     *     VALUETOTEXT
+     *     VAR
+     *     VAR.P
+     *     VAR.S
+     *     VARA
+     *     VARP
+     *     VARPA
+     *     VDB
+     *     VLOOKUP
+     *     WEEKDAY
+     *     WEEKNUM
+     *     WEIBULL
+     *     WEIBULL.DIST
+     *     WORKDAY
+     *     WORKDAY.INTL
+     *     XIRR
+     *     XLOOKUP
+     *     XNPV
+     *     XOR
+     *     YEAR
+     *     YEARFRAC
+     *     YIELD
+     *     YIELDDISC
+     *     YIELDMAT
+     *     Z.TEST
+     *     ZTEST
+     *
      * @param sheet The worksheet name
      * @param cell The cell reference
      * @param opts The options for get calculated cell value
