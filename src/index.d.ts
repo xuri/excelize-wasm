@@ -784,6 +784,37 @@ declare module 'excelize-wasm' {
   };
 
   /**
+   * PivotTableShowValuesAsType defines the calculation type enumeration.
+   */
+  export enum PivotTableShowValuesAsType {
+    PivotTableShowValuesAsNoCalculation,
+    PivotTableShowValuesAsPercentOfGrandTotal,
+    PivotTableShowValuesAsPercentOfColumnTotal,
+    PivotTableShowValuesAsPercentOfRowTotal,
+    PivotTableShowValuesAsPercentOf,
+    PivotTableShowValuesAsPercentOfParentRowTotal,
+    PivotTableShowValuesAsPercentOfParentColumnTotal,
+    PivotTableShowValuesAsPercentOfParentTotal,
+    PivotTableShowValuesAsDifferenceFrom,
+    PivotTableShowValuesAsPercentDifferenceFrom,
+    PivotTableShowValuesAsRunningTotalIn,
+    PivotTableShowValuesAsPercentRunningTotalIn,
+    PivotTableShowValuesAsRankSmallestToLargest,
+    PivotTableShowValuesAsRankLargestToSmallest,
+    PivotTableShowValuesAsIndex,
+  }
+
+  /**
+   * PivotTableShowValuesAs directly maps the show value as settings of the
+   * pivot table.
+   */
+  export type PivotTableShowValuesAs = {
+    Type?:      PivotTableShowValuesAsType;
+    BaseField?: string;
+    BaseItem?:  string;
+  };
+
+  /**
    * PivotTableField directly maps the field settings of the pivot table.
    *
    * Name specifies the name of the data field. Maximum 255 characters
@@ -812,6 +843,51 @@ declare module 'excelize-wasm' {
    * SelectedItems specifies the default selected items in a pivot table field.
    * The selected items must be values within the cell range referenced by that
    * field.
+   *
+   * ShowValuesAs specifies the calculation type for showing values in a pivot
+   * table values fields. The possible values for the Type field of ShowValuesAs
+   * are:
+   *
+   * ```typescript
+   * PivotTableShowValuesAsNoCalculation
+   * PivotTableShowValuesAsPercentOfGrandTotal
+   * PivotTableShowValuesAsPercentOfColumnTotal
+   * PivotTableShowValuesAsPercentOfRowTotal
+   * PivotTableShowValuesAsPercentOf
+   * PivotTableShowValuesAsPercentOfParentRowTotal
+   * PivotTableShowValuesAsPercentOfParentColumnTotal
+   * PivotTableShowValuesAsPercentOfParentTotal
+   * PivotTableShowValuesAsDifferenceFrom
+   * PivotTableShowValuesAsPercentDifferenceFrom
+   * PivotTableShowValuesAsRunningTotalIn
+   * PivotTableShowValuesAsPercentRunningTotalIn
+   * PivotTableShowValuesAsRankSmallestToLargest
+   * PivotTableShowValuesAsRankLargestToSmallest
+   * PivotTableShowValuesAsIndex
+   * ```
+   *
+   * Note that the base field and base item settings of ShowValuesAs are only
+   * required for some calculation types, the calculation types requires base
+   * field settings are:
+   *
+   * ```typescript
+   * PivotTableShowValuesAsPercentOf
+   * PivotTableShowValuesAsPercentOfParentTotal
+   * PivotTableShowValuesAsDifferenceFrom
+   * PivotTableShowValuesAsPercentDifferenceFrom
+   * PivotTableShowValuesAsRunningTotalIn
+   * PivotTableShowValuesAsPercentRunningTotalIn
+   * PivotTableShowValuesAsRankSmallestToLargest
+   * PivotTableShowValuesAsRankLargestToSmallest
+   * ```
+   *
+   * The supported calculation types requires base item settings are:
+   *
+   * ```typescript
+   * PivotTableShowValuesAsPercentOf
+   * PivotTableShowValuesAsDifferenceFrom
+   * PivotTableShowValuesAsPercentDifferenceFrom
+   * ```
    */
   export type PivotTableField = {
     Compact?:         boolean;
@@ -824,6 +900,7 @@ declare module 'excelize-wasm' {
     DefaultSubtotal?: boolean;
     NumFmt?:          number;
     SelectedItems?:   string[];
+    ShowValuesAs?:    PivotTableShowValuesAs;
   };
 
   /**
@@ -4517,139 +4594,154 @@ declare module 'excelize-wasm' {
    * @param path The compressed wasm archive path
    */
   export function init(path: string): Promise<{
-    CellNameToCoordinates:             typeof CellNameToCoordinates,
-    ColumnNameToNumber:                typeof ColumnNameToNumber,
-    ColumnNumberToName:                typeof ColumnNumberToName,
-    CoordinatesToCellName:             typeof CoordinatesToCellName,
-    HSLToRGB:                          typeof HSLToRGB,
-    JoinCellName:                      typeof JoinCellName,
-    RGBToHSL:                          typeof RGBToHSL,
-    SplitCellName:                     typeof SplitCellName,
-    ThemeColor:                        typeof ThemeColor,
-    NewFile:                           typeof NewFile;
-    OpenReader:                        typeof OpenReader;
-    CellTypeUnset:                     typeof CellType.CellTypeUnset;
-    CellTypeBool:                      typeof CellType.CellTypeBool;
-    CellTypeDate:                      typeof CellType.CellTypeDate;
-    CellTypeError:                     typeof CellType.CellTypeError;
-    CellTypeFormula:                   typeof CellType.CellTypeFormula;
-    CellTypeInlineString:              typeof CellType.CellTypeInlineString;
-    CellTypeNumber:                    typeof CellType.CellTypeNumber;
-    CellTypeSharedString:              typeof CellType.CellTypeSharedString;
-    CultureNameUnknown:                typeof CultureName.CultureNameUnknown;
-    CultureNameEnUS:                   typeof CultureName.CultureNameEnUS;
-    CultureNameJaJP:                   typeof CultureName.CultureNameJaJP;
-    CultureNameKoKR:                   typeof CultureName.CultureNameKoKR;
-    CultureNameZhCN:                   typeof CultureName.CultureNameZhCN;
-    CultureNameZhTW:                   typeof CultureName.CultureNameZhTW;
-    FormControlNote:                   typeof FormControlType.FormControlNote;
-    FormControlButton:                 typeof FormControlType.FormControlButton;
-    FormControlOptionButton:           typeof FormControlType.FormControlOptionButton;
-    FormControlSpinButton:             typeof FormControlType.FormControlSpinButton;
-    FormControlCheckBox:               typeof FormControlType.FormControlCheckBox;
-    FormControlGroupBox:               typeof FormControlType.FormControlGroupBox;
-    FormControlLabel:                  typeof FormControlType.FormControlLabel;
-    FormControlScrollBar:              typeof FormControlType.FormControlScrollBar;
-    Area:                              typeof ChartType.Area;
-    AreaStacked:                       typeof ChartType.AreaStacked;
-    AreaPercentStacked:                typeof ChartType.AreaPercentStacked;
-    Area3D:                            typeof ChartType.Area3D;
-    Area3DStacked:                     typeof ChartType.Area3DStacked;
-    Area3DPercentStacked:              typeof ChartType.Area3DPercentStacked;
-    Bar:                               typeof ChartType.Bar;
-    BarStacked:                        typeof ChartType.BarStacked;
-    BarPercentStacked:                 typeof ChartType.BarPercentStacked;
-    Bar3DClustered:                    typeof ChartType.Bar3DClustered;
-    Bar3DStacked:                      typeof ChartType.Bar3DStacked;
-    Bar3DPercentStacked:               typeof ChartType.Bar3DPercentStacked;
-    Bar3DConeClustered:                typeof ChartType.Bar3DConeClustered;
-    Bar3DConeStacked:                  typeof ChartType.Bar3DConeStacked;
-    Bar3DConePercentStacked:           typeof ChartType.Bar3DConePercentStacked;
-    Bar3DPyramidClustered:             typeof ChartType.Bar3DPyramidClustered;
-    Bar3DPyramidStacked:               typeof ChartType.Bar3DPyramidStacked;
-    Bar3DPyramidPercentStacked:        typeof ChartType.Bar3DPyramidPercentStacked;
-    Bar3DCylinderClustered:            typeof ChartType.Bar3DCylinderClustered;
-    Bar3DCylinderStacked:              typeof ChartType.Bar3DCylinderStacked;
-    Bar3DCylinderPercentStacked:       typeof ChartType.Bar3DCylinderPercentStacked;
-    Col:                               typeof ChartType.Col;
-    ColStacked:                        typeof ChartType.ColStacked;
-    ColPercentStacked:                 typeof ChartType.ColPercentStacked;
-    Col3D:                             typeof ChartType.Col3D;
-    Col3DClustered:                    typeof ChartType.Col3DClustered;
-    Col3DStacked:                      typeof ChartType.Col3DStacked;
-    Col3DPercentStacked:               typeof ChartType.Col3DPercentStacked;
-    Col3DCone:                         typeof ChartType.Col3DCone;
-    Col3DConeClustered:                typeof ChartType.Col3DConeClustered;
-    Col3DConeStacked:                  typeof ChartType.Col3DConeStacked;
-    Col3DConePercentStacked:           typeof ChartType.Col3DConePercentStacked;
-    Col3DPyramid:                      typeof ChartType.Col3DPyramid;
-    Col3DPyramidClustered:             typeof ChartType.Col3DPyramidClustered;
-    Col3DPyramidStacked:               typeof ChartType.Col3DPyramidStacked;
-    Col3DPyramidPercentStacked:        typeof ChartType.Col3DPyramidPercentStacked;
-    Col3DCylinder:                     typeof ChartType.Col3DCylinder;
-    Col3DCylinderClustered:            typeof ChartType.Col3DCylinderClustered;
-    Col3DCylinderStacked:              typeof ChartType.Col3DCylinderStacked;
-    Col3DCylinderPercentStacked:       typeof ChartType.Col3DCylinderPercentStacked;
-    Doughnut:                          typeof ChartType.Doughnut;
-    Line:                              typeof ChartType.Line;
-    Line3D:                            typeof ChartType.Line3D;
-    Pie:                               typeof ChartType.Pie;
-    Pie3D:                             typeof ChartType.Pie3D;
-    PieOfPie:                          typeof ChartType.PieOfPie;
-    BarOfPie:                          typeof ChartType.BarOfPie;
-    Radar:                             typeof ChartType.Radar;
-    Scatter:                           typeof ChartType.Scatter;
-    Surface3D:                         typeof ChartType.Surface3D;
-    WireframeSurface3D:                typeof ChartType.WireframeSurface3D;
-    Contour:                           typeof ChartType.Contour;
-    WireframeContour:                  typeof ChartType.WireframeContour;
-    Bubble:                            typeof ChartType.Bubble;
-    Bubble3D:                          typeof ChartType.Bubble3D;
-    StockHighLowClose:                 typeof ChartType.StockHighLowClose;
-    StockOpenHighLowClose:             typeof ChartType.StockOpenHighLowClose;
-    ChartDataLabelsPositionUnset:      typeof ChartDataLabelPositionType.ChartDataLabelsPositionUnset;
-    ChartDataLabelsPositionBestFit:    typeof ChartDataLabelPositionType.ChartDataLabelsPositionBestFit;
-    ChartDataLabelsPositionBelow:      typeof ChartDataLabelPositionType.ChartDataLabelsPositionBelow;
-    ChartDataLabelsPositionCenter:     typeof ChartDataLabelPositionType.ChartDataLabelsPositionCenter;
-    ChartDataLabelsPositionInsideBase: typeof ChartDataLabelPositionType.ChartDataLabelsPositionInsideBase;
-    ChartDataLabelsPositionInsideEnd:  typeof ChartDataLabelPositionType.ChartDataLabelsPositionInsideEnd;
-    ChartDataLabelsPositionLeft:       typeof ChartDataLabelPositionType.ChartDataLabelsPositionLeft;
-    ChartDataLabelsPositionOutsideEnd: typeof ChartDataLabelPositionType.ChartDataLabelsPositionOutsideEnd;
-    ChartDataLabelsPositionRight:      typeof ChartDataLabelPositionType.ChartDataLabelsPositionRight;
-    ChartDataLabelsPositionAbove:      typeof ChartDataLabelPositionType.ChartDataLabelsPositionAbove;
-    ChartTickLabelNextToAxis:          typeof ChartTickLabelPositionType.ChartTickLabelNextToAxis;
-    ChartTickLabelHigh:                typeof ChartTickLabelPositionType.ChartTickLabelHigh;
-    ChartTickLabelLow:                 typeof ChartTickLabelPositionType.ChartTickLabelLow;
-    ChartTickLabelNone:                typeof ChartTickLabelPositionType.ChartTickLabelNone;
-    HeaderFooterImagePositionLeft:     typeof HeaderFooterImagePositionType.HeaderFooterImagePositionLeft;
-    HeaderFooterImagePositionCenter:   typeof HeaderFooterImagePositionType.HeaderFooterImagePositionCenter;
-    HeaderFooterImagePositionRight:    typeof HeaderFooterImagePositionType.HeaderFooterImagePositionRight;
-    IgnoredErrorsEvalError:            typeof IgnoredErrorsType.IgnoredErrorsEvalError;
-    IgnoredErrorsTwoDigitTextYear:     typeof IgnoredErrorsType.IgnoredErrorsTwoDigitTextYear;
-    IgnoredErrorsNumberStoredAsText:   typeof IgnoredErrorsType.IgnoredErrorsNumberStoredAsText;
-    IgnoredErrorsFormula:              typeof IgnoredErrorsType.IgnoredErrorsFormula;
-    IgnoredErrorsFormulaRange:         typeof IgnoredErrorsType.IgnoredErrorsFormulaRange;
-    IgnoredErrorsUnlockedFormula:      typeof IgnoredErrorsType.IgnoredErrorsUnlockedFormula;
-    IgnoredErrorsEmptyCellReference:   typeof IgnoredErrorsType.IgnoredErrorsEmptyCellReference;
-    IgnoredErrorsListDataValidation:   typeof IgnoredErrorsType.IgnoredErrorsListDataValidation;
-    IgnoredErrorsCalculatedColumn:     typeof IgnoredErrorsType.IgnoredErrorsCalculatedColumn;
-    LineDashUnset:                     typeof LineDashType.LineDashUnset;
-    LineDashSolid:                     typeof LineDashType.LineDashSolid;
-    LineDashDot:                       typeof LineDashType.LineDashDot;
-    LineDashDash:                      typeof LineDashType.LineDashDash;
-    LineDashLgDash:                    typeof LineDashType.LineDashLgDash;
-    LineDashSashDot:                   typeof LineDashType.LineDashSashDot;
-    LineDashLgDashDot:                 typeof LineDashType.LineDashLgDashDot;
-    LineDashLgDashDotDot:              typeof LineDashType.LineDashLgDashDotDot;
-    LineDashSysDash:                   typeof LineDashType.LineDashSysDash;
-    LineDashSysDot:                    typeof LineDashType.LineDashSysDot;
-    LineDashSysDashDot:                typeof LineDashType.LineDashSysDashDot;
-    LineDashSysDashDotDot:             typeof LineDashType.LineDashSysDashDotDot;
-    LineSolid:                         typeof LineType.LineSolid;
-    LineNone:                          typeof LineType.LineNone;
-    LineAutomatic:                     typeof LineType.LineAutomatic;
-    PictureInsertTypePlaceOverCells:   typeof PictureInsertType.PictureInsertTypePlaceOverCells,
-    PictureInsertTypePlaceInCell:      typeof PictureInsertType.PictureInsertTypePlaceInCell,
-    PictureInsertTypeDISPIMG:          typeof PictureInsertType.PictureInsertTypeDISPIMG,
+    CellNameToCoordinates:                            typeof CellNameToCoordinates,
+    ColumnNameToNumber:                               typeof ColumnNameToNumber,
+    ColumnNumberToName:                               typeof ColumnNumberToName,
+    CoordinatesToCellName:                            typeof CoordinatesToCellName,
+    HSLToRGB:                                         typeof HSLToRGB,
+    JoinCellName:                                     typeof JoinCellName,
+    RGBToHSL:                                         typeof RGBToHSL,
+    SplitCellName:                                    typeof SplitCellName,
+    ThemeColor:                                       typeof ThemeColor,
+    NewFile:                                          typeof NewFile;
+    OpenReader:                                       typeof OpenReader;
+    CellTypeUnset:                                    typeof CellType.CellTypeUnset;
+    CellTypeBool:                                     typeof CellType.CellTypeBool;
+    CellTypeDate:                                     typeof CellType.CellTypeDate;
+    CellTypeError:                                    typeof CellType.CellTypeError;
+    CellTypeFormula:                                  typeof CellType.CellTypeFormula;
+    CellTypeInlineString:                             typeof CellType.CellTypeInlineString;
+    CellTypeNumber:                                   typeof CellType.CellTypeNumber;
+    CellTypeSharedString:                             typeof CellType.CellTypeSharedString;
+    CultureNameUnknown:                               typeof CultureName.CultureNameUnknown;
+    CultureNameEnUS:                                  typeof CultureName.CultureNameEnUS;
+    CultureNameJaJP:                                  typeof CultureName.CultureNameJaJP;
+    CultureNameKoKR:                                  typeof CultureName.CultureNameKoKR;
+    CultureNameZhCN:                                  typeof CultureName.CultureNameZhCN;
+    CultureNameZhTW:                                  typeof CultureName.CultureNameZhTW;
+    FormControlNote:                                  typeof FormControlType.FormControlNote;
+    FormControlButton:                                typeof FormControlType.FormControlButton;
+    FormControlOptionButton:                          typeof FormControlType.FormControlOptionButton;
+    FormControlSpinButton:                            typeof FormControlType.FormControlSpinButton;
+    FormControlCheckBox:                              typeof FormControlType.FormControlCheckBox;
+    FormControlGroupBox:                              typeof FormControlType.FormControlGroupBox;
+    FormControlLabel:                                 typeof FormControlType.FormControlLabel;
+    FormControlScrollBar:                             typeof FormControlType.FormControlScrollBar;
+    Area:                                             typeof ChartType.Area;
+    AreaStacked:                                      typeof ChartType.AreaStacked;
+    AreaPercentStacked:                               typeof ChartType.AreaPercentStacked;
+    Area3D:                                           typeof ChartType.Area3D;
+    Area3DStacked:                                    typeof ChartType.Area3DStacked;
+    Area3DPercentStacked:                             typeof ChartType.Area3DPercentStacked;
+    Bar:                                              typeof ChartType.Bar;
+    BarStacked:                                       typeof ChartType.BarStacked;
+    BarPercentStacked:                                typeof ChartType.BarPercentStacked;
+    Bar3DClustered:                                   typeof ChartType.Bar3DClustered;
+    Bar3DStacked:                                     typeof ChartType.Bar3DStacked;
+    Bar3DPercentStacked:                              typeof ChartType.Bar3DPercentStacked;
+    Bar3DConeClustered:                               typeof ChartType.Bar3DConeClustered;
+    Bar3DConeStacked:                                 typeof ChartType.Bar3DConeStacked;
+    Bar3DConePercentStacked:                          typeof ChartType.Bar3DConePercentStacked;
+    Bar3DPyramidClustered:                            typeof ChartType.Bar3DPyramidClustered;
+    Bar3DPyramidStacked:                              typeof ChartType.Bar3DPyramidStacked;
+    Bar3DPyramidPercentStacked:                       typeof ChartType.Bar3DPyramidPercentStacked;
+    Bar3DCylinderClustered:                           typeof ChartType.Bar3DCylinderClustered;
+    Bar3DCylinderStacked:                             typeof ChartType.Bar3DCylinderStacked;
+    Bar3DCylinderPercentStacked:                      typeof ChartType.Bar3DCylinderPercentStacked;
+    Col:                                              typeof ChartType.Col;
+    ColStacked:                                       typeof ChartType.ColStacked;
+    ColPercentStacked:                                typeof ChartType.ColPercentStacked;
+    Col3D:                                            typeof ChartType.Col3D;
+    Col3DClustered:                                   typeof ChartType.Col3DClustered;
+    Col3DStacked:                                     typeof ChartType.Col3DStacked;
+    Col3DPercentStacked:                              typeof ChartType.Col3DPercentStacked;
+    Col3DCone:                                        typeof ChartType.Col3DCone;
+    Col3DConeClustered:                               typeof ChartType.Col3DConeClustered;
+    Col3DConeStacked:                                 typeof ChartType.Col3DConeStacked;
+    Col3DConePercentStacked:                          typeof ChartType.Col3DConePercentStacked;
+    Col3DPyramid:                                     typeof ChartType.Col3DPyramid;
+    Col3DPyramidClustered:                            typeof ChartType.Col3DPyramidClustered;
+    Col3DPyramidStacked:                              typeof ChartType.Col3DPyramidStacked;
+    Col3DPyramidPercentStacked:                       typeof ChartType.Col3DPyramidPercentStacked;
+    Col3DCylinder:                                    typeof ChartType.Col3DCylinder;
+    Col3DCylinderClustered:                           typeof ChartType.Col3DCylinderClustered;
+    Col3DCylinderStacked:                             typeof ChartType.Col3DCylinderStacked;
+    Col3DCylinderPercentStacked:                      typeof ChartType.Col3DCylinderPercentStacked;
+    Doughnut:                                         typeof ChartType.Doughnut;
+    Line:                                             typeof ChartType.Line;
+    Line3D:                                           typeof ChartType.Line3D;
+    Pie:                                              typeof ChartType.Pie;
+    Pie3D:                                            typeof ChartType.Pie3D;
+    PieOfPie:                                         typeof ChartType.PieOfPie;
+    BarOfPie:                                         typeof ChartType.BarOfPie;
+    Radar:                                            typeof ChartType.Radar;
+    Scatter:                                          typeof ChartType.Scatter;
+    Surface3D:                                        typeof ChartType.Surface3D;
+    WireframeSurface3D:                               typeof ChartType.WireframeSurface3D;
+    Contour:                                          typeof ChartType.Contour;
+    WireframeContour:                                 typeof ChartType.WireframeContour;
+    Bubble:                                           typeof ChartType.Bubble;
+    Bubble3D:                                         typeof ChartType.Bubble3D;
+    StockHighLowClose:                                typeof ChartType.StockHighLowClose;
+    StockOpenHighLowClose:                            typeof ChartType.StockOpenHighLowClose;
+    ChartDataLabelsPositionUnset:                     typeof ChartDataLabelPositionType.ChartDataLabelsPositionUnset;
+    ChartDataLabelsPositionBestFit:                   typeof ChartDataLabelPositionType.ChartDataLabelsPositionBestFit;
+    ChartDataLabelsPositionBelow:                     typeof ChartDataLabelPositionType.ChartDataLabelsPositionBelow;
+    ChartDataLabelsPositionCenter:                    typeof ChartDataLabelPositionType.ChartDataLabelsPositionCenter;
+    ChartDataLabelsPositionInsideBase:                typeof ChartDataLabelPositionType.ChartDataLabelsPositionInsideBase;
+    ChartDataLabelsPositionInsideEnd:                 typeof ChartDataLabelPositionType.ChartDataLabelsPositionInsideEnd;
+    ChartDataLabelsPositionLeft:                      typeof ChartDataLabelPositionType.ChartDataLabelsPositionLeft;
+    ChartDataLabelsPositionOutsideEnd:                typeof ChartDataLabelPositionType.ChartDataLabelsPositionOutsideEnd;
+    ChartDataLabelsPositionRight:                     typeof ChartDataLabelPositionType.ChartDataLabelsPositionRight;
+    ChartDataLabelsPositionAbove:                     typeof ChartDataLabelPositionType.ChartDataLabelsPositionAbove;
+    ChartTickLabelNextToAxis:                         typeof ChartTickLabelPositionType.ChartTickLabelNextToAxis;
+    ChartTickLabelHigh:                               typeof ChartTickLabelPositionType.ChartTickLabelHigh;
+    ChartTickLabelLow:                                typeof ChartTickLabelPositionType.ChartTickLabelLow;
+    ChartTickLabelNone:                               typeof ChartTickLabelPositionType.ChartTickLabelNone;
+    HeaderFooterImagePositionLeft:                    typeof HeaderFooterImagePositionType.HeaderFooterImagePositionLeft;
+    HeaderFooterImagePositionCenter:                  typeof HeaderFooterImagePositionType.HeaderFooterImagePositionCenter;
+    HeaderFooterImagePositionRight:                   typeof HeaderFooterImagePositionType.HeaderFooterImagePositionRight;
+    IgnoredErrorsEvalError:                           typeof IgnoredErrorsType.IgnoredErrorsEvalError;
+    IgnoredErrorsTwoDigitTextYear:                    typeof IgnoredErrorsType.IgnoredErrorsTwoDigitTextYear;
+    IgnoredErrorsNumberStoredAsText:                  typeof IgnoredErrorsType.IgnoredErrorsNumberStoredAsText;
+    IgnoredErrorsFormula:                             typeof IgnoredErrorsType.IgnoredErrorsFormula;
+    IgnoredErrorsFormulaRange:                        typeof IgnoredErrorsType.IgnoredErrorsFormulaRange;
+    IgnoredErrorsUnlockedFormula:                     typeof IgnoredErrorsType.IgnoredErrorsUnlockedFormula;
+    IgnoredErrorsEmptyCellReference:                  typeof IgnoredErrorsType.IgnoredErrorsEmptyCellReference;
+    IgnoredErrorsListDataValidation:                  typeof IgnoredErrorsType.IgnoredErrorsListDataValidation;
+    IgnoredErrorsCalculatedColumn:                    typeof IgnoredErrorsType.IgnoredErrorsCalculatedColumn;
+    LineDashUnset:                                    typeof LineDashType.LineDashUnset;
+    LineDashSolid:                                    typeof LineDashType.LineDashSolid;
+    LineDashDot:                                      typeof LineDashType.LineDashDot;
+    LineDashDash:                                     typeof LineDashType.LineDashDash;
+    LineDashLgDash:                                   typeof LineDashType.LineDashLgDash;
+    LineDashSashDot:                                  typeof LineDashType.LineDashSashDot;
+    LineDashLgDashDot:                                typeof LineDashType.LineDashLgDashDot;
+    LineDashLgDashDotDot:                             typeof LineDashType.LineDashLgDashDotDot;
+    LineDashSysDash:                                  typeof LineDashType.LineDashSysDash;
+    LineDashSysDot:                                   typeof LineDashType.LineDashSysDot;
+    LineDashSysDashDot:                               typeof LineDashType.LineDashSysDashDot;
+    LineDashSysDashDotDot:                            typeof LineDashType.LineDashSysDashDotDot;
+    LineSolid:                                        typeof LineType.LineSolid;
+    LineNone:                                         typeof LineType.LineNone;
+    LineAutomatic:                                    typeof LineType.LineAutomatic;
+    PictureInsertTypePlaceOverCells:                  typeof PictureInsertType.PictureInsertTypePlaceOverCells,
+    PictureInsertTypePlaceInCell:                     typeof PictureInsertType.PictureInsertTypePlaceInCell,
+    PictureInsertTypeDISPIMG:                         typeof PictureInsertType.PictureInsertTypeDISPIMG,
+    PivotTableShowValuesAsNoCalculation:              typeof PivotTableShowValuesAsType.PivotTableShowValuesAsNoCalculation;
+    PivotTableShowValuesAsPercentOfGrandTotal:        typeof PivotTableShowValuesAsType.PivotTableShowValuesAsPercentOfGrandTotal;
+    PivotTableShowValuesAsPercentOfColumnTotal:       typeof PivotTableShowValuesAsType.PivotTableShowValuesAsPercentOfColumnTotal;
+    PivotTableShowValuesAsPercentOfRowTotal:          typeof PivotTableShowValuesAsType.PivotTableShowValuesAsPercentOfRowTotal;
+    PivotTableShowValuesAsPercentOf:                  typeof PivotTableShowValuesAsType.PivotTableShowValuesAsPercentOf;
+    PivotTableShowValuesAsPercentOfParentRowTotal:    typeof PivotTableShowValuesAsType.PivotTableShowValuesAsPercentOfParentRowTotal;
+    PivotTableShowValuesAsPercentOfParentColumnTotal: typeof PivotTableShowValuesAsType.PivotTableShowValuesAsPercentOfParentColumnTotal;
+    PivotTableShowValuesAsPercentOfParentTotal:       typeof PivotTableShowValuesAsType.PivotTableShowValuesAsPercentOfParentTotal;
+    PivotTableShowValuesAsDifferenceFrom:             typeof PivotTableShowValuesAsType.PivotTableShowValuesAsDifferenceFrom;
+    PivotTableShowValuesAsPercentDifferenceFrom:      typeof PivotTableShowValuesAsType.PivotTableShowValuesAsPercentDifferenceFrom;
+    PivotTableShowValuesAsRunningTotalIn:             typeof PivotTableShowValuesAsType.PivotTableShowValuesAsRunningTotalIn;
+    PivotTableShowValuesAsPercentRunningTotalIn:      typeof PivotTableShowValuesAsType.PivotTableShowValuesAsPercentRunningTotalIn;
+    PivotTableShowValuesAsRankSmallestToLargest:      typeof PivotTableShowValuesAsType.PivotTableShowValuesAsRankSmallestToLargest;
+    PivotTableShowValuesAsRankLargestToSmallest:      typeof PivotTableShowValuesAsType.PivotTableShowValuesAsRankLargestToSmallest;
+    PivotTableShowValuesAsIndex:                      typeof PivotTableShowValuesAsType.PivotTableShowValuesAsIndex;
   }>;
 }

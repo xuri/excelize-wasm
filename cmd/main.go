@@ -325,6 +325,22 @@ func regConstants() {
 		"PictureInsertTypePlaceOverCells": int(excelize.PictureInsertTypePlaceOverCells),
 		"PictureInsertTypePlaceInCell":    int(excelize.PictureInsertTypePlaceInCell),
 		"PictureInsertTypeDISPIMG":        int(excelize.PictureInsertTypeDISPIMG),
+		// PivotTableShowValuesAsType enumeration
+		"PivotTableShowValuesAsNoCalculation":              int(excelize.PivotTableShowValuesAsNoCalculation),
+		"PivotTableShowValuesAsPercentOfGrandTotal":        int(excelize.PivotTableShowValuesAsPercentOfGrandTotal),
+		"PivotTableShowValuesAsPercentOfColumnTotal":       int(excelize.PivotTableShowValuesAsPercentOfColumnTotal),
+		"PivotTableShowValuesAsPercentOfRowTotal":          int(excelize.PivotTableShowValuesAsPercentOfRowTotal),
+		"PivotTableShowValuesAsPercentOf":                  int(excelize.PivotTableShowValuesAsPercentOf),
+		"PivotTableShowValuesAsPercentOfParentRowTotal":    int(excelize.PivotTableShowValuesAsPercentOfParentRowTotal),
+		"PivotTableShowValuesAsPercentOfParentColumnTotal": int(excelize.PivotTableShowValuesAsPercentOfParentColumnTotal),
+		"PivotTableShowValuesAsPercentOfParentTotal":       int(excelize.PivotTableShowValuesAsPercentOfParentTotal),
+		"PivotTableShowValuesAsDifferenceFrom":             int(excelize.PivotTableShowValuesAsDifferenceFrom),
+		"PivotTableShowValuesAsPercentDifferenceFrom":      int(excelize.PivotTableShowValuesAsPercentDifferenceFrom),
+		"PivotTableShowValuesAsRunningTotalIn":             int(excelize.PivotTableShowValuesAsRunningTotalIn),
+		"PivotTableShowValuesAsPercentRunningTotalIn":      int(excelize.PivotTableShowValuesAsPercentRunningTotalIn),
+		"PivotTableShowValuesAsRankSmallestToLargest":      int(excelize.PivotTableShowValuesAsRankSmallestToLargest),
+		"PivotTableShowValuesAsRankLargestToSmallest":      int(excelize.PivotTableShowValuesAsRankLargestToSmallest),
+		"PivotTableShowValuesAsIndex":                      int(excelize.PivotTableShowValuesAsIndex),
 	} {
 		js.Global().Get("excelize").Set(name, constant)
 	}
