@@ -585,7 +585,7 @@ if (node && typeof globalThis.navigator === 'undefined') {
   }
 })();
 
-import pako from 'pako';
+import { ungzip } from 'pako';
 
 export async function init(wasmPath) {
   const go = new Go();
@@ -594,12 +594,12 @@ export async function init(wasmPath) {
   if (node) {
     const mod = await dynamicImport('node:fs').catch(() => dynamicImport('fs'));
     const fs = mod.default || mod;
-    buffer = pako.ungzip(fs.readFileSync(wasmPath));
+    buffer = ungzip(fs.readFileSync(wasmPath));
   } else {
-    buffer = pako.ungzip(await (await fetch(wasmPath)).arrayBuffer());
+    buffer = ungzip(await (await fetch(wasmPath)).arrayBuffer());
   }
   if (buffer[0] === 0x1f && buffer[1] === 0x8b) {
-    buffer = pako.ungzip(buffer);
+    buffer = ungzip(buffer);
   }
   const result = await WebAssembly.instantiate(buffer, go.importObject);
   go.run(result.instance);

@@ -1,6 +1,6 @@
 {
   "name": "excelize-wasm",
-  "version": "0.1.2",
+  "version": "0.1.3",
   "description": "A pure WebAssembly / Javascript port of Go Excelize library that allow you to write to and read from XLAM / XLSM / XLSX / XLTM / XLTX files",
   "author": "xuri <xuri.me@gmail.com>",
   "homepage": "https://xuri.me/excelize",
@@ -64,7 +64,7 @@
     "@rollup/plugin-commonjs": "29.0.3",
     "@rollup/plugin-node-resolve": "16.0.3",
     "@rollup/plugin-terser": "1.0.0",
-    "pako": "2.1.0",
+    "pako": "3.0.1",
     "rollup": "4.62.2"
   }
 }
