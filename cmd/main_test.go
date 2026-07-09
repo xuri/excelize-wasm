@@ -2741,7 +2741,7 @@ func TestSetSheetName(t *testing.T) {
 	ret = f.(js.Value).Call("SetSheetName")
 	assert.EqualError(t, errArgNum, ret.Get("error").String())
 
-	ret = f.(js.Value).Call("SetSheetName", js.ValueOf("Sheet:1"), js.ValueOf("Sheet2"))
+	ret = f.(js.Value).Call("SetSheetName", js.ValueOf("Sheet2"), js.ValueOf("Sheet:1"))
 	assert.EqualError(t, excelize.ErrSheetNameInvalid, ret.Get("error").String())
 
 	ret = f.(js.Value).Call("SetSheetName", js.ValueOf("SheetN"), js.ValueOf("Sheet2"))
