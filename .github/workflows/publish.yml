@@ -60,7 +60,7 @@ jobs:
     - name: Setup Node.js
       uses: actions/setup-node@v6
       with:
-        node-version: 22.22.2
+        node-version: 20.20.0
 
     - name: NPM Build
       run: |
@@ -96,13 +96,13 @@ jobs:
     - name: Setup Node.js
       uses: actions/setup-node@v6
       with:
-        node-version: 22.22.2
+        node-version: '24'
         registry-url: 'https://registry.npmjs.org'
+        package-manager-cache: false
 
     - name: NPM Publish
       env:
         NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
       run: |
         cd dist
-        npm install -g npm@latest
         npm publish --provenance --access public
