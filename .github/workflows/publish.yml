@@ -58,7 +58,7 @@ jobs:
         gzip -f --best ../dist/excelize.wasm
 
     - name: Setup Node.js
-      uses: actions/setup-node@v6
+      uses: actions/setup-node@v7
       with:
         node-version: 20.20.0
 
@@ -94,7 +94,7 @@ jobs:
         path: dist/
 
     - name: Setup Node.js
-      uses: actions/setup-node@v6
+      uses: actions/setup-node@v7
       with:
         node-version: '24'
         registry-url: 'https://registry.npmjs.org'
