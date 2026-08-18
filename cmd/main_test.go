@@ -462,6 +462,28 @@ func TestDataValidation(t *testing.T) {
 
 	ret = f.(js.Value).Call("GetDataValidations", js.ValueOf("SheetN"))
 	assert.Equal(t, "sheet SheetN does not exist", ret.Get("error").String())
+
+	ret = f.(js.Value).Call("DeleteDataValidation", js.ValueOf("Sheet1"))
+	assert.True(t, ret.Get("error").IsNull())
+
+	ret = f.(js.Value).Call("DeleteDataValidation", js.ValueOf("Sheet1"), js.ValueOf("A1:A2"))
+	assert.True(t, ret.Get("error").IsNull())
+
+	ret = f.(js.Value).Call("DeleteDataValidation", js.ValueOf("Sheet1"), js.ValueOf("A1:A2"), js.ValueOf("C1:C3"))
+	assert.True(t, ret.Get("error").IsNull())
+
+	ret = f.(js.Value).Call("DeleteDataValidation")
+	assert.EqualError(t, errArgNum, ret.Get("error").String())
+
+	ret = f.(js.Value).Call("DeleteDataValidation", js.ValueOf(nil))
+	assert.Equal(t, errArgType.Error(), ret.Get("error").String())
+
+	ret = f.(js.Value).Call("DeleteDataValidation", js.ValueOf("SheetN"), js.ValueOf("A1"))
+	assert.Equal(t, "sheet SheetN does not exist", ret.Get("error").String())
+
+	ret = f.(js.Value).Call("GetDataValidations", js.ValueOf("Sheet1"))
+	assert.True(t, ret.Get("error").IsNull())
+	assert.Zero(t, ret.Get("dataValidations").Length())
 }
 
 func TestFormControl(t *testing.T) {
@@ -1035,23 +1057,6 @@ func TestDeleteComment(t *testing.T) {
 	assert.EqualError(t, errArgNum, ret.Get("error").String())
 
 	ret = f.(js.Value).Call("DeleteComment", js.ValueOf("SheetN"), js.ValueOf("A1"))
-	assert.Equal(t, "sheet SheetN does not exist", ret.Get("error").String())
-}
-
-func TestDeleteDataValidation(t *testing.T) {
-	f := NewFile(js.Value{}, []js.Value{})
-	assert.True(t, f.(js.Value).Get("error").IsNull())
-
-	ret := f.(js.Value).Call("DeleteDataValidation", js.ValueOf("Sheet1"))
-	assert.True(t, ret.Get("error").IsNull())
-
-	ret = f.(js.Value).Call("DeleteDataValidation", js.ValueOf("Sheet1"), js.ValueOf("A1:A2"))
-	assert.True(t, ret.Get("error").IsNull())
-
-	ret = f.(js.Value).Call("DeleteDataValidation")
-	assert.EqualError(t, errArgNum, ret.Get("error").String())
-
-	ret = f.(js.Value).Call("DeleteDataValidation", js.ValueOf("SheetN"), js.ValueOf("A1"))
 	assert.Equal(t, "sheet SheetN does not exist", ret.Get("error").String())
 }
 

@@ -1575,19 +1575,27 @@ func DeleteComment(f *excelize.File) func(this js.Value, args []js.Value) interf
 // if not specify reference sequence parameter.
 func DeleteDataValidation(f *excelize.File) func(this js.Value, args []js.Value) interface{} {
 	return func(this js.Value, args []js.Value) interface{} {
-		ret := map[string]interface{}{"error": nil}
-		err := prepareArgs(args, []argsRule{
-			{types: []js.Type{js.TypeString}},
-			{types: []js.Type{js.TypeString}, opts: true},
-		})
-		if err != nil {
-			ret["error"] = err.Error()
+		var (
+			err   error
+			sqref []string
+			ret   = map[string]interface{}{"error": nil}
+		)
+		if len(args) < 1 {
+			ret["error"] = errArgNum.Error()
 			return js.ValueOf(ret)
 		}
-		if len(args) == 2 {
-			err = f.DeleteDataValidation(args[0].String(), args[1].String())
-		} else {
+		for i := 0; i < len(args); i++ {
+			if args[i].Type() != js.TypeString {
+				ret["error"] = errArgType.Error()
+				return js.ValueOf(ret)
+			}
+			sqref = append(sqref, args[i].String())
+		}
+
+		if len(args) == 1 {
 			err = f.DeleteDataValidation(args[0].String())
+		} else {
+			err = f.DeleteDataValidation(args[0].String(), sqref[1:]...)
 		}
 		if err != nil {
 			ret["error"] = err.Error()

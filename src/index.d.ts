@@ -2828,8 +2828,34 @@ declare module 'excelize-wasm' {
      * deleted if not specify reference sequence parameter.
      * @param sheet The worksheet name
      * @param sqref The cell reference sequence
+     *
+     * Example 1, delete data validation on Sheet1!A1:B2:
+     *
+     * ```typescript
+     * const { error } = f.DeleteDataValidation("Sheet1", "A1:B2")
+     * ```
+     * Example 2, delete data validations on Sheet1 with multiple cell ranges
+     * A1:B2 and C1:C3 with reference sequence slice:
+     *
+     * ```typescript
+     * const { error } = f.DeleteDataValidation("Sheet1", ...["A1:B2", "C1:C3"])
+     * ```
+     *
+     * Example 3, delete data validations on Sheet1 with multiple cell ranges
+     * A1:B2 and C1:C3 with blank separated reference sequence string, the result
+     * same as example 2:
+     *
+     * ```typescript
+     * const { error } = f.DeleteDataValidation("Sheet1", "A1:B2 C1:C3")
+     * ```
+     *
+     * Example 4, delete all data validations on Sheet1:
+     *
+     * ```typescript
+     * const { error } = f.DeleteDataValidation("Sheet1")
+     * ```
      */
-    DeleteDataValidation(sheet: string, sqref?: string): { error: string | null }
+    DeleteDataValidation(sheet: string, ...sqref: string[]): { error: string | null }
 
     /**
      * DeleteDefinedName provides a function to delete the defined names of the
