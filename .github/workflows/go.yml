@@ -11,9 +11,9 @@ jobs:
     strategy:
       matrix:
         go-version: [1.25.x]
-        os: [ubuntu-24.04]
+        os: [ubuntu-26.04]
         targetplatform: [x64]
-        node-version: ['20.x', '21.x', '22.x', '23.x', '24.x', '25.x']
+        node-version: ['20.x', '21.x', '22.x', '23.x', '24.x', '25.x', '26.x']
 
     runs-on: ${{ matrix.os }}
     environment: production

@@ -4043,6 +4043,414 @@ declare module 'excelize-wasm' {
      * formatting rule for cell value. Conditional formatting is a feature of
      * Excel which allows you to apply a format to a cell or a range of cells
      * based on certain criteria.
+     *
+     * The type option is a required parameter and it has no default value.
+     * Allowable type values and their associated parameters are:
+     *
+     *       Type          | Parameters
+     *      ---------------+------------------------------------
+     *       cell          | Criteria
+     *                     | Value
+     *                     | MinValue
+     *                     | MaxValue
+     *       time_period   | Criteria
+     *       text          | Criteria
+     *                     | Value
+     *       average       | Criteria
+     *       duplicate     | (none)
+     *       unique        | (none)
+     *       top           | Criteria
+     *                     | Value
+     *       bottom        | Criteria
+     *                     | Value
+     *       blanks        | (none)
+     *       no_blanks     | (none)
+     *       errors        | (none)
+     *       no_errors     | (none)
+     *       2_color_scale | MinType
+     *                     | MaxType
+     *                     | MinValue
+     *                     | MaxValue
+     *                     | MinColor
+     *                     | MaxColor
+     *       3_color_scale | MinType
+     *                     | MidType
+     *                     | MaxType
+     *                     | MinValue
+     *                     | MidValue
+     *                     | MaxValue
+     *                     | MinColor
+     *                     | MidColor
+     *                     | MaxColor
+     *       data_bar      | MinType
+     *                     | MaxType
+     *                     | MinValue
+     *                     | MaxValue
+     *                     | BarBorderColor
+     *                     | BarColor
+     *                     | BarDirection
+     *                     | BarOnly
+     *                     | BarSolid
+     *       icon_set      | IconStyle
+     *                     | ReverseIcons
+     *                     | IconsOnly
+     *       formula       | Criteria
+     *
+     * The `Criteria` parameter is used to set the criteria by which the cell
+     * data will be evaluated. It has no default value. The most common
+     * criteria as applied to {Type: "cell"} are:
+     *
+     *     between                  |
+     *     not between              |
+     *     equal to                 | ==
+     *     not equal to             | !=
+     *     greater than             | >
+     *     less than                | <
+     *     greater than or equal to | >=
+     *     less than or equal to    | <=
+     *
+     * You can either use Excel's textual description strings, in the first
+     * column above, or the more common symbolic alternatives.
+     *
+     * Additional criteria which are specific to other conditional format types
+     * are shown in the relevant sections below.
+     *
+     * value: The value is generally used along with the criteria parameter to
+     * set the rule by which the cell data will be evaluated:
+     *
+     * ```typescript
+     * const { error } = f.SetConditionalFormat('Sheet1', 'D1:D10', [
+     *   {
+     *     Type:     'cell',
+     *     Criteria: '>',
+     *     Format:   format,
+     *     Value:    '6',
+     *   },
+     * ]);
+     * ```
+     *
+     * The value property can also be an cell reference:
+     *
+     * ```typescript
+     * const { error } = f.SetConditionalFormat('Sheet1', 'D1:D10', [
+     *   {
+     *     Type:     'cell',
+     *     Criteria: '>',
+     *     Format:   format,
+     *     Value:    '$C$1',
+     *   },
+     * ]);
+     * ```
+     *
+     * type: format - The format parameter is used to specify the format that
+     * will be applied to the cell when the conditional formatting criterion is
+     * met. The format is created using the `NewConditionalStyle` function in
+     * the same way as cell formats:
+     *
+     * ```typescript
+     * let { style: format, error } = f.NewConditionalStyle({
+     *   Font: { Color: '9A0511' },
+     *   Fill: { Type:    'pattern',  Color:   ['FEC7CE'], Pattern: 1},
+     * });
+     * if (error) {
+     *   console.log(error);
+     * }
+     * ({ error } = f.SetConditionalFormat('Sheet1', 'D1:D10', [
+     *   { Type: 'cell', Criteria: '>', Format: format, Value: '6' },
+     * ]));
+     * ```
+     *
+     * Note: In Excel, a conditional format is superimposed over the existing
+     * cell format and not all cell format properties can be modified.
+     * Properties that cannot be modified in a conditional format are font
+     * name, font size, superscript and subscript, diagonal borders, all
+     * alignment properties and all protection properties.
+     *
+     * Excel specifies some default formats to be used with conditional
+     * formatting. These can be replicated using the following excelize
+     * formats:
+     *
+     * ```typescript
+     * // Rose format for bad conditional.
+     * const { style: format1, error } = f.NewConditionalStyle({
+     *   Font: { Color: '9A0511' },
+     *   Fill: { Type: 'pattern', Color: ['FEC7CE'], Pattern: 1 },
+     * });
+     * ```
+     *
+     * ```typescript
+     * // Light yellow format for neutral conditional.
+     * const { style: format2, error } = f.NewConditionalStyle({
+     *   Font: { Color: '9B5713' },
+     *   Fill: { Type: 'pattern', Color: ['FEEAA0'], Pattern: 1},
+     * });
+     * ```
+     *
+     * ```typescript
+     * // Light green format for good conditional.
+     * const { style: format3, error } = f.NewConditionalStyle({
+     *   Font: { Color: '09600B' },
+     *   Fill: { Type: 'pattern', Color: ['C7EECF'], Pattern: 1},
+     * });
+     * ```
+     *
+     * type: `MinValue` - The `MinValue` parameter is used to set the lower
+     * limiting value when the criteria is either "between" or "not between".
+     *
+     * ```typescript
+     * // Highlight cells rules: between...
+     * const { error } = f.SetConditionalFormat('Sheet1', 'A1:A10', [
+     *   {
+     *     Type:     'cell',
+     *     Criteria: 'between',
+     *     Format:   format,
+     *     MinValue: '6',
+     *     MaxValue: '8',
+     *   },
+     * ]);
+     * ```
+     *
+     * type: `MaxValue` - The `MaxValue` parameter is used to set the upper
+     * limiting value when the criteria is either "between" or "not between".
+     * See the previous example.
+     *
+     * type: average - The average type is used to specify Excel's "Average"
+     * style conditional format:
+     *
+     * ```typescript
+     * // Top/Bottom rules: Above Average...
+     * const { error } = f.SetConditionalFormat('Sheet1', 'A1:A10', [
+     *   {
+     *     Type:         'average',
+     *     Criteria:     '=',
+     *     Format:       format1,
+     *     AboveAverage: true,
+     *   },
+     * ]);
+     * ```
+     *
+     * ```typescript
+     * // Top/Bottom rules: Below Average...
+     * const { error } = f.SetConditionalFormat('Sheet1', 'B1:B10', [
+     *   {
+     *     Type:         'average',
+     *     Criteria:     '=',
+     *     Format:       format2,
+     *     AboveAverage: false,
+     *   },
+     * ]);
+     * ```
+     *
+     * type: duplicate - The duplicate type is used to highlight duplicate
+     * cells in a range:
+     *
+     * ```typescript
+     * // Highlight cells rules: Duplicate Values...
+     * const { error } = f.SetConditionalFormat('Sheet1', 'A1:A10', [
+     *   { Type: 'duplicate', Criteria: '=', Format: format },
+     * ]);
+     * ```
+     *
+     * type: unique - The unique type is used to highlight unique cells in a
+     * range:
+     *
+     * ```typescript
+     * // Highlight cells rules: Not Equal To...
+     * const { error } = f.SetConditionalFormat('Sheet1', 'A1:A10', [
+     *   { Type: 'unique', Criteria: '=', Format: format },
+     * ]);
+     * ```
+     *
+     * type: top - The top type is used to specify the top n values by number
+     * or percentage in a range:
+     *
+     * ```typescript
+     * // Top/Bottom rules: Top 6.
+     * const { error } = f.SetConditionalFormat('Sheet1', 'H1:H10', [
+     *   {
+     *     Type:     'top',
+     *     Criteria: '=',
+     *     Format:   format,
+     *     Value:    '6',
+     *   },
+     * ]);
+     * ```
+     *
+     * The criteria can be used to indicate that a percentage condition is
+     * required:
+     *
+     * ```typescript
+     * const { error } = f.SetConditionalFormat('Sheet1', 'A1:A10', [
+     *   {
+     *     Type:     'top',
+     *     Criteria: '=',
+     *     Format:   format,
+     *     Value:    '6',
+     *     Percent:  true,
+     *   },
+     * ]);
+     * ```
+     *
+     * type: 2_color_scale - The 2_color_scale type is used to specify Excel's
+     * "2 Color Scale" style conditional format:
+     *
+     * ```typescript
+     * // Color scales: 2 color.
+     * const { error } = f.SetConditionalFormat('Sheet1', 'A1:A10', [
+     *   {
+     *     Type:     '2_color_scale',
+     *     Criteria: '=',
+     *     MinType:  'min',
+     *     MaxType:  'max',
+     *     MinColor: 'F8696B',
+     *     MaxColor: '63BE7B',
+     *   },
+     * ]);
+     * ```
+     *
+     * This conditional type can be modified with MinType, MaxType, MinValue,
+     * MaxValue, MinColor and MaxColor, see below.
+     *
+     * type: 3_color_scale - The 3_color_scale type is used to specify Excel's
+     * "3 Color Scale" style conditional format:
+     *
+     * ```typescript
+     * // Color scales: 3 color.
+     * const { error } = f.SetConditionalFormat('Sheet1', 'A1:A10', [
+     *   {
+     *     Type:     '3_color_scale',
+     *     Criteria: '=',
+     *     MinType:  'min',
+     *     MidType:  'percentile',
+     *     MaxType:  'max',
+     *     MinColor: 'F8696B',
+     *     MidColor: 'FFEB84',
+     *     MaxColor: '63BE7B',
+     *   },
+     * ]);
+     * ```
+     *
+     * This conditional type can be modified with MinType, MidType, MaxType,
+     * MinValue, MidValue, MaxValue, MinColor, MidColor and MaxColor, see
+     * below.
+     *
+     * type: data_bar - The data_bar type is used to specify Excel's "Data Bar"
+     * style conditional format.
+     *
+     * MinType - The MinType and MaxType properties are available when the
+     * conditional formatting type is 2_color_scale, 3_color_scale or data_bar.
+     * The MidType is available for 3_color_scale. The properties are used as
+     * follows:
+     *
+     * ```typescript
+     * // Data Bars: Gradient Fill.
+     * const { error } = f.SetConditionalFormat('Sheet1', 'K1:K10', [
+     *   {
+     *     Type:     'data_bar',
+     *     Criteria: '=',
+     *     MinType:  'min',
+     *     MaxType:  'max',
+     *     BarColor: '638EC6',
+     *   },
+     * ]);
+     * ```
+     *
+     * The available min/mid/max types are:
+     *
+     *     min        (for MinType only)
+     *     num
+     *     percent
+     *     percentile
+     *     formula
+     *     max        (for MaxType only)
+     *
+     * MidType - Used for 3_color_scale. Same as MinType, see above.
+     *
+     * MaxType - Same as MinType, see above.
+     *
+     * MinValue - The MinValue and MaxValue properties are available when the
+     * conditional formatting type is 2_color_scale, 3_color_scale or data_bar.
+     *
+     * MidValue - The MidValue is available for 3_color_scale. Same as
+     * MinValue, see above.
+     *
+     * MaxValue - Same as MinValue, see above.
+     *
+     * MinColor - The MinColor and MaxColor properties are available when the
+     * conditional formatting type is 2_color_scale, 3_color_scale or data_bar.
+     *
+     * MidColor - The MidColor is available for 3_color_scale. The properties
+     * are used as follows:
+     *
+     * ```typescript
+     * // Color scales: 3 color.
+     * const { error } = f.SetConditionalFormat('Sheet1', 'B1:B10', [
+     *   {
+     *     Type:     '3_color_scale',
+     *     Criteria: '=',
+     *     MinType:  'min',
+     *     MidType:  'percentile',
+     *     MaxType:  'max',
+     *     MinColor: 'F8696B',
+     *     MidColor: 'FFEB84',
+     *     MaxColor: '63BE7B',
+     *   },
+     * ]);
+     * ```
+     *
+     * MaxColor - Same as MinColor, see above.
+     *
+     * BarColor - Used for data_bar. Same as MinColor, see above.
+     *
+     * BarBorderColor - Used for sets the color for the border line of a data
+     * bar, this is only visible in Excel 2010 and later.
+     *
+     * BarDirection - Sets the direction for data bars. The available options
+     * are:
+     *
+     *     context - Data bar direction is set by spreadsheet application based
+     *     on the context of the data displayed.
+     *     leftToRight - Data bar direction is from right to left.
+     *     rightToLeft - Data bar direction is from left to right.
+     *
+     * BarOnly - Used for set displays a bar data but not the data in the
+     * cells.
+     *
+     * BarSolid - Used for turns on a solid (non-gradient) fill for data bars,
+     * this is only visible in Excel 2010 and later.
+     *
+     * IconStyle - The available options are:
+     *
+     *     3Arrows
+     *     3ArrowsGray
+     *     3Flags
+     *     3Signs
+     *     3Stars
+     *     3Symbols
+     *     3Symbols2
+     *     3TrafficLights1
+     *     3TrafficLights2
+     *     3Triangles
+     *     4Arrows
+     *     4ArrowsGray
+     *     4Rating
+     *     4RedToBlack
+     *     4TrafficLights
+     *     5Arrows
+     *     5ArrowsGray
+     *     5Boxes
+     *     5Quarters
+     *     5Rating
+     *
+     * ReverseIcons - Used for set reversed icons sets.
+     *
+     * IconsOnly - Used for set displayed without the cell value.
+     *
+     * StopIfTrue - Used to set the "stop if true" feature of a conditional
+     * formatting rule when more than one rule is applied to a cell or a range
+     * of cells. When this parameter is set then subsequent rules are not
+     * evaluated if the current rule is true.
+     *
      * @param sheet The worksheet name
      * @param reference The conditional format range reference
      * @param opts The conditional options
