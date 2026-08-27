@@ -4916,7 +4916,60 @@ declare module 'excelize-wasm' {
     SetSheetName(source: string, target: string): { error: string | null }
 
     /**
-     * SetSheetProps provides a function to set worksheet properties.
+     * SetSheetProps provides a function to set worksheet properties. There 4
+     * kinds of presets "Custom Scaling Options" in the spreadsheet
+     * applications, if you need to set those kind of scaling options, please
+     * using the `SetSheetProps` and `SetPageLayout` functions to approach these
+     * 4 scaling options:
+     *
+     * 1. No Scaling (Print sheets at their actual size):
+     *
+     * ```typescript
+     * const { error } = f.SetSheetProps('Sheet1', {
+     *   FitToPage: false,
+     * });
+     * if (error) {
+     *   console.log(error);
+     * }
+     * ```
+     *
+     * 2. Fit Sheet on One Page (Shrink the printout so that it fits on one
+     * page):
+     *
+     * ```typescript
+     * const { error } = f.SetSheetProps('Sheet1', { FitToPage: true });
+     * if (error) {
+     *   console.log(error);
+     * }
+     * ```
+     *
+     * 3. Fit All Columns on One Page (Shrink the printout so that it is one
+     * page wide):
+     *
+     * ```typescript
+     * let { error } = f.SetSheetProps('Sheet1', { FitToPage: true });
+     * if (error) {
+     *   console.log(error);
+     * }
+     * ({ error } = f.SetPageLayout('Sheet1', { FitToHeight: 0 }));
+     * if (error) {
+     *   console.log(error);
+     * }
+     * ```
+     *
+     * 4. Fit All Rows on One Page (Shrink the printout so that it is one page
+     * high):
+     *
+     * ```typescript
+     * let { error } = f.SetSheetProps('Sheet1', { FitToPage: true });
+     * if (error) {
+     *   console.log(error);
+     * }
+     * ({ error } = f.SetPageLayout('Sheet1', { FitToWidth: 0 }));
+     * if (error) {
+     *   console.log(error);
+     * }
+     * ```
      * @param sheet The worksheet name
      * @param opts The worksheet property options
      */
