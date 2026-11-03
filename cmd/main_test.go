@@ -2331,6 +2331,19 @@ func TestSetConditionalFormat(t *testing.T) {
 	f := NewFile(js.Value{}, []js.Value{})
 	assert.True(t, f.(js.Value).Get("error").IsNull())
 
+	ret := f.(js.Value).Call("NewConditionalStyle",
+		js.ValueOf(map[string]interface{}{
+			"Fill": map[string]interface{}{
+				"Type":    "pattern",
+				"Color":   []interface{}{"FEEAA0"},
+				"Pattern": 1,
+			},
+		}),
+	)
+	assert.True(t, ret.Get("error").IsNull(), ret.Get("error").String())
+	styleID := ret.Get("style")
+	assert.Equal(t, 0, styleID.Int())
+
 	condFmt := js.ValueOf([]interface{}{
 		map[string]interface{}{
 			"Type":     "top",
@@ -2338,7 +2351,7 @@ func TestSetConditionalFormat(t *testing.T) {
 			"Format":   0,
 		},
 	})
-	ret := f.(js.Value).Call("SetConditionalFormat", js.ValueOf("Sheet1"), js.ValueOf("A1:B2"), condFmt)
+	ret = f.(js.Value).Call("SetConditionalFormat", js.ValueOf("Sheet1"), js.ValueOf("A1:B2"), condFmt)
 	assert.True(t, ret.Get("error").IsNull())
 
 	ret = f.(js.Value).Call("SetConditionalFormat")
